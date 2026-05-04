@@ -1,26 +1,14 @@
 import { clsx } from 'clsx'
-import { generateNKeysBetween } from 'fractional-indexing'
-import { v4 as uuidv4 } from 'uuid'
-
-type Task = {
-    id: string
-    sectionId: string
-    order: string
-    title: string
-    done: boolean
-}
-
-type Section = {
-    id: string
-    order: string
-    name: string
-}
+import useApp, { type Task, type Section } from './store'
 
 function ViewApp() {
+    const sections = useApp((s) => s.sections)
+    const tasks = useApp((s) => s.tasks)
+
     return (
         <div className="min-h-screen bg-gray-50">
             <ViewHeader />
-            <ViewSections sections={MOCK_SECTIONS} tasks={MOCK_TASKS} />
+            <ViewSections sections={sections} tasks={tasks} />
         </div>
     )
 }
@@ -42,7 +30,7 @@ function ViewSections({ sections, tasks }: { sections: Section[]; tasks: Task[] 
 function ViewSection({ section, tasks }: { section: Section; tasks: Task[] }) {
     return (
         <div className="flex flex-col gap-2">
-            <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{section.name}</h2>
+            <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{section.title}</h2>
             {tasks.map((task) => (
                 <ViewTask key={task.id} task={task} />
             ))}
@@ -84,64 +72,5 @@ function ViewHeader() {
         </header>
     )
 }
-
-const MOCK_SECTION_DATA: { name: string; tasks: { title: string; done: boolean }[] }[] = [
-    {
-        name: 'Inbox',
-        tasks: [
-            { title: 'Read article on deep work', done: false },
-            { title: 'Reply to contractor email', done: false },
-            { title: 'Buy new keyboard', done: false },
-        ],
-    },
-    {
-        name: 'Next Actions',
-        tasks: [
-            { title: 'Review project proposal', done: false },
-            { title: 'Write unit tests for auth module', done: false },
-            { title: 'Schedule team sync', done: true },
-        ],
-    },
-    {
-        name: 'Projects',
-        tasks: [
-            { title: 'Launch SimpleGTD v1', done: false },
-            { title: 'Migrate DB to Postgres', done: false },
-            { title: 'Redesign onboarding flow', done: false },
-        ],
-    },
-    {
-        name: 'Waiting For',
-        tasks: [
-            { title: 'Design assets from contractor', done: false },
-            { title: 'Approval on budget proposal', done: false },
-            { title: 'Deploy staging build', done: true },
-        ],
-    },
-    {
-        name: 'Someday / Maybe',
-        tasks: [
-            { title: 'Learn Rust', done: false },
-            { title: 'Update API documentation', done: false },
-            { title: 'Set up home lab', done: false },
-        ],
-    },
-]
-
-const MOCK_SECTIONS: Section[] = generateNKeysBetween(null, null, MOCK_SECTION_DATA.length).map((order, i) => ({
-    id: uuidv4(),
-    order,
-    name: MOCK_SECTION_DATA[i].name,
-}))
-
-const MOCK_TASKS: Task[] = MOCK_SECTIONS.flatMap((section, i) => {
-    const titles = MOCK_SECTION_DATA[i].tasks
-    return generateNKeysBetween(null, null, titles.length).map((order, j) => ({
-        id: uuidv4(),
-        sectionId: section.id,
-        order,
-        ...titles[j],
-    }))
-})
 
 export default ViewApp
