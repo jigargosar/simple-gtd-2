@@ -2,7 +2,7 @@ import { clsx } from 'clsx'
 import { generateNKeysBetween } from 'fractional-indexing'
 import { v4 as uuidv4 } from 'uuid'
 
-interface Task {
+type Task = {
     id: string
     sectionId: string
     order: string
@@ -10,7 +10,7 @@ interface Task {
     done: boolean
 }
 
-interface Section {
+type Section = {
     id: string
     order: string
     name: string
