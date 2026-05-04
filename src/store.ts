@@ -1,6 +1,7 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
-import { generateNKeysBetween } from 'fractional-indexing'
+import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing'
 import { v4 as uuidv4 } from 'uuid'
 
 export type Task = {
@@ -22,7 +23,17 @@ type AppState = {
     tasks: Task[]
 }
 
-const useApp = create<AppState>(mockState)
+const useApp = create<AppState>()(
+    persist(mockState, {
+        name: 'simple-gtd',
+        version: 1,
+        partialize: (s) => ({ sections: s.sections, tasks: s.tasks }),
+        // migrate: (persisted, fromVersion) => {
+        //     if (fromVersion === 0) return mockState()
+        //     return persisted as AppState
+        // },
+    }),
+)
 
 export default useApp
 
@@ -42,6 +53,22 @@ export const toggleTask = (id: string) =>
     useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     }))
+
+export const addTask = (sectionId: string, title: string) => {
+    const lastOrder =
+        useApp
+            .getState()
+            .tasks.filter((t) => t.sectionId === sectionId)
+            .sort((a, b) => (a.order < b.order ? -1 : 1))
+            .at(-1)?.order ?? null
+
+    useApp.setState((s) => ({
+        tasks: [
+            ...s.tasks,
+            { id: uuidv4(), sectionId, order: generateKeyBetween(lastOrder, null), title, done: false },
+        ],
+    }))
+}
 
 export const reorderTask = (id: string, newOrder: string) =>
     useApp.setState((s) => ({
