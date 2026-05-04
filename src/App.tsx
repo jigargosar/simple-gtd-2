@@ -20,7 +20,7 @@ function App() {
 
 function TaskList({ tasks }: { tasks: Task[] }) {
     return (
-        <div className="mx-auto max-w-xl space-y-2 px-4 py-8">
+        <div className="mx-auto flex max-w-xl flex-col gap-2 px-4 py-8">
             {tasks.map((task) => (
                 <TaskItem key={task.id} task={task} />
             ))}
