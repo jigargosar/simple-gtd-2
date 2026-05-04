@@ -21,10 +21,7 @@ type AppState = {
     tasks: Task[]
 }
 
-const useApp = create<AppState>(() => ({
-    sections: MOCK_SECTIONS,
-    tasks: MOCK_TASKS,
-}))
+const useApp = create<AppState>(mockState)
 
 export default useApp
 
@@ -35,61 +32,72 @@ export const toggleTask = (id: string) =>
 
 // Mock data
 
-const MOCK_SECTION_DATA: { title: string; tasks: { title: string; done: boolean }[] }[] = [
-    {
-        title: 'Inbox',
-        tasks: [
-            { title: 'Read article on deep work', done: false },
-            { title: 'Reply to contractor email', done: false },
-            { title: 'Buy new keyboard', done: false },
-        ],
-    },
-    {
-        title: 'Next Actions',
-        tasks: [
-            { title: 'Review project proposal', done: false },
-            { title: 'Write unit tests for auth module', done: false },
-            { title: 'Schedule team sync', done: true },
-        ],
-    },
-    {
-        title: 'Projects',
-        tasks: [
-            { title: 'Launch SimpleGTD v1', done: false },
-            { title: 'Migrate DB to Postgres', done: false },
-            { title: 'Redesign onboarding flow', done: false },
-        ],
-    },
-    {
-        title: 'Waiting For',
-        tasks: [
-            { title: 'Design assets from contractor', done: false },
-            { title: 'Approval on budget proposal', done: false },
-            { title: 'Deploy staging build', done: true },
-        ],
-    },
-    {
-        title: 'Someday / Maybe',
-        tasks: [
-            { title: 'Learn Rust', done: false },
-            { title: 'Update API documentation', done: false },
-            { title: 'Set up home lab', done: false },
-        ],
-    },
-]
+function mockState(): AppState {
+    const sections = mockSections()
+    return { sections, tasks: mockTasks(sections) }
+}
 
-const MOCK_SECTIONS: Section[] = generateNKeysBetween(null, null, MOCK_SECTION_DATA.length).map((order, i) => ({
-    id: uuidv4(),
-    order,
-    title: MOCK_SECTION_DATA[i].title,
-}))
-
-const MOCK_TASKS: Task[] = MOCK_SECTIONS.flatMap((section, i) => {
-    const titles = MOCK_SECTION_DATA[i].tasks
-    return generateNKeysBetween(null, null, titles.length).map((order, j) => ({
+function mockSections(): Section[] {
+    return generateNKeysBetween(null, null, mockSectionData().length).map((order, i) => ({
         id: uuidv4(),
-        sectionId: section.id,
         order,
-        ...titles[j],
+        title: mockSectionData()[i].title,
     }))
-})
+}
+
+function mockTasks(sections: Section[]): Task[] {
+    return sections.flatMap((section, i) => {
+        const tasks = mockSectionData()[i].tasks
+        return generateNKeysBetween(null, null, tasks.length).map((order, j) => ({
+            id: uuidv4(),
+            sectionId: section.id,
+            order,
+            ...tasks[j],
+        }))
+    })
+}
+
+function mockSectionData(): { title: string; tasks: { title: string; done: boolean }[] }[] {
+    return [
+        {
+            title: 'Inbox',
+            tasks: [
+                { title: 'Read article on deep work', done: false },
+                { title: 'Reply to contractor email', done: false },
+                { title: 'Buy new keyboard', done: false },
+            ],
+        },
+        {
+            title: 'Next Actions',
+            tasks: [
+                { title: 'Review project proposal', done: false },
+                { title: 'Write unit tests for auth module', done: false },
+                { title: 'Schedule team sync', done: true },
+            ],
+        },
+        {
+            title: 'Projects',
+            tasks: [
+                { title: 'Launch SimpleGTD v1', done: false },
+                { title: 'Migrate DB to Postgres', done: false },
+                { title: 'Redesign onboarding flow', done: false },
+            ],
+        },
+        {
+            title: 'Waiting For',
+            tasks: [
+                { title: 'Design assets from contractor', done: false },
+                { title: 'Approval on budget proposal', done: false },
+                { title: 'Deploy staging build', done: true },
+            ],
+        },
+        {
+            title: 'Someday / Maybe',
+            tasks: [
+                { title: 'Learn Rust', done: false },
+                { title: 'Update API documentation', done: false },
+                { title: 'Set up home lab', done: false },
+            ],
+        },
+    ]
+}

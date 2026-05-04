@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import useApp, { type Task, type Section } from './store'
+import useApp, { toggleTask, type Task, type Section } from './store'
 
 function ViewApp() {
     const sections = useApp((s) => s.sections)
@@ -39,20 +39,21 @@ function ViewSection({ section, tasks }: { section: Section; tasks: Task[] }) {
 }
 
 function ViewTask(props: { task: Task }) {
-    const { title, done } = props.task
+    const { id, title, done } = props.task
     return (
         <div className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
-            <ViewTaskDoneMarker done={done} />
+            <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
             <ViewTaskTitle done={done} title={title} />
         </div>
     )
 }
 
-function ViewTaskDoneMarker(props: { done: boolean }) {
+function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
     return (
         <span
+            onClick={props.onClick}
             className={clsx(
-                'h-4 w-4 shrink-0 rounded-full border-2',
+                'h-4 w-4 shrink-0 cursor-pointer rounded-full border-2',
                 props.done ? 'border-green-500 bg-green-500' : 'border-gray-300',
             )}
         />
