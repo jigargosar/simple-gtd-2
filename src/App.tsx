@@ -1,6 +1,6 @@
 import { clsx } from 'clsx'
 import { useState } from 'react'
-import { useSections, useSectionTasks, toggleTask, addTask, type Task, type Section } from './store'
+import { useSections, useSectionTasks, toggleTask, appendTask, type Task, type Section } from './store'
 
 function ViewApp() {
     const sections = useSections()
@@ -48,7 +48,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     function submit() {
         const trimmed = value.trim()
         if (!trimmed) return
-        addTask(sectionId, trimmed)
+        appendTask(sectionId, trimmed)
         setValue('')
     }
 
@@ -59,12 +59,9 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
                 placeholder="Add task…"
-                className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none placeholder:text-gray-300 focus:border-accent"
+                className="focus:border-accent flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none placeholder:text-gray-300"
             />
-            <button
-                onClick={submit}
-                className="rounded-lg bg-accent px-3 py-2 text-sm font-medium text-white"
-            >
+            <button onClick={submit} className="bg-accent rounded-lg px-3 py-2 text-sm font-medium text-white">
                 Add
             </button>
         </div>

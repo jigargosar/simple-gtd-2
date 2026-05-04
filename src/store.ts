@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
 import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing'
-import { filter, firstBy, pipe, sortBy, prop } from 'remeda'
+import { filter, pipe, sortBy, prop } from 'remeda'
 import { v4 as uuidv4 } from 'uuid'
 
 export type Task = {
@@ -36,34 +36,34 @@ const useApp = create<AppState>()(
     }),
 )
 
-export default useApp
+function getSectionTasks(tasks: Task[], sectionId: string) {
+    return pipe(
+        tasks,
+        filter((t) => t.sectionId === sectionId),
+        sortBy(prop('order')),
+    )
+}
 
 export function useSections() {
     return useApp(useShallow((s) => sortBy(s.sections, prop('order'))))
 }
 
 export function useSectionTasks(sectionId: string) {
-    return useApp(
-        useShallow((s) => pipe(s.tasks, filter((t) => t.sectionId === sectionId), sortBy(prop('order')))),
-    )
+    return useApp(useShallow((s) => getSectionTasks(s.tasks, sectionId)))
+}
+
+export const appendTask = (sectionId: string, title: string) => {
+    const lastOrder = getSectionTasks(useApp.getState().tasks, sectionId).at(-1)?.order ?? null
+    const newTask = { id: uuidv4(), sectionId, order: keyBetween(lastOrder, null), title, done: false }
+    useApp.setState((s) => ({
+        tasks: [...s.tasks, newTask],
+    }))
 }
 
 export const toggleTask = (id: string) =>
     useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     }))
-
-export const addTask = (sectionId: string, title: string) => {
-    const lastOrder = pipe(
-        useApp.getState().tasks,
-        filter((t) => t.sectionId === sectionId),
-        firstBy([(t) => t.order, 'desc']),
-    )?.order ?? null
-
-    useApp.setState((s) => ({
-        tasks: [...s.tasks, { id: uuidv4(), sectionId, order: keyBetween(lastOrder, null), title, done: false }],
-    }))
-}
 
 export const reorderTask = (id: string, newOrder: string) =>
     useApp.setState((s) => ({
