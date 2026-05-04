@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { useShallow } from 'zustand/react/shallow'
 import { generateNKeysBetween } from 'fractional-indexing'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -24,6 +25,10 @@ type AppState = {
 const useApp = create<AppState>(mockState)
 
 export default useApp
+
+export function useSectionTasks(sectionId: string) {
+    return useApp(useShallow((s) => s.tasks.filter((t) => t.sectionId === sectionId)))
+}
 
 export const toggleTask = (id: string) =>
     useApp.setState((s) => ({

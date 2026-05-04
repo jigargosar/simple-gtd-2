@@ -1,36 +1,33 @@
 import { clsx } from 'clsx'
-import useApp, { toggleTask, type Task, type Section } from './store'
+import useApp, { useSectionTasks, toggleTask, type Task, type Section } from './store'
 
 function ViewApp() {
     const sections = useApp((s) => s.sections)
-    const tasks = useApp((s) => s.tasks)
 
     return (
         <div className="min-h-screen bg-gray-50">
             <ViewHeader />
-            <ViewSections sections={sections} tasks={tasks} />
+            <ViewSections sections={sections} />
         </div>
     )
 }
 
-function ViewSections({ sections, tasks }: { sections: Section[]; tasks: Task[] }) {
+function ViewSections({ sections }: { sections: Section[] }) {
     return (
         <div className="mx-auto flex max-w-xl flex-col gap-8 px-4 py-8">
             {sections.map((section) => (
-                <ViewSection
-                    key={section.id}
-                    section={section}
-                    tasks={tasks.filter((t) => t.sectionId === section.id)}
-                />
+                <ViewSection key={section.id} section={section} />
             ))}
         </div>
     )
 }
 
-function ViewSection({ section, tasks }: { section: Section; tasks: Task[] }) {
+function ViewSection({ section }: { section: Section }) {
+    const tasks = useSectionTasks(section.id)
+
     return (
         <div className="flex flex-col gap-2">
-            <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{section.title}</h2>
+            <h2 className="py-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">{section.title}</h2>
             {tasks.map((task) => (
                 <ViewTask key={task.id} task={task} />
             ))}
