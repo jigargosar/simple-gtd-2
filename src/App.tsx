@@ -1,7 +1,10 @@
 import { clsx } from 'clsx'
+import { generateNKeysBetween } from 'fractional-indexing'
+import { v4 as uuidv4 } from 'uuid'
 
 interface Task {
-    id: number
+    id: string
+    order: string
     title: string
     done: boolean
 }
@@ -56,12 +59,16 @@ function Header() {
     return <h1 className="mb-6 text-2xl font-semibold text-gray-800">Tasks</h1>
 }
 
-const MOCK_TASKS: Task[] = [
-    { id: 1, title: 'Review project proposal', done: false },
-    { id: 2, title: 'Schedule team sync', done: true },
-    { id: 3, title: 'Write unit tests for auth module', done: false },
-    { id: 4, title: 'Update API documentation', done: false },
-    { id: 5, title: 'Deploy staging build', done: true },
+const MOCK_TASK_TITLES: { title: string; done: boolean }[] = [
+    { title: 'Review project proposal', done: false },
+    { title: 'Schedule team sync', done: true },
+    { title: 'Write unit tests for auth module', done: false },
+    { title: 'Update API documentation', done: false },
+    { title: 'Deploy staging build', done: true },
 ]
+
+const MOCK_TASKS: Task[] = generateNKeysBetween(null, null, MOCK_TASK_TITLES.length).map(
+    (order, i) => ({ id: uuidv4(), order, ...MOCK_TASK_TITLES[i] }),
+)
 
 export default App
