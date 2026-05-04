@@ -51,7 +51,7 @@ function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
             onClick={props.onClick}
             className={clsx(
                 'h-4 w-4 shrink-0 cursor-pointer rounded-full border-2',
-                props.done ? 'border-green-500 bg-green-500' : 'border-gray-300',
+                props.done ? 'border-accent bg-accent' : 'border-gray-300',
             )}
         />
     )
