@@ -60,6 +60,9 @@ export const appendTask = (sectionId: string, title: string) => {
     }))
 }
 
+export const deleteTask = (id: string) =>
+    useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
+
 export const toggleTask = (id: string) =>
     useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),

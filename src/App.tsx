@@ -1,6 +1,6 @@
 import { clsx } from 'clsx'
 import { useState } from 'react'
-import { useSections, useSectionTasks, toggleTask, appendTask, type Task, type Section } from './store'
+import { useSections, useSectionTasks, toggleTask, deleteTask, appendTask, type Task, type Section } from './store'
 
 function ViewApp() {
     const sections = useSections()
@@ -71,10 +71,22 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 function ViewTask(props: { task: Task }) {
     const { id, title, done } = props.task
     return (
-        <div className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+        <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
             <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
             <ViewTaskTitle done={done} title={title} />
+            <ViewDeleteTask onClick={() => deleteTask(id)} />
         </div>
+    )
+}
+
+function ViewDeleteTask(props: { onClick: () => void }) {
+    return (
+        <button
+            onClick={props.onClick}
+            className="ml-auto text-gray-200 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
+        >
+            ✕
+        </button>
     )
 }
 
