@@ -26,13 +26,31 @@ const useApp = create<AppState>(mockState)
 
 export default useApp
 
+export function useSections() {
+    return useApp(useShallow((s) => [...s.sections].sort((a, b) => (a.order < b.order ? -1 : 1))))
+}
+
 export function useSectionTasks(sectionId: string) {
-    return useApp(useShallow((s) => s.tasks.filter((t) => t.sectionId === sectionId)))
+    return useApp(
+        useShallow((s) =>
+            s.tasks.filter((t) => t.sectionId === sectionId).sort((a, b) => (a.order < b.order ? -1 : 1)),
+        ),
+    )
 }
 
 export const toggleTask = (id: string) =>
     useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
+    }))
+
+export const reorderTask = (id: string, newOrder: string) =>
+    useApp.setState((s) => ({
+        tasks: s.tasks.map((t) => (t.id === id ? { ...t, order: newOrder } : t)),
+    }))
+
+export const reorderSection = (id: string, newOrder: string) =>
+    useApp.setState((s) => ({
+        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, order: newOrder } : sec)),
     }))
 
 // Mock data

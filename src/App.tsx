@@ -1,8 +1,8 @@
 import { clsx } from 'clsx'
-import useApp, { useSectionTasks, toggleTask, type Task, type Section } from './store'
+import { useSections, useSectionTasks, toggleTask, type Task, type Section } from './store'
 
 function ViewApp() {
-    const sections = useApp((s) => s.sections)
+    const sections = useSections()
 
     return (
         <div className="min-h-screen bg-gray-50">
