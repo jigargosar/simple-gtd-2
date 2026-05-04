@@ -1,3 +1,5 @@
+import { clsx } from 'clsx'
+
 function App() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -23,9 +25,10 @@ function TaskItem({ title, done }: Task) {
   return (
     <li className="flex items-center gap-3 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-100">
       <span
-        className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${done ? 'bg-green-500 border-green-500' : 'border-gray-300'}`}
+        className={clsx('w-4 h-4 rounded-full border-2 shrink-0',
+            done ? 'bg-green-500 border-green-500' : 'border-gray-300')}
       />
-      <span className={done ? 'line-through text-gray-400' : 'text-gray-700'}>
+      <span className={clsx(done ? 'line-through text-gray-400' : 'text-gray-700')}>
         {title}
       </span>
     </li>
