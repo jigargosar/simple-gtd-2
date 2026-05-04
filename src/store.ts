@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
 import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing'
+import { filter, firstBy, pipe, sortBy, prop } from 'remeda'
 import { v4 as uuidv4 } from 'uuid'
 
 export type Task = {
@@ -38,14 +39,12 @@ const useApp = create<AppState>()(
 export default useApp
 
 export function useSections() {
-    return useApp(useShallow((s) => [...s.sections].sort((a, b) => (a.order < b.order ? -1 : 1))))
+    return useApp(useShallow((s) => sortBy(s.sections, prop('order'))))
 }
 
 export function useSectionTasks(sectionId: string) {
     return useApp(
-        useShallow((s) =>
-            s.tasks.filter((t) => t.sectionId === sectionId).sort((a, b) => (a.order < b.order ? -1 : 1)),
-        ),
+        useShallow((s) => pipe(s.tasks, filter((t) => t.sectionId === sectionId), sortBy(prop('order')))),
     )
 }
 
@@ -55,18 +54,14 @@ export const toggleTask = (id: string) =>
     }))
 
 export const addTask = (sectionId: string, title: string) => {
-    const lastOrder =
-        useApp
-            .getState()
-            .tasks.filter((t) => t.sectionId === sectionId)
-            .sort((a, b) => (a.order < b.order ? -1 : 1))
-            .at(-1)?.order ?? null
+    const lastOrder = pipe(
+        useApp.getState().tasks,
+        filter((t) => t.sectionId === sectionId),
+        firstBy([(t) => t.order, 'desc']),
+    )?.order ?? null
 
     useApp.setState((s) => ({
-        tasks: [
-            ...s.tasks,
-            { id: uuidv4(), sectionId, order: generateKeyBetween(lastOrder, null), title, done: false },
-        ],
+        tasks: [...s.tasks, { id: uuidv4(), sectionId, order: keyBetween(lastOrder, null), title, done: false }],
     }))
 }
 
@@ -79,6 +74,10 @@ export const reorderSection = (id: string, newOrder: string) =>
     useApp.setState((s) => ({
         sections: s.sections.map((sec) => (sec.id === id ? { ...sec, order: newOrder } : sec)),
     }))
+
+export function keyBetween(a: string | null | undefined, b: string | null | undefined) {
+    return generateKeyBetween(a ?? null, b ?? null)
+}
 
 // Mock data
 
