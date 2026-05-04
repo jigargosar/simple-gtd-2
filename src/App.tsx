@@ -47,7 +47,7 @@ function ViewTask(props: { task: Task }) {
 
 function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
     return (
-        <span
+        <button
             onClick={props.onClick}
             className={clsx(
                 'h-4 w-4 shrink-0 cursor-pointer rounded-full border-2',
