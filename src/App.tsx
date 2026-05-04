@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 interface Task {
     id: string
+    sectionId: string
     order: string
     title: string
     done: boolean
@@ -13,7 +14,6 @@ interface Section {
     id: string
     order: string
     name: string
-    tasks: Task[]
 }
 
 function App() {
@@ -22,18 +22,22 @@ function App() {
             <Header />
             <div className="mx-auto flex max-w-xl flex-col gap-8 px-4 py-8">
                 {MOCK_SECTIONS.map((section) => (
-                    <TaskSection key={section.id} section={section} />
+                    <TaskSection
+                        key={section.id}
+                        section={section}
+                        tasks={MOCK_TASKS.filter((t) => t.sectionId === section.id)}
+                    />
                 ))}
             </div>
         </div>
     )
 }
 
-function TaskSection({ section }: { section: Section }) {
+function TaskSection({ section, tasks }: { section: Section; tasks: Task[] }) {
     return (
         <div className="flex flex-col gap-2">
             <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{section.name}</h2>
-            {section.tasks.map((task) => (
+            {tasks.map((task) => (
                 <TaskItem key={task.id} task={task} />
             ))}
         </div>
@@ -73,14 +77,6 @@ function Header() {
             </div>
         </header>
     )
-}
-
-function makeTasks(titles: { title: string; done: boolean }[]): Task[] {
-    return generateNKeysBetween(null, null, titles.length).map((order, i) => ({
-        id: uuidv4(),
-        order,
-        ...titles[i],
-    }))
 }
 
 const MOCK_SECTION_DATA: { name: string; tasks: { title: string; done: boolean }[] }[] = [
@@ -130,7 +126,16 @@ const MOCK_SECTIONS: Section[] = generateNKeysBetween(null, null, MOCK_SECTION_D
     id: uuidv4(),
     order,
     name: MOCK_SECTION_DATA[i].name,
-    tasks: makeTasks(MOCK_SECTION_DATA[i].tasks),
 }))
+
+const MOCK_TASKS: Task[] = MOCK_SECTIONS.flatMap((section, i) => {
+    const titles = MOCK_SECTION_DATA[i].tasks
+    return generateNKeysBetween(null, null, titles.length).map((order, j) => ({
+        id: uuidv4(),
+        sectionId: section.id,
+        order,
+        ...titles[j],
+    }))
+})
 
 export default App
