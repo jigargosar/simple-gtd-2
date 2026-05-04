@@ -21,19 +21,19 @@ function App() {
         <div className="min-h-screen bg-gray-50">
             <Header />
             <div className="mx-auto flex max-w-xl flex-col gap-8 px-4 py-8">
-                {MOCK_LISTS.map((list) => (
-                    <TaskSection key={list.id} list={list} />
+                {MOCK_SECTIONS.map((section) => (
+                    <TaskSection key={section.id} section={section} />
                 ))}
             </div>
         </div>
     )
 }
 
-function TaskSection({ list }: { list: Section }) {
+function TaskSection({ section }: { section: Section }) {
     return (
         <div className="flex flex-col gap-2">
-            <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{list.name}</h2>
-            {list.tasks.map((task) => (
+            <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{section.name}</h2>
+            {section.tasks.map((task) => (
                 <TaskItem key={task.id} task={task} />
             ))}
         </div>
@@ -83,7 +83,7 @@ function makeTasks(titles: { title: string; done: boolean }[]): Task[] {
     }))
 }
 
-const MOCK_LIST_DATA: { name: string; tasks: { title: string; done: boolean }[] }[] = [
+const MOCK_SECTION_DATA: { name: string; tasks: { title: string; done: boolean }[] }[] = [
     {
         name: 'Inbox',
         tasks: [
@@ -126,11 +126,11 @@ const MOCK_LIST_DATA: { name: string; tasks: { title: string; done: boolean }[] 
     },
 ]
 
-const MOCK_LISTS: Section[] = generateNKeysBetween(null, null, MOCK_LIST_DATA.length).map((order, i) => ({
+const MOCK_SECTIONS: Section[] = generateNKeysBetween(null, null, MOCK_SECTION_DATA.length).map((order, i) => ({
     id: uuidv4(),
     order,
-    name: MOCK_LIST_DATA[i].name,
-    tasks: makeTasks(MOCK_LIST_DATA[i].tasks),
+    name: MOCK_SECTION_DATA[i].name,
+    tasks: makeTasks(MOCK_SECTION_DATA[i].tasks),
 }))
 
 export default App
