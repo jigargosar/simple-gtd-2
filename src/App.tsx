@@ -23,16 +23,30 @@ function TaskList({ tasks }: { tasks: Task[] }) {
 
 function TaskItem({ title, done }: Task) {
   return (
-    <li className="flex items-center gap-3 bg-white rounded-lg px-4 py-3 shadow-sm border border-gray-100">
-      <span
-        className={clsx('w-4 h-4 rounded-full border-2 shrink-0',
-            done ? 'bg-green-500 border-green-500' : 'border-gray-300')}
-      />
-      <span className={clsx(done ? 'line-through text-gray-400' : 'text-gray-700')}>
-        {title}
-      </span>
+    <li className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+      <TaskDoneMarker done={done} />
+      <TaskTitle done={done} title={title} />
     </li>
   )
+}
+
+function TaskDoneMarker(props: { done: boolean }) {
+  return (
+    <span
+      className={clsx(
+        'h-4 w-4 shrink-0 rounded-full border-2',
+        props.done ? 'border-green-500 bg-green-500' : 'border-gray-300',
+      )}
+    />
+  )
+}
+
+function TaskTitle(props: { done: boolean; title: string }) {
+    return (
+        <span className={clsx(props.done ? 'text-gray-400 line-through' : 'text-gray-700')}>
+      {props.title}
+    </span>
+    )
 }
 
 function Header() {
