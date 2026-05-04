@@ -9,19 +9,31 @@ interface Task {
     done: boolean
 }
 
+interface Section {
+    id: string
+    order: string
+    name: string
+    tasks: Task[]
+}
+
 function App() {
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
-            <TaskList tasks={MOCK_TASKS} />
+            <div className="mx-auto flex max-w-xl flex-col gap-8 px-4 py-8">
+                {MOCK_LISTS.map((list) => (
+                    <TaskSection key={list.id} list={list} />
+                ))}
+            </div>
         </div>
     )
 }
 
-function TaskList({ tasks }: { tasks: Task[] }) {
+function TaskSection({ list }: { list: Section }) {
     return (
-        <div className="mx-auto flex max-w-xl flex-col gap-2 px-4 py-8">
-            {tasks.map((task) => (
+        <div className="flex flex-col gap-2">
+            <h2 className="text-xs font-semibold tracking-widest text-gray-400 uppercase">{list.name}</h2>
+            {list.tasks.map((task) => (
                 <TaskItem key={task.id} task={task} />
             ))}
         </div>
@@ -31,10 +43,10 @@ function TaskList({ tasks }: { tasks: Task[] }) {
 function TaskItem(props: { task: Task }) {
     const { title, done } = props.task
     return (
-        <li className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
             <TaskDoneMarker done={done} />
             <TaskTitle done={done} title={title} />
-        </li>
+        </div>
     )
 }
 
@@ -63,18 +75,62 @@ function Header() {
     )
 }
 
-const MOCK_TASK_TITLES: { title: string; done: boolean }[] = [
-    { title: 'Review project proposal', done: false },
-    { title: 'Schedule team sync', done: true },
-    { title: 'Write unit tests for auth module', done: false },
-    { title: 'Update API documentation', done: false },
-    { title: 'Deploy staging build', done: true },
+function makeTasks(titles: { title: string; done: boolean }[]): Task[] {
+    return generateNKeysBetween(null, null, titles.length).map((order, i) => ({
+        id: uuidv4(),
+        order,
+        ...titles[i],
+    }))
+}
+
+const MOCK_LIST_DATA: { name: string; tasks: { title: string; done: boolean }[] }[] = [
+    {
+        name: 'Inbox',
+        tasks: [
+            { title: 'Read article on deep work', done: false },
+            { title: 'Reply to contractor email', done: false },
+            { title: 'Buy new keyboard', done: false },
+        ],
+    },
+    {
+        name: 'Next Actions',
+        tasks: [
+            { title: 'Review project proposal', done: false },
+            { title: 'Write unit tests for auth module', done: false },
+            { title: 'Schedule team sync', done: true },
+        ],
+    },
+    {
+        name: 'Projects',
+        tasks: [
+            { title: 'Launch SimpleGTD v1', done: false },
+            { title: 'Migrate DB to Postgres', done: false },
+            { title: 'Redesign onboarding flow', done: false },
+        ],
+    },
+    {
+        name: 'Waiting For',
+        tasks: [
+            { title: 'Design assets from contractor', done: false },
+            { title: 'Approval on budget proposal', done: false },
+            { title: 'Deploy staging build', done: true },
+        ],
+    },
+    {
+        name: 'Someday / Maybe',
+        tasks: [
+            { title: 'Learn Rust', done: false },
+            { title: 'Update API documentation', done: false },
+            { title: 'Set up home lab', done: false },
+        ],
+    },
 ]
 
-const MOCK_TASKS: Task[] = generateNKeysBetween(null, null, MOCK_TASK_TITLES.length).map((order, i) => ({
+const MOCK_LISTS: Section[] = generateNKeysBetween(null, null, MOCK_LIST_DATA.length).map((order, i) => ({
     id: uuidv4(),
     order,
-    ...MOCK_TASK_TITLES[i],
+    name: MOCK_LIST_DATA[i].name,
+    tasks: makeTasks(MOCK_LIST_DATA[i].tasks),
 }))
 
 export default App
