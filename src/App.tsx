@@ -11,22 +11,22 @@ interface Task {
 
 function App() {
     return (
-        <div className="min-h-screen bg-gray-50 px-4 py-10">
-            <div className="mx-auto max-w-xl">
-                <Header />
-                <TaskList tasks={MOCK_TASKS} />
-            </div>
+        <div className="min-h-screen bg-gray-50">
+            <Header />
+            <TaskList tasks={MOCK_TASKS} />
         </div>
     )
 }
 
 function TaskList({ tasks }: { tasks: Task[] }) {
     return (
-        <ul className="space-y-2">
-            {tasks.map((task) => (
-                <TaskItem key={task.id} task={task} />
-            ))}
-        </ul>
+        <main className="mx-auto max-w-xl px-4 py-8">
+            <ul className="space-y-2">
+                {tasks.map((task) => (
+                    <TaskItem key={task.id} task={task} />
+                ))}
+            </ul>
+        </main>
     )
 }
 
@@ -56,7 +56,13 @@ function TaskTitle(props: { done: boolean; title: string }) {
 }
 
 function Header() {
-    return <h1 className="mb-6 text-2xl font-semibold text-gray-800">Tasks</h1>
+    return (
+        <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
+            <div className="mx-auto max-w-xl">
+                <span className="text-lg font-semibold tracking-tight text-gray-800">SimpleGTD</span>
+            </div>
+        </header>
+    )
 }
 
 const MOCK_TASK_TITLES: { title: string; done: boolean }[] = [
@@ -67,8 +73,10 @@ const MOCK_TASK_TITLES: { title: string; done: boolean }[] = [
     { title: 'Deploy staging build', done: true },
 ]
 
-const MOCK_TASKS: Task[] = generateNKeysBetween(null, null, MOCK_TASK_TITLES.length).map(
-    (order, i) => ({ id: uuidv4(), order, ...MOCK_TASK_TITLES[i] }),
-)
+const MOCK_TASKS: Task[] = generateNKeysBetween(null, null, MOCK_TASK_TITLES.length).map((order, i) => ({
+    id: uuidv4(),
+    order,
+    ...MOCK_TASK_TITLES[i],
+}))
 
 export default App
