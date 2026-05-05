@@ -1,5 +1,6 @@
 import { clsx } from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { firstBy } from 'remeda'
 import {
     useSections,
     useSectionTasks,
@@ -14,6 +15,7 @@ import {
 
 function ViewApp() {
     const sections = useSections()
+    useNearestBeaconTracker()
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -150,10 +152,51 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
 // ---------- Beacons ----------
 
+function getBeacons() {
+    return [...document.querySelectorAll<HTMLElement>('[data-sortable-kind]')]
+}
+
+function distanceFromY(y: number, el: HTMLElement) {
+    const r = el.getBoundingClientRect()
+    return Math.abs(r.top + r.height / 2 - y)
+}
+
+function activateNearestBeacon(y: number) {
+    const beacons = getBeacons()
+    const nearest = firstBy(beacons, (el) => distanceFromY(y, el))
+    beacons.forEach((el) => (el.dataset.active = String(el === nearest)))
+}
+
+function useNearestBeaconTracker() {
+    useEffect(() => {
+        let lastY: number | null = null
+
+        function onMove(e: MouseEvent) {
+            lastY = e.clientY
+            activateNearestBeacon(lastY)
+        }
+
+        function onScroll() {
+            if (lastY === null) return
+            activateNearestBeacon(lastY)
+        }
+
+        window.addEventListener('mousemove', onMove)
+        window.addEventListener('scroll', onScroll, true)
+        return () => {
+            window.removeEventListener('mousemove', onMove)
+            window.removeEventListener('scroll', onScroll, true)
+        }
+    }, [])
+}
+
 function Beacon({ kind }: { kind: 'section' | 'task' }) {
-    const color = kind === 'section' ? 'bg-amber-400/60' : 'bg-accent/40'
+    const color = kind === 'section' ? 'bg-amber-400' : 'bg-accent'
     return (
-        <div data-sortable-kind={kind} className="flex h-2 items-center">
+        <div
+            data-sortable-kind={kind}
+            className="flex h-2 items-center opacity-15 transition-opacity duration-150 data-[active=true]:opacity-100"
+        >
             <div className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', color)} />
             <div className={clsx('h-0.5 flex-1 rounded-full', color)} />
             <div className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', color)} />
