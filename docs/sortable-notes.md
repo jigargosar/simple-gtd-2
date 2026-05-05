@@ -144,3 +144,50 @@ If 1.★, 2.★, 3.★, 4.★, 5.★, 6.★, 7.★, 8.★, 9.★, 10. confirmed 
 My notes:
 
 ❯ instade of mouse we can and should use pointer events. also I am not sure how keyboard sortable would work, (we can figure out later if need be) also auto scorll is kind of necessary, but I dont think it will be a big issue, since we are already considering scrolling to update nearst drop location. FYI general auto-scrolling that I have seen in other apps is very bad, either its to slow, or too fast. Its unpredicitable. I would like ours to be better controlled. Also on principle, I dont want layout shifts, arbitary artifacts shown, i.e. delete cross on hover (delete UX needs more work, but later) shouldnt activate, i.e. keep sort focused and neat. Thoughts.
+
+---
+Data Structure discussion:
+
+**TL;DR**: discriminated union with `tag`, four variants. No optional fields — each phase carries exactly the data it needs and nothing else.
+
+```ts
+type Point = { x: number; y: number }
+
+type TaskBeacon = {
+    sectionId: string       // destination section
+    previousTaskId: string | null   // order of preceding task, null if first
+    nextTaskId: string | null    // order of following task, null if last
+}
+
+type SectionBeacon = {
+    previousSectionId: string | null
+    nextSectionId: string | null
+}
+
+type DragState =
+    | { tag: 'idle' }
+    | {
+          tag: 'pending'
+          kind: 'task' | 'section'
+          sourceId: string
+          pointerId: number
+          startPointer: Point
+          grabOffset: Point
+      }
+    | {
+          tag: 'dragging-task'
+          sourceId: string
+          pointerId: number
+          grabOffset: Point
+          pointer: Point
+          activeBeacon: TaskBeacon | null
+      }
+    | {
+          tag: 'dragging-section'
+          sourceId: string
+          pointerId: number
+          grabOffset: Point
+          pointer: Point
+          activeBeacon: SectionBeacon | null
+      }
+```
