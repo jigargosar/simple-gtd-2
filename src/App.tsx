@@ -1,6 +1,14 @@
 import { clsx } from 'clsx'
 import { useState } from 'react'
-import { useSections, useSectionTasks, toggleTask, deleteTask, appendTask, type Task, type Section } from './store'
+import {
+    useSections,
+    useSectionTasks,
+    toggleTask,
+    deleteTask,
+    appendTask,
+    type Task,
+    type Section,
+} from './store'
 
 function ViewApp() {
     const sections = useSections()
@@ -28,7 +36,9 @@ function ViewSection({ section }: { section: Section }) {
 
     return (
         <div className="flex flex-col gap-2">
-            <h2 className="py-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">{section.title}</h2>
+            <h2 className="py-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
+                {section.title}
+            </h2>
             {tasks.length === 0 && <ViewEmptyState />}
             {tasks.map((task) => (
                 <ViewTask key={task.id} task={task} />
@@ -61,7 +71,10 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                 placeholder="Add task…"
                 className="focus:border-accent flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none placeholder:text-gray-300"
             />
-            <button onClick={submit} className="bg-accent rounded-lg px-3 py-2 text-sm font-medium text-white">
+            <button
+                onClick={submit}
+                className="bg-accent rounded-lg px-3 py-2 text-sm font-medium text-white"
+            >
                 Add
             </button>
         </div>
@@ -102,14 +115,20 @@ function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
 }
 
 function ViewTaskTitle(props: { done: boolean; title: string }) {
-    return <span className={clsx(props.done ? 'text-gray-400 line-through' : 'text-gray-700')}>{props.title}</span>
+    return (
+        <span className={clsx(props.done ? 'text-gray-400 line-through' : 'text-gray-700')}>
+            {props.title}
+        </span>
+    )
 }
 
 function ViewHeader() {
     return (
         <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
             <div className="mx-auto max-w-xl">
-                <span className="text-lg font-semibold tracking-tight text-gray-800">SimpleGTD</span>
+                <span className="text-lg font-semibold tracking-tight text-gray-800">
+                    SimpleGTD
+                </span>
             </div>
         </header>
     )

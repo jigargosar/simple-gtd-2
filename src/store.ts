@@ -54,7 +54,13 @@ export function useSectionTasks(sectionId: string) {
 
 export const appendTask = (sectionId: string, title: string) => {
     const lastOrder = getSectionTasks(useApp.getState().tasks, sectionId).at(-1)?.order ?? null
-    const newTask = { id: uuidv4(), sectionId, order: keyBetween(lastOrder, null), title, done: false }
+    const newTask = {
+        id: uuidv4(),
+        sectionId,
+        order: keyBetween(lastOrder, null),
+        title,
+        done: false,
+    }
     useApp.setState((s) => ({
         tasks: [...s.tasks, newTask],
     }))
