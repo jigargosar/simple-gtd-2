@@ -81,3 +81,62 @@ Task sorting behaviour:
     - If the active beacon is in a different section: the task moves to that section at that position; its sectionId updates.
     - The ghost smoothly animates into the slot, placeholder collapses, surrounding tasks adjust to final arrangement.
 - On cancel (Escape, drop outside any beacon): ghost returns to source, placeholder restores, no data change.
+
+
+---
+New Plan proposed by opus which included DnD-Kit primitives:
+
+A handful of design choices shape the implementation. Locking these before I write code.
+
+### 1. Drag mechanism
+1. Hand-rolled with pointer events (`pointerdown`/`move`/`up`) — full control, no HTML5 drag-image quirks.
+2. `@use-gesture/react` for the gesture + Framer Motion for ghost/placeholder animation. ★ — gives you cursor-locked drag, momentum, cancel, and `<motion.div layout>` for the collapse/expand on drop, with very little glue code. Aligns with "prefer libraries".
+3. `dnd-kit` primitives (not its sortable preset, which insists on layout-shift). About the same effort as #1 because the sortable preset doesn't apply; only worth it if you want its keyboard a11y sensors out of the box.
+
+### 2. Drag initiation
+1. Whole row, with a movement threshold (~6px) so taps still hit the done-marker / delete button.
+2. Explicit drag handle (e.g., `⋮⋮` on hover for tasks; a handle next to the section title). ★ — zero ambiguity with existing buttons, and section headers are currently plain text with no obvious grab affordance.
+3. Long-press.
+
+### 3. Beacon identity
+Right now `Beacon` only knows its `kind`; the drop handler needs to know what insertion point each beacon represents.
+1. Pass `prev` / `next` ids (or a single insertion descriptor) as props at render time, also written as data-attributes for the tracker to read. ★
+2. Compute by walking DOM siblings at drop time.
+3. Maintain a parallel index array keyed by position.
+
+### 4. Beacons when not dragging
+Today `useNearestBeaconTracker` activates the closest beacon any time the mouse moves — even idle.
+1. Show beacons only while dragging. ★
+2. Keep current always-faintly-visible behavior; only "active" highlight is drag-gated.
+
+### 5. Kind filtering during drag
+Section drag should ignore task beacons; task drag should ignore section beacons. Today the tracker picks the global nearest.
+1. Filter `getBeacons()` by the in-flight drag's `kind`. ★ — confirm.
+
+### 6. Drag-state location
+State shape ≈ `{ kind, sourceId, pointerOffset, activeBeaconId }`. Read by ghost + active beacon + source placeholder.
+1. Module-level store (tiny custom subscription, or a second Zustand store excluded from `persist`). ★ — keeps the persisted GTD store clean.
+2. Inside the existing `useApp` with `partialize` filtering it out.
+3. React context.
+
+### 7. Cross-section task moves
+A task dropped under a different section must update both `order` and `sectionId`. Current `reorderTask(id, newOrder)` only updates order.
+1. Replace with `moveTask(id, sectionId, newOrder)`; in-section moves pass the same `sectionId`. ★
+2. Keep `reorderTask`, add a separate `moveTaskToSection`.
+
+### 8. Cancel triggers
+1. Escape + release outside any beacon-kind region + window blur. ★
+2. Escape only.
+
+### 9. Scope
+1. Mouse + touch (pointer events cover both for free). ★
+2. Mouse only.
+3. Mouse + touch + keyboard reordering.
+
+### 10. Empty-section beacon
+The current rendering already produces a single `TaskBeacon` between `ViewEmptySection` and `ViewAddTask` when a section is empty. Confirming that one beacon is the intended drop target for "drop into empty section" — no separate empty-state beacon needed.
+
+If 1.★, 2.★, 3.★, 4.★, 5.★, 6.★, 7.★, 8.★, 9.★, 10. confirmed are all "yes", I have enough to start. Otherwise tell me which to override.
+
+
+---
