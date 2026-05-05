@@ -60,3 +60,24 @@ Understood — beacons are fixed positions, they don't physically move. Correcti
 - Beacons exist at fixed insertion positions (before each section, after the last). They don't move.
 - At any moment during drag, exactly one beacon is active (visible/highlighted) — the one nearest the ghost's Y-center.
 - As the ghost moves and the nearest beacon changes, the active state transitions smoothly: the previously-active beacon fades out as the newly-active one fades in. Each beacon's position is fixed; only the active state moves between them.
+
+
+
+
+---
+
+
+Task sorting behaviour:
+
+- User grabs a task. Drag begins.
+- The source task becomes a dashed placeholder, occupying its original space in its original section.
+- A ghost copy of the task follows the cursor, offset-locked to the grab point.
+- Beacons exist at fixed insertion positions across all sections: before each task, after the last task of each section, and in the empty-state slot of any section with no tasks. They don't move.
+- At any moment during drag, exactly one beacon is active — the one nearest the ghost's center. As the ghost moves between tasks within a section, or crosses into another section, the active state transitions smoothly: the previously-active beacon fades out as the newly-active one fades in.
+- The beacons immediately flanking the source task can become active and are rendered the same way (their drop is a no-op, but feedback is consistent).
+- No layout shift during drag — beacon visibility is a visual overlay.
+- On drop:
+    - If the active beacon is in the same section as the source: the task moves to that position within the section.
+    - If the active beacon is in a different section: the task moves to that section at that position; its sectionId updates.
+    - The ghost smoothly animates into the slot, placeholder collapses, surrounding tasks adjust to final arrangement.
+- On cancel (Escape, drop outside any beacon): ghost returns to source, placeholder restores, no data change.
