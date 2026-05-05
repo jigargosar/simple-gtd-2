@@ -140,3 +140,7 @@ If 1.★, 2.★, 3.★, 4.★, 5.★, 6.★, 7.★, 8.★, 9.★, 10. confirmed 
 
 
 ---
+
+My notes:
+
+❯ instade of mouse we can and should use pointer events. also I am not sure how keyboard sortable would work, (we can figure out later if need be) also auto scorll is kind of necessary, but I dont think it will be a big issue, since we are already considering scrolling to update nearst drop location. FYI general auto-scrolling that I have seen in other apps is very bad, either its to slow, or too fast. Its unpredicitable. I would like ours to be better controlled. Also on principle, I dont want layout shifts, arbitary artifacts shown, i.e. delete cross on hover (delete UX needs more work, but later) shouldnt activate, i.e. keep sort focused and neat. Thoughts.
