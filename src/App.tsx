@@ -36,9 +36,10 @@ function ViewSections({ sections }: { sections: Section[] }) {
 }
 
 function Beacon({ kind }: { kind: 'section' | 'task' }) {
+    const lineColor = kind === 'section' ? 'bg-amber-400/60' : 'bg-accent/40'
     return (
         <div data-sortable-kind={kind} className="flex h-2 items-center">
-            <div className="bg-accent/40 h-0.5 w-full rounded-full" />
+            <div className={clsx('h-0.5 w-full rounded-full', lineColor)} />
         </div>
     )
 }
@@ -102,12 +103,12 @@ function ViewTask({ task: { done, id, title } }: { task: Task }) {
         <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
             <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
             <ViewTaskTitle done={done} title={title} />
-            <ViewDeleteTask onClick={() => deleteTask(id)} />
+            <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
         </div>
     )
 }
 
-function ViewDeleteTask(props: { onClick: () => void }) {
+function ViewDeleteTaskIcon(props: { onClick: () => void }) {
     return (
         <button
             onClick={props.onClick}
