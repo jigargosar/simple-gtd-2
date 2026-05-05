@@ -23,10 +23,22 @@ function ViewApp() {
 
 function ViewSections({ sections }: { sections: Section[] }) {
     return (
-        <div className="mx-auto flex max-w-xl flex-col gap-8 px-4 py-8">
+        <div className="mx-auto flex max-w-xl flex-col px-4 py-8">
+            <Beacon kind="section" />
             {sections.map((section) => (
-                <ViewSection key={section.id} section={section} />
+                <div key={section.id} className="flex flex-col">
+                    <ViewSection section={section} />
+                    <Beacon kind="section" />
+                </div>
             ))}
+        </div>
+    )
+}
+
+function Beacon({ kind }: { kind: 'section' | 'task' }) {
+    return (
+        <div data-sortable-kind={kind} className="flex h-2 items-center">
+            <div className="bg-accent/40 h-0.5 w-full rounded-full" />
         </div>
     )
 }
@@ -35,13 +47,17 @@ function ViewSection({ section }: { section: Section }) {
     const tasks = useSectionTasks(section.id)
 
     return (
-        <div className="flex flex-col gap-2">
-            <h2 className="py-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
+        <div className="flex flex-col">
+            <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 {section.title}
             </h2>
             {tasks.length === 0 && <ViewEmptyState />}
+            <Beacon kind="task" />
             {tasks.map((task) => (
-                <ViewTask key={task.id} task={task} />
+                <div key={task.id} className="flex flex-col">
+                    <ViewTask task={task} />
+                    <Beacon kind="task" />
+                </div>
             ))}
             <ViewAddTask sectionId={section.id} />
         </div>
@@ -63,7 +79,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     }
 
     return (
-        <div className="flex items-center gap-2 pt-1">
+        <div className="flex items-center gap-2">
             <input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
