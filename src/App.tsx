@@ -10,6 +10,8 @@ import {
     type Section,
 } from './store'
 
+// ---------- App root ----------
+
 function ViewApp() {
     const sections = useSections()
 
@@ -20,6 +22,20 @@ function ViewApp() {
         </div>
     )
 }
+
+function ViewHeader() {
+    return (
+        <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
+            <div className="mx-auto max-w-xl">
+                <span className="text-lg font-semibold tracking-tight text-gray-800">
+                    SimpleGTD
+                </span>
+            </div>
+        </header>
+    )
+}
+
+// ---------- Sections ----------
 
 function ViewSections({ sections }: { sections: Section[] }) {
     return (
@@ -33,23 +49,6 @@ function ViewSections({ sections }: { sections: Section[] }) {
             ))}
         </div>
     )
-}
-
-function Beacon({ kind }: { kind: 'section' | 'task' }) {
-    const lineColor = kind === 'section' ? 'bg-amber-400/60' : 'bg-accent/40'
-    return (
-        <div data-sortable-kind={kind} className="flex h-2 items-center">
-            <div className={clsx('h-0.5 w-full rounded-full', lineColor)} />
-        </div>
-    )
-}
-
-function SectionBeacon() {
-    return <Beacon kind="section" />
-}
-
-function TaskBeacon() {
-    return <Beacon kind="task" />
 }
 
 function ViewSection({ section }: { section: Section }) {
@@ -75,6 +74,49 @@ function ViewSection({ section }: { section: Section }) {
 
 function ViewEmptyState() {
     return <p className="py-1 text-sm text-gray-300">No tasks yet.</p>
+}
+
+// ---------- Tasks ----------
+
+function ViewTask({ task: { done, id, title } }: { task: Task }) {
+    return (
+        <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+            <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
+            <ViewTaskTitle done={done} title={title} />
+            <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
+        </div>
+    )
+}
+
+function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
+    return (
+        <button
+            onClick={props.onClick}
+            className={clsx(
+                'h-4 w-4 shrink-0 cursor-pointer rounded-full border-2',
+                props.done ? 'border-accent bg-accent' : 'border-gray-300',
+            )}
+        />
+    )
+}
+
+function ViewTaskTitle(props: { done: boolean; title: string }) {
+    return (
+        <span className={clsx(props.done ? 'text-gray-400 line-through' : 'text-gray-700')}>
+            {props.title}
+        </span>
+    )
+}
+
+function ViewDeleteTaskIcon(props: { onClick: () => void }) {
+    return (
+        <button
+            onClick={props.onClick}
+            className="ml-auto text-gray-200 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
+        >
+            ✕
+        </button>
+    )
 }
 
 function ViewAddTask({ sectionId }: { sectionId: string }) {
@@ -106,57 +148,23 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     )
 }
 
-function ViewTask({ task: { done, id, title } }: { task: Task }) {
+// ---------- Beacons ----------
+
+function Beacon({ kind }: { kind: 'section' | 'task' }) {
+    const lineColor = kind === 'section' ? 'bg-amber-400/60' : 'bg-accent/40'
     return (
-        <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
-            <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
-            <ViewTaskTitle done={done} title={title} />
-            <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
+        <div data-sortable-kind={kind} className="flex h-2 items-center">
+            <div className={clsx('h-0.5 w-full rounded-full', lineColor)} />
         </div>
     )
 }
 
-function ViewDeleteTaskIcon(props: { onClick: () => void }) {
-    return (
-        <button
-            onClick={props.onClick}
-            className="ml-auto text-gray-200 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
-        >
-            ✕
-        </button>
-    )
+function SectionBeacon() {
+    return <Beacon kind="section" />
 }
 
-function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
-    return (
-        <button
-            onClick={props.onClick}
-            className={clsx(
-                'h-4 w-4 shrink-0 cursor-pointer rounded-full border-2',
-                props.done ? 'border-accent bg-accent' : 'border-gray-300',
-            )}
-        />
-    )
-}
-
-function ViewTaskTitle(props: { done: boolean; title: string }) {
-    return (
-        <span className={clsx(props.done ? 'text-gray-400 line-through' : 'text-gray-700')}>
-            {props.title}
-        </span>
-    )
-}
-
-function ViewHeader() {
-    return (
-        <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
-            <div className="mx-auto max-w-xl">
-                <span className="text-lg font-semibold tracking-tight text-gray-800">
-                    SimpleGTD
-                </span>
-            </div>
-        </header>
-    )
+function TaskBeacon() {
+    return <Beacon kind="task" />
 }
 
 export default ViewApp
