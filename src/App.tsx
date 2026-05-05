@@ -24,11 +24,11 @@ function ViewApp() {
 function ViewSections({ sections }: { sections: Section[] }) {
     return (
         <div className="mx-auto flex max-w-xl flex-col px-4 py-8">
-            <Beacon kind="section" />
+            <SectionBeacon />
             {sections.map((section) => (
                 <div key={section.id} className="flex flex-col">
                     <ViewSection section={section} />
-                    <Beacon kind="section" />
+                    <SectionBeacon />
                 </div>
             ))}
         </div>
@@ -44,6 +44,14 @@ function Beacon({ kind }: { kind: 'section' | 'task' }) {
     )
 }
 
+function SectionBeacon() {
+    return <Beacon kind="section" />
+}
+
+function TaskBeacon() {
+    return <Beacon kind="task" />
+}
+
 function ViewSection({ section }: { section: Section }) {
     const tasks = useSectionTasks(section.id)
 
@@ -53,11 +61,11 @@ function ViewSection({ section }: { section: Section }) {
                 {section.title}
             </h2>
             {tasks.length === 0 && <ViewEmptyState />}
-            <Beacon kind="task" />
+            <TaskBeacon />
             {tasks.map((task) => (
                 <div key={task.id} className="flex flex-col">
                     <ViewTask task={task} />
-                    <Beacon kind="task" />
+                    <TaskBeacon />
                 </div>
             ))}
             <ViewAddTask sectionId={section.id} />
