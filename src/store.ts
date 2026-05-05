@@ -57,7 +57,7 @@ export const appendTask = (sectionId: string, title: string) => {
     const newTask = {
         id: uuidv4(),
         sectionId,
-        order: keyBetween(lastOrder, null),
+        order: orderBetween(lastOrder, null),
         title,
         done: false,
     }
@@ -84,7 +84,7 @@ export const reorderSection = (id: string, newOrder: string) =>
         sections: s.sections.map((sec) => (sec.id === id ? { ...sec, order: newOrder } : sec)),
     }))
 
-export function keyBetween(a: string | null | undefined, b: string | null | undefined) {
+function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
 }
 
