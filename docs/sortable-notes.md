@@ -36,3 +36,27 @@ This is more work than the standard sortable path, but it's cleaner UX — no ja
 
 imagine there are no sections. except there is a beacon at start of the section, and one beacon at end of the section. once beacons are
 identified/placed,
+
+
+---
+
+**Section sorting behaviour:**
+
+- User grabs a section header. Drag begins.
+- The source section becomes a dashed placeholder, occupying its original space.
+- A ghost copy of the section header follows the cursor, offset-locked to the grab point.
+- At any moment during the drag, exactly one beacon is visible: the one nearest to the ghost's Y-center. It is rendered as a thin highlighted horizontal line at one of the N+1 insertion positions (before each section, after the last).
+- As the ghost moves and the nearest position changes, the active beacon transitions smoothly from its previous location to the new one — no teleportation, no multiple beacons visible at once.
+- The beacons immediately flanking the source section can become the nearest beacon and are rendered the same way (their drop is a no-op, but the user sees consistent feedback).
+- No layout shift occurs at any point during the drag — beacon visibility is purely a visual overlay, not an inserted element.
+- On drop: the section moves to the active beacon's position. The ghost smoothly animates into that slot, the placeholder collapses, and the rest of the list adjusts to its final arrangement.
+- On cancel (Escape, drop outside the list): the ghost returns to the source, the placeholder restores, no change to the data.
+
+---
+❯ FYI beacons dont move
+
+Understood — beacons are fixed positions, they don't physically move. Correction:
+
+- Beacons exist at fixed insertion positions (before each section, after the last). They don't move.
+- At any moment during drag, exactly one beacon is active (visible/highlighted) — the one nearest the ghost's Y-center.
+- As the ghost moves and the nearest beacon changes, the active state transitions smoothly: the previously-active beacon fades out as the newly-active one fades in. Each beacon's position is fixed; only the active state moves between them.
