@@ -59,7 +59,7 @@ function ViewSection({ section }: { section: Section }) {
             <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 {section.title}
             </h2>
-            {tasks.length === 0 && <ViewEmptyState />}
+            {tasks.length === 0 && <ViewEmptySection />}
             <TaskBeacon />
             {tasks.map((task) => (
                 <div key={task.id} className="flex flex-col">
@@ -72,7 +72,7 @@ function ViewSection({ section }: { section: Section }) {
     )
 }
 
-function ViewEmptyState() {
+function ViewEmptySection() {
     return <p className="py-1 text-sm text-gray-300">No tasks yet.</p>
 }
 
