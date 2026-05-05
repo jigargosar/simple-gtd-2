@@ -68,8 +68,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     )
 }
 
-function ViewTask(props: { task: Task }) {
-    const { id, title, done } = props.task
+function ViewTask({ task: { done, id, title } }: { task: Task }) {
     return (
         <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
             <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
