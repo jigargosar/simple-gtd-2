@@ -151,10 +151,12 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 // ---------- Beacons ----------
 
 function Beacon({ kind }: { kind: 'section' | 'task' }) {
-    const lineColor = kind === 'section' ? 'bg-amber-400/60' : 'bg-accent/40'
+    const color = kind === 'section' ? 'bg-amber-400/60' : 'bg-accent/40'
     return (
         <div data-sortable-kind={kind} className="flex h-2 items-center">
-            <div className={clsx('h-0.5 w-full rounded-full', lineColor)} />
+            <div className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', color)} />
+            <div className={clsx('h-0.5 flex-1 rounded-full', color)} />
+            <div className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', color)} />
         </div>
     )
 }
