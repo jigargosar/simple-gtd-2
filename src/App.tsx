@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
     appendTask,
     deleteTask,
@@ -9,6 +9,7 @@ import {
     useSections,
     useSectionTasks,
 } from './store'
+import { useSortable } from './useSortable'
 
 // ---------- App root ----------
 
@@ -39,8 +40,16 @@ function ViewHeader() {
 // ---------- Sections ----------
 
 function ViewSections({ sections }: { sections: Section[] }) {
+    const containerRef = useRef<HTMLDivElement>(null)
+    useSortable({
+        containerRef,
+        onDragStart: (info) => {
+            console.log('[ViewSections] drag start', info)
+        },
+    })
+
     return (
-        <div className="mx-auto flex max-w-xl flex-col px-4 py-8">
+        <div ref={containerRef} className="mx-auto flex max-w-xl flex-col px-4 py-8">
             <SectionBeacon />
             {sections.map((section) => (
                 <div key={section.id} className="flex flex-col">
