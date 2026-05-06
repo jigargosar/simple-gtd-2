@@ -26,9 +26,13 @@ Single-page GTD app: sections contain tasks, both ordered via fractional indexin
 
 **Ordering** uses `fractional-indexing` (`generateKeyBetween`, `generateNKeysBetween`) so items can be reordered or inserted without renumbering.
 
-**UI** (`src/App.tsx`) is a tree of `View*` functional components — `ViewApp → ViewHeader + ViewSections → ViewSection → ViewTask`. No routing; single view.
+**Mock data / seeding**: `mockState()` is the Zustand store initializer — it runs once on first load to seed localStorage. It is not a test fixture. Sections are currently read-only (no `appendSection`/`deleteSection` actions exist); only tasks can be added or deleted.
 
-**Styling**: Tailwind CSS v4 (`@import "tailwindcss"`) with a custom `--color-accent: dodgerblue` theme variable defined in `index.css`.
+**UI** (`src/App.tsx`) is a tree of `View*` functional components — `ViewApp → ViewHeader + ViewSections → ViewSection → ViewTask`. No routing; single view. `Beacon` / `SectionBeacon` / `TaskBeacon` are drop-zone placeholder components for drag-and-drop reordering (in-progress; `useNearestBeaconTracker` is commented out).
+
+**Styling**: Tailwind CSS v4 (`@import "tailwindcss"`) with a custom `--color-accent: dodgerblue` theme variable defined in `index.css`. `clsx` is used for conditional class composition in views.
+
+**Utilities**: `remeda` (`filter`, `pipe`, `sortBy`, `prop`) is used for array operations in the store.
 
 **React Compiler** (babel-plugin-react-compiler) is enabled via Vite's Babel plugin — automatic memoization, no manual `useMemo`/`useCallback` needed.
 
