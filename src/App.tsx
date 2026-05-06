@@ -9,7 +9,6 @@ import {
     useSections,
     useSectionTasks,
 } from './store'
-import { useSortable } from './useSortable'
 
 // ---------- App root ----------
 
@@ -41,17 +40,6 @@ function ViewHeader() {
 
 function ViewSections({ sections }: { sections: Section[] }) {
     const containerRef = useRef<HTMLDivElement>(null)
-    useSortable({
-        containerRef,
-        onDragStart: (info) => {
-            console.log('[ViewSections] drag start', info)
-            return {
-                onMove: (e) => console.log('[ViewSections] move', info.tag, e.clientX, e.clientY),
-                onDrop: (e) => console.log('[ViewSections] drop', info.tag, e.clientX, e.clientY),
-                onCancel: () => console.log('[ViewSections] cancel', info.tag),
-            }
-        },
-    })
 
     return (
         <div ref={containerRef} className="mx-auto flex max-w-xl flex-col px-4 py-8">
@@ -70,7 +58,12 @@ function ViewSection({ section }: { section: Section }) {
     const tasks = useSectionTasks(section.id)
 
     return (
-        <div className="flex flex-col" data-drag-source data-drag-tag="section" data-drag-id={section.id}>
+        <div
+            className="flex flex-col"
+            data-drag-source
+            data-drag-tag="section"
+            data-drag-id={section.id}
+        >
             <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 {section.title}
             </h2>
