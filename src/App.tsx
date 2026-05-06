@@ -149,46 +149,6 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     )
 }
 
-// ---------- Beacons ----------
-
-// function getBeacons() {
-//     return [...document.querySelectorAll<HTMLElement>('[data-sortable-kind]')]
-// }
-//
-// function distanceFromY(y: number, el: HTMLElement) {
-//     const r = el.getBoundingClientRect()
-//     return Math.abs(r.top + r.height / 2 - y)
-// }
-//
-// function activateNearestBeacon(y: number) {
-//     const beacons = getBeacons()
-//     const nearest = firstBy(beacons, (el) => distanceFromY(y, el))
-//     beacons.forEach((el) => (el.dataset.active = String(el === nearest)))
-// }
-//
-// function useNearestBeaconTracker() {
-//     useEffect(() => {
-//         let lastY: number | null = null
-//
-//         function onMove(e: MouseEvent) {
-//             lastY = e.clientY
-//             activateNearestBeacon(lastY)
-//         }
-//
-//         function onScroll() {
-//             if (lastY === null) return
-//             activateNearestBeacon(lastY)
-//         }
-//
-//         window.addEventListener('mousemove', onMove)
-//         window.addEventListener('scroll', onScroll, true)
-//         return () => {
-//             window.removeEventListener('mousemove', onMove)
-//             window.removeEventListener('scroll', onScroll, true)
-//         }
-//     }, [])
-// }
-
 function Beacon({ kind }: { kind: 'section' | 'task' }) {
     const color = kind === 'section' ? 'bg-amber-400' : 'bg-accent'
     return (
