@@ -15,13 +15,12 @@ import {
 type SourceMeta = { tag: string; id: string }
 
 type SourceEntry = {
-    internalId: string
     tag: string
+    id: string
     ref: RefObject<HTMLDivElement | null>
 }
 
 type BeaconEntry = {
-    internalId: string
     tag: string
     ref: RefObject<HTMLDivElement | null>
     onDropRef: RefObject<(source: SourceMeta) => void>
@@ -32,18 +31,14 @@ type DragState =
     | {
           tag: 'pressed'
           pointerId: number
-          sourceInternalId: string
-          sourceTag: string
-          sourceUserId: string
+          source: SourceMeta
           startX: number
           startY: number
       }
     | {
           tag: 'dragging'
           pointerId: number
-          sourceInternalId: string
-          sourceTag: string
-          sourceUserId: string
+          source: SourceMeta
           ghost: HTMLElement
           offsetX: number
           offsetY: number
@@ -53,26 +48,25 @@ function assertNever(value: never): never {
     throw new Error(`unreachable: ${JSON.stringify(value)}`)
 }
 
+function sourceKey(meta: SourceMeta): string {
+    return `${meta.tag}\x00${meta.id}`
+}
+
 type Registration = {
     registerSource: (entry: SourceEntry) => () => void
-    registerBeacon: (entry: BeaconEntry) => () => void
-    startPress: (
-        sourceInternalId: string,
-        sourceTag: string,
-        sourceUserId: string,
-        e: ReactPointerEvent<HTMLElement>,
-    ) => void
+    registerBeacon: (beaconId: string, entry: BeaconEntry) => () => void
+    startPress: (source: SourceMeta, e: ReactPointerEvent<HTMLElement>) => void
 }
 
 type ActiveState = {
-    draggingSourceInternalId: string | null
-    activeBeaconInternalId: string | null
+    draggingSource: SourceMeta | null
+    activeBeaconId: string | null
 }
 
 const RegistrationCtx = createContext<Registration | null>(null)
 const ActiveCtx = createContext<ActiveState>({
-    draggingSourceInternalId: null,
-    activeBeaconInternalId: null,
+    draggingSource: null,
+    activeBeaconId: null,
 })
 
 function useRegistration(): Registration {
@@ -86,42 +80,49 @@ type SortableRootProps = {
     threshold?: number
 }
 
-function SortableRoot({ children, threshold = 5 }: SortableRootProps) {
+function Sortable({ children, threshold = 5 }: SortableRootProps) {
     const sources = useRef(new Map<string, SourceEntry>())
     const beacons = useRef(new Map<string, BeaconEntry>())
     const stateRef = useRef<DragState>({ tag: 'idle' })
 
-    const [draggingSourceInternalId, setDraggingId] = useState<string | null>(null)
-    const [activeBeaconInternalId, setActiveBeacon] = useState<string | null>(null)
+    const [draggingSource, setDraggingSource] = useState<SourceMeta | null>(null)
+    const [activeBeaconId, setActiveBeaconId] = useState<string | null>(null)
 
     const registerSource = useCallback((entry: SourceEntry) => {
-        sources.current.set(entry.internalId, entry)
+        if (entry.tag === '')
+            throw new Error('Sortable.Source: tag must be a non-empty string.')
+        if (entry.id === '')
+            throw new Error('Sortable.Source: id must be a non-empty string.')
+        const key = sourceKey(entry)
+        if (sources.current.has(key)) {
+            throw new Error(
+                `Sortable.Source: duplicate (tag="${entry.tag}", id="${entry.id}"). Each Source must have a unique (tag, id) within a single <Sortable>.`,
+            )
+        }
+        sources.current.set(key, entry)
         return () => {
-            sources.current.delete(entry.internalId)
+            sources.current.delete(key)
         }
     }, [])
 
-    const registerBeacon = useCallback((entry: BeaconEntry) => {
-        beacons.current.set(entry.internalId, entry)
+    const registerBeacon = useCallback((beaconId: string, entry: BeaconEntry) => {
+        if (entry.tag === '')
+            throw new Error('Sortable.Beacon: tag must be a non-empty string.')
+        beacons.current.set(beaconId, entry)
         return () => {
-            beacons.current.delete(entry.internalId)
+            beacons.current.delete(beaconId)
         }
     }, [])
 
-    const startPress = useCallback<Registration['startPress']>(
-        (sourceInternalId, sourceTag, sourceUserId, e) => {
-            stateRef.current = {
-                tag: 'pressed',
-                pointerId: e.pointerId,
-                sourceInternalId,
-                sourceTag,
-                sourceUserId,
-                startX: e.clientX,
-                startY: e.clientY,
-            }
-        },
-        [],
-    )
+    const startPress = useCallback<Registration['startPress']>((source, e) => {
+        stateRef.current = {
+            tag: 'pressed',
+            pointerId: e.pointerId,
+            source,
+            startX: e.clientX,
+            startY: e.clientY,
+        }
+    }, [])
 
     useEffect(() => {
         function findNearestBeacon(x: number, y: number, sourceTag: string): string | null {
@@ -149,8 +150,8 @@ function SortableRoot({ children, threshold = 5 }: SortableRootProps) {
             const s = stateRef.current
             if (s.tag === 'dragging') s.ghost.remove()
             stateRef.current = { tag: 'idle' }
-            setDraggingId(null)
-            setActiveBeacon(null)
+            setDraggingSource(null)
+            setActiveBeaconId(null)
             document.body.style.userSelect = ''
             document.body.style.cursor = ''
         }
@@ -159,7 +160,7 @@ function SortableRoot({ children, threshold = 5 }: SortableRootProps) {
             s: Extract<DragState, { tag: 'pressed' }>,
             e: PointerEvent,
         ): void {
-            const src = sources.current.get(s.sourceInternalId)
+            const src = sources.current.get(sourceKey(s.source))
             if (!src?.ref.current) {
                 reset()
                 return
@@ -192,15 +193,13 @@ function SortableRoot({ children, threshold = 5 }: SortableRootProps) {
             stateRef.current = {
                 tag: 'dragging',
                 pointerId: s.pointerId,
-                sourceInternalId: s.sourceInternalId,
-                sourceTag: s.sourceTag,
-                sourceUserId: s.sourceUserId,
+                source: s.source,
                 ghost: cloned,
                 offsetX: s.startX - rect.left,
                 offsetY: s.startY - rect.top,
             }
-            setDraggingId(s.sourceInternalId)
-            setActiveBeacon(findNearestBeacon(e.clientX, e.clientY, s.sourceTag))
+            setDraggingSource(s.source)
+            setActiveBeaconId(findNearestBeacon(e.clientX, e.clientY, s.source.tag))
         }
 
         function onMove(e: PointerEvent): void {
@@ -221,7 +220,7 @@ function SortableRoot({ children, threshold = 5 }: SortableRootProps) {
                     s.ghost.style.transform = `translate(${e.clientX - s.offsetX}px, ${
                         e.clientY - s.offsetY
                     }px)`
-                    setActiveBeacon(findNearestBeacon(e.clientX, e.clientY, s.sourceTag))
+                    setActiveBeaconId(findNearestBeacon(e.clientX, e.clientY, s.source.tag))
                     return
                 }
                 default:
@@ -235,11 +234,11 @@ function SortableRoot({ children, threshold = 5 }: SortableRootProps) {
                 reset()
                 return
             }
-            const beaconId = findNearestBeacon(e.clientX, e.clientY, s.sourceTag)
+            const beaconId = findNearestBeacon(e.clientX, e.clientY, s.source.tag)
             const beacon = beaconId !== null ? beacons.current.get(beaconId) : undefined
-            const sourceMeta: SourceMeta = { tag: s.sourceTag, id: s.sourceUserId }
+            const droppedSource = s.source
             reset()
-            if (beacon) beacon.onDropRef.current(sourceMeta)
+            if (beacon) beacon.onDropRef.current(droppedSource)
         }
 
         function onCancel(): void {
@@ -268,8 +267,8 @@ function SortableRoot({ children, threshold = 5 }: SortableRootProps) {
     )
 
     const active = useMemo<ActiveState>(
-        () => ({ draggingSourceInternalId, activeBeaconInternalId }),
-        [draggingSourceInternalId, activeBeaconInternalId],
+        () => ({ draggingSource, activeBeaconId }),
+        [draggingSource, activeBeaconId],
     )
 
     return (
@@ -288,16 +287,15 @@ type SortableSourceProps = {
 
 function SortableSource({ tag, id, children, className }: SortableSourceProps) {
     const ref = useRef<HTMLDivElement>(null)
-    const internalId = useId()
     const reg = useRegistration()
-    const { draggingSourceInternalId } = useContext(ActiveCtx)
+    const { draggingSource } = useContext(ActiveCtx)
 
     useEffect(
-        () => reg.registerSource({ internalId, tag, ref }),
-        [reg, internalId, tag],
+        () => reg.registerSource({ tag, id, ref }),
+        [reg, tag, id],
     )
 
-    const isDragging = draggingSourceInternalId === internalId
+    const isDragging = draggingSource?.tag === tag && draggingSource.id === id
 
     return (
         <div
@@ -314,7 +312,7 @@ function SortableSource({ tag, id, children, className }: SortableSourceProps) {
                 )
                     return
                 e.stopPropagation()
-                reg.startPress(internalId, tag, id, e)
+                reg.startPress({ tag, id }, e)
             }}
             style={
                 isDragging
@@ -340,9 +338,9 @@ type SortableBeaconProps = {
 
 function SortableBeacon({ tag, onDrop, children, className }: SortableBeaconProps) {
     const ref = useRef<HTMLDivElement>(null)
-    const internalId = useId()
+    const beaconId = useId()
     const reg = useRegistration()
-    const { activeBeaconInternalId } = useContext(ActiveCtx)
+    const { activeBeaconId } = useContext(ActiveCtx)
     const onDropRef = useRef(onDrop)
 
     useEffect(() => {
@@ -350,11 +348,11 @@ function SortableBeacon({ tag, onDrop, children, className }: SortableBeaconProp
     })
 
     useEffect(
-        () => reg.registerBeacon({ internalId, tag, ref, onDropRef }),
-        [reg, internalId, tag],
+        () => reg.registerBeacon(beaconId, { tag, ref, onDropRef }),
+        [reg, beaconId, tag],
     )
 
-    const isActive = activeBeaconInternalId === internalId
+    const isActive = activeBeaconId === beaconId
 
     return (
         <div
@@ -369,5 +367,4 @@ function SortableBeacon({ tag, onDrop, children, className }: SortableBeaconProp
     )
 }
 
-export { SortableRoot, SortableSource, SortableBeacon }
-export type { SourceMeta }
+export { Sortable, SortableSource, SortableBeacon }

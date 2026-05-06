@@ -11,7 +11,7 @@ import {
     useSections,
     useSectionTasks,
 } from './store'
-import { Sortable } from './sortable'
+import { Sortable, SortableBeacon, SortableSource } from './sortable'
 
 // ---------- App root ----------
 
@@ -66,7 +66,7 @@ function ViewSection({ section }: { section: Section }) {
     const tasks = useSectionTasks(section.id)
 
     return (
-        <Sortable.Source tag="section" id={section.id}>
+        <SortableSource tag="section" id={section.id}>
             <div className="flex flex-col">
                 <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                     {section.title}
@@ -89,7 +89,7 @@ function ViewSection({ section }: { section: Section }) {
                 ))}
                 <ViewAddTask sectionId={section.id} />
             </div>
-        </Sortable.Source>
+        </SortableSource>
     )
 }
 
@@ -101,13 +101,13 @@ function ViewEmptySection() {
 
 function ViewTask({ task: { done, id, title } }: { task: Task }) {
     return (
-        <Sortable.Source tag="task" id={id}>
+        <SortableSource tag="task" id={id}>
             <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
                 <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
                 <ViewTaskTitle done={done} title={title} />
                 <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
             </div>
-        </Sortable.Source>
+        </SortableSource>
     )
 }
 
@@ -181,7 +181,7 @@ function SectionBeacon({
     afterOrder: string | null
 }) {
     return (
-        <Sortable.Beacon
+        <SortableBeacon
             tag="section"
             onDrop={(src) => moveSection({ id: src.id, beforeOrder, afterOrder })}
             className="flex h-2 items-center opacity-15 transition-opacity duration-150 data-[active]:opacity-100"
@@ -189,7 +189,7 @@ function SectionBeacon({
             <div className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />
             <div className="h-0.5 flex-1 rounded-full bg-amber-400" />
             <div className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-        </Sortable.Beacon>
+        </SortableBeacon>
     )
 }
 
@@ -203,7 +203,7 @@ function TaskBeacon({
     afterOrder: string | null
 }) {
     return (
-        <Sortable.Beacon
+        <SortableBeacon
             tag="task"
             onDrop={(src) =>
                 moveTask({ id: src.id, sectionId, beforeOrder, afterOrder })
@@ -213,7 +213,7 @@ function TaskBeacon({
             <div className="bg-accent h-2 w-2 shrink-0 rounded-full" />
             <div className="bg-accent h-0.5 flex-1 rounded-full" />
             <div className="bg-accent h-2 w-2 shrink-0 rounded-full" />
-        </Sortable.Beacon>
+        </SortableBeacon>
     )
 }
 
