@@ -65,7 +65,7 @@ function ViewSection({ section }: { section: Section }) {
     const tasks = useSectionTasks(section.id)
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col" data-drag-source data-drag-tag="section" data-drag-id={section.id}>
             <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 {section.title}
             </h2>
@@ -90,7 +90,12 @@ function ViewEmptySection() {
 
 function ViewTask({ task: { done, id, title } }: { task: Task }) {
     return (
-        <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+        <div
+            className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm"
+            data-drag-source
+            data-drag-tag="task"
+            data-drag-id={id}
+        >
             <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
             <ViewTaskTitle done={done} title={title} />
             <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
