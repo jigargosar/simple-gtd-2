@@ -158,9 +158,9 @@ function Beacon({ kind }: { kind: 'section' | 'task' }) {
             data-sortable-kind={kind}
             className="flex h-2 items-center opacity-15 transition-opacity duration-150 data-[active=true]:opacity-100"
         >
-            <div className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', color)} />
+            <div className={clsx('h-2 w-2 shrink-0 rounded-full', color)} />
             <div className={clsx('h-0.5 flex-1 rounded-full', color)} />
-            <div className={clsx('h-1.5 w-1.5 shrink-0 rounded-full', color)} />
+            <div className={clsx('h-2 w-2 shrink-0 rounded-full', color)} />
         </div>
     )
 }
