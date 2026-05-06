@@ -151,7 +151,9 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
 // ---------- Beacons ----------
 
-function Beacon({ kind }: { kind: 'section' | 'task' }) {
+type BeaconKind = { kind: 'section' | 'task' }
+
+function Beacon({ kind }: BeaconKind) {
     const color = kind === 'section' ? 'bg-amber-400' : 'bg-accent'
     return (
         <div
