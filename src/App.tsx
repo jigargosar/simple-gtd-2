@@ -45,6 +45,11 @@ function ViewSections({ sections }: { sections: Section[] }) {
         containerRef,
         onDragStart: (info) => {
             console.log('[ViewSections] drag start', info)
+            return {
+                onMove: (e) => console.log('[ViewSections] move', info.tag, e.clientX, e.clientY),
+                onDrop: (e) => console.log('[ViewSections] drop', info.tag, e.clientX, e.clientY),
+                onCancel: () => console.log('[ViewSections] cancel', info.tag),
+            }
         },
     })
 
