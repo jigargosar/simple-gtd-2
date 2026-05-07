@@ -1,7 +1,9 @@
 import {
     createContext,
     useContext,
+    useEffect,
     useId,
+    useRef,
     useState,
     type PointerEvent as ReactPointerEvent,
     type ReactNode,
@@ -209,22 +211,29 @@ type ProviderProps = {
 
 function SortableProvider({ children, onDrop, threshold = 5 }: ProviderProps) {
     const [state, setState] = useState<Model>(idle)
+    // modelRef mirrors state so dispatch reads the latest model regardless
+    // of which render captured the listener closure. onDropRef does the same
+    // for the user's callback. Both are written in an effect (not during
+    // render) to keep render pure.
+    const modelRef = useRef<Model>(state)
+    const onDropRef = useRef(onDrop)
+    useEffect(() => {
+        modelRef.current = state
+        onDropRef.current = onDrop
+    })
 
     function dispatch(msg: Msg) {
-        setState((m) => {
-            const next = step(m, msg)
-            // Body styles follow the dragging-or-not transition.
-            if ((m.tag === 'dragging') !== (next.tag === 'dragging')) {
-                applyDragStyles(next.tag === 'dragging')
-            }
-            // Drop-event derivation happens at the moment of pointerUp on a
-            // dragging model. This is the one callback effect we run here.
-            if (msg.tag === 'pointerUp') {
-                const drop = dropEventAt(m, msg.x, msg.y)
-                if (drop) onDrop(drop)
-            }
-            return next
-        })
+        const prev = modelRef.current
+        const next = step(prev, msg)
+        modelRef.current = next
+        if ((prev.tag === 'dragging') !== (next.tag === 'dragging')) {
+            applyDragStyles(next.tag === 'dragging')
+        }
+        if (msg.tag === 'pointerUp') {
+            const drop = dropEventAt(prev, msg.x, msg.y)
+            if (drop) onDropRef.current(drop)
+        }
+        setState(next)
     }
 
     return (
