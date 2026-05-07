@@ -62,19 +62,9 @@ function ViewApp() {
                 <ViewHeader />
                 <ViewSections />
             </div>
-            <DragGhost />
+            <Ghost />
         </SortableProvider>
     )
-}
-
-function DragGhost() {
-    return <Ghost><DragGhostBody /></Ghost>
-}
-
-function DragGhostBody() {
-    // Ghost only renders while dragging; the consumer can pick any presentation.
-    // For now: a simple translucent placeholder that mirrors the source's width.
-    return <div className="rounded-lg border border-gray-300 bg-white px-4 py-3 shadow-lg" />
 }
 
 function ViewHeader() {

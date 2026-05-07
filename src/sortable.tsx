@@ -27,6 +27,9 @@ type Model =
           draggableTag: string
           draggableData: unknown
           srcEl: HTMLElement
+          ghostHtml: string
+          ghostWidth: number
+          ghostHeight: number
           offsetX: number
           offsetY: number
           activeDroppableId: string
@@ -142,6 +145,9 @@ function SortableProvider({ children, onDrop, threshold = 5 }: ProviderProps) {
                             draggableTag: m.draggableTag,
                             draggableData: m.draggableData,
                             srcEl: m.srcEl,
+                            ghostHtml: m.srcEl.outerHTML,
+                            ghostWidth: rect.width,
+                            ghostHeight: rect.height,
                             offsetX: m.startX - rect.left,
                             offsetY: m.startY - rect.top,
                             activeDroppableId,
@@ -215,31 +221,26 @@ function updateGhostPosition(clientX: number, clientY: number) {
     document.documentElement.style.setProperty(GHOST_VAR_Y, `${clientY}px`)
 }
 
-type GhostProps = {
-    children: ReactNode
-}
-
-function Ghost({ children }: GhostProps) {
+function Ghost() {
     const { state } = useCtx()
     if (state.tag !== 'dragging') return null
-    const { offsetX, offsetY, srcEl } = state
-    const rect = srcEl.getBoundingClientRect()
+    const { offsetX, offsetY, ghostHtml, ghostWidth, ghostHeight } = state
     return createPortal(
         <div
             style={{
                 position: 'fixed',
                 top: 0,
                 left: 0,
-                width: rect.width,
+                width: ghostWidth,
+                height: ghostHeight,
                 pointerEvents: 'none',
                 opacity: 0.85,
                 zIndex: 9999,
                 boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
                 transform: `translate3d(calc(var(${GHOST_VAR_X}) - ${offsetX}px), calc(var(${GHOST_VAR_Y}) - ${offsetY}px), 0)`,
             }}
-        >
-            {children}
-        </div>,
+            dangerouslySetInnerHTML={{ __html: ghostHtml }}
+        />,
         document.body,
     )
 }
