@@ -18,17 +18,19 @@ export type Section = {
     order: string
     title: string
 }
+type Sortable = 'NotSorting' | 'Dragging'
 
 type AppState = {
     sections: Section[]
     tasks: Task[]
+    sortable: Sortable
 }
 
 const useApp = create<AppState>()(
     persist(mockState, {
         name: 'simple-gtd',
         version: 1,
-        partialize: (s) => ({ sections: s.sections, tasks: s.tasks }),
+        partialize: ({ sections, tasks }) => ({ sections, tasks }),
         // migrate: (persisted, fromVersion) => {
         //     if (fromVersion === 0) return mockState()
         //     return persisted as AppState
@@ -82,7 +84,7 @@ function orderBetween(a: string | null | undefined, b: string | null | undefined
 
 function mockState(): AppState {
     const sections = mockSections()
-    return { sections, tasks: mockTasks(sections) }
+    return { sections, tasks: mockTasks(sections), sortable: 'NotSorting' }
 }
 
 function mockSections(): Section[] {
