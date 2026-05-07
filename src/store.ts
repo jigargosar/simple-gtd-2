@@ -18,7 +18,10 @@ export type Section = {
     order: string
     title: string
 }
-type Sortable = 'NotSorting' | 'Dragging'
+
+type Point = { x: number; y: number }
+
+type Sortable = 'NotSorting' | { tag: 'PointerDown'; pt: Point } | { tag: 'Dragging' }
 
 type AppState = {
     sections: Section[]
