@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 *.local.json
+
+# Vendored research clones (not project code)
+docs/dnd-list-6.0.1/

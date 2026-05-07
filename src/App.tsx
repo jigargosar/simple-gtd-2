@@ -3,26 +3,19 @@ import { useState } from 'react'
 import {
     appendTask,
     deleteTask,
-    moveSection,
-    moveTask,
     type Section,
     type Task,
     toggleTask,
     useSections,
     useSectionTasks,
 } from './store'
-import { Sortable, SortableBeacon, SortableSource } from './sortable'
-
-// ---------- App root ----------
 
 function ViewApp() {
     return (
-        <Sortable>
-            <div className="min-h-screen bg-gray-50">
-                <ViewHeader />
-                <ViewSections />
-            </div>
-        </Sortable>
+        <div className="min-h-screen bg-gray-50">
+            <ViewHeader />
+            <ViewSections />
+        </div>
     )
 }
 
@@ -38,25 +31,13 @@ function ViewHeader() {
     )
 }
 
-// ---------- Sections ----------
-
 function ViewSections() {
     const sections = useSections()
 
     return (
         <div className="mx-auto flex max-w-xl flex-col px-4 py-8">
-            <SectionBeacon
-                beforeOrder={null}
-                afterOrder={sections[0]?.order ?? null}
-            />
-            {sections.map((section, i) => (
-                <div key={section.id} className="flex flex-col">
-                    <ViewSection section={section} />
-                    <SectionBeacon
-                        beforeOrder={section.order}
-                        afterOrder={sections[i + 1]?.order ?? null}
-                    />
-                </div>
+            {sections.map((section) => (
+                <ViewSection key={section.id} section={section} />
             ))}
         </div>
     )
@@ -66,30 +47,16 @@ function ViewSection({ section }: { section: Section }) {
     const tasks = useSectionTasks(section.id)
 
     return (
-        <SortableSource tag="section" id={section.id}>
-            <div className="flex flex-col">
-                <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
-                    {section.title}
-                </h2>
-                {tasks.length === 0 && <ViewEmptySection />}
-                <TaskBeacon
-                    sectionId={section.id}
-                    beforeOrder={null}
-                    afterOrder={tasks[0]?.order ?? null}
-                />
-                {tasks.map((task, i) => (
-                    <div key={task.id} className="flex flex-col">
-                        <ViewTask task={task} />
-                        <TaskBeacon
-                            sectionId={section.id}
-                            beforeOrder={task.order}
-                            afterOrder={tasks[i + 1]?.order ?? null}
-                        />
-                    </div>
-                ))}
-                <ViewAddTask sectionId={section.id} />
-            </div>
-        </SortableSource>
+        <div className="flex flex-col">
+            <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
+                {section.title}
+            </h2>
+            {tasks.length === 0 && <ViewEmptySection />}
+            {tasks.map((task) => (
+                <ViewTask key={task.id} task={task} />
+            ))}
+            <ViewAddTask sectionId={section.id} />
+        </div>
     )
 }
 
@@ -97,17 +64,13 @@ function ViewEmptySection() {
     return <p className="py-1 text-sm text-gray-300">No tasks yet.</p>
 }
 
-// ---------- Tasks ----------
-
 function ViewTask({ task: { done, id, title } }: { task: Task }) {
     return (
-        <SortableSource tag="task" id={id}>
-            <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
-                <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
-                <ViewTaskTitle done={done} title={title} />
-                <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
-            </div>
-        </SortableSource>
+        <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+            <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
+            <ViewTaskTitle done={done} title={title} />
+            <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
+        </div>
     )
 }
 
@@ -168,52 +131,6 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                 Add
             </button>
         </div>
-    )
-}
-
-// ---------- Beacons ----------
-
-function SectionBeacon({
-    beforeOrder,
-    afterOrder,
-}: {
-    beforeOrder: string | null
-    afterOrder: string | null
-}) {
-    return (
-        <SortableBeacon
-            tag="section"
-            onDrop={(src) => moveSection({ id: src.id, beforeOrder, afterOrder })}
-            className="flex h-2 items-center opacity-15 transition-opacity duration-150 data-[active]:opacity-100"
-        >
-            <div className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-            <div className="h-0.5 flex-1 rounded-full bg-amber-400" />
-            <div className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-        </SortableBeacon>
-    )
-}
-
-function TaskBeacon({
-    sectionId,
-    beforeOrder,
-    afterOrder,
-}: {
-    sectionId: string
-    beforeOrder: string | null
-    afterOrder: string | null
-}) {
-    return (
-        <SortableBeacon
-            tag="task"
-            onDrop={(src) =>
-                moveTask({ id: src.id, sectionId, beforeOrder, afterOrder })
-            }
-            className="flex h-2 items-center opacity-15 transition-opacity duration-150 data-[active]:opacity-100"
-        >
-            <div className="bg-accent h-2 w-2 shrink-0 rounded-full" />
-            <div className="bg-accent h-0.5 flex-1 rounded-full" />
-            <div className="bg-accent h-2 w-2 shrink-0 rounded-full" />
-        </SortableBeacon>
     )
 }
 

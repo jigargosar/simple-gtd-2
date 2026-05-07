@@ -74,31 +74,6 @@ export const toggleTask = (id: string) =>
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     }))
 
-type Move = {
-    id: string
-    beforeOrder: string | null
-    afterOrder: string | null
-}
-
-export const moveSection = ({ id, beforeOrder, afterOrder }: Move) => {
-    const order = orderBetween(beforeOrder, afterOrder)
-    useApp.setState((s) => ({
-        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, order } : sec)),
-    }))
-}
-
-export const moveTask = ({
-    id,
-    sectionId,
-    beforeOrder,
-    afterOrder,
-}: Move & { sectionId: string }) => {
-    const order = orderBetween(beforeOrder, afterOrder)
-    useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, sectionId, order } : t)),
-    }))
-}
-
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
 }
