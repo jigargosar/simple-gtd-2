@@ -8,6 +8,8 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 
+// ---------- Types ----------
+
 type Model =
     | { tag: 'idle' }
     | {
@@ -26,7 +28,6 @@ type Model =
           draggableId: string
           draggableTag: string
           draggableData: unknown
-          srcEl: HTMLElement
           ghostHtml: string
           ghostWidth: number
           ghostHeight: number
@@ -35,31 +36,29 @@ type Model =
           activeDroppableId: string
       }
 
-function assertNever(value: never): never {
-    throw new Error(`unreachable: ${JSON.stringify(value)}`)
-}
+type Msg =
+    | {
+          tag: 'pointerDown'
+          pointerId: number
+          draggableId: string
+          draggableTag: string
+          draggableData: unknown
+          srcEl: HTMLElement
+          x: number
+          y: number
+      }
+    | { tag: 'pointerMove'; pointerId: number; x: number; y: number; threshold: number }
+    | { tag: 'pointerUp'; pointerId: number; x: number; y: number }
+    | { tag: 'cancel' }
 
 type DropParty = { id: string; tag: string; data: unknown }
 type DropEvent = { draggable: DropParty; droppable: DropParty }
 
-type Ctx = {
-    state: Model
-    startPress: (
-        draggableId: string,
-        draggableTag: string,
-        draggableData: unknown,
-        srcEl: HTMLElement,
-        e: ReactPointerEvent<HTMLElement>,
-    ) => void
+function assertNever(value: never): never {
+    throw new Error(`unreachable: ${JSON.stringify(value)}`)
 }
 
-const SortableCtx = createContext<Ctx | null>(null)
-
-function useCtx(): Ctx {
-    const c = useContext(SortableCtx)
-    if (!c) throw new Error('useSortable hooks must be used inside <SortableProvider>')
-    return c
-}
+// ---------- DOM helpers ----------
 
 function findNearestDroppable(x: number, y: number, draggableTag: string): Element | null {
     const els = document.querySelectorAll(`[data-droppable-tag="${CSS.escape(draggableTag)}"]`)
@@ -86,6 +85,122 @@ function readDroppable(el: Element): DropParty {
     return { id, tag, data }
 }
 
+function droppableIdAt(x: number, y: number, tag: string): string | null {
+    return findNearestDroppable(x, y, tag)?.getAttribute('data-droppable-id') ?? null
+}
+
+// ---------- Pure reducer (Elm-style update) ----------
+
+const idle: Model = { tag: 'idle' }
+
+function step(m: Model, msg: Msg): Model {
+    switch (msg.tag) {
+        case 'pointerDown':
+            return {
+                tag: 'pressed',
+                pointerId: msg.pointerId,
+                draggableId: msg.draggableId,
+                draggableTag: msg.draggableTag,
+                draggableData: msg.draggableData,
+                srcEl: msg.srcEl,
+                startX: msg.x,
+                startY: msg.y,
+            }
+        case 'pointerMove':
+            if (m.tag === 'idle') return m
+            if (msg.pointerId !== m.pointerId) return m
+            return m.tag === 'pressed' ? maybeBeginDrag(m, msg) : trackActiveDroppable(m, msg)
+        case 'pointerUp':
+            if (m.tag === 'idle') return m
+            if (msg.pointerId !== m.pointerId) return m
+            return idle
+        case 'cancel':
+            return idle
+        default:
+            return assertNever(msg)
+    }
+}
+
+function maybeBeginDrag(
+    m: Model & { tag: 'pressed' },
+    msg: Msg & { tag: 'pointerMove' },
+): Model {
+    if (Math.hypot(msg.x - m.startX, msg.y - m.startY) < msg.threshold) return m
+    const activeDroppableId = droppableIdAt(msg.x, msg.y, m.draggableTag)
+    if (activeDroppableId === null) return m
+    const rect = m.srcEl.getBoundingClientRect()
+    return {
+        tag: 'dragging',
+        pointerId: m.pointerId,
+        draggableId: m.draggableId,
+        draggableTag: m.draggableTag,
+        draggableData: m.draggableData,
+        ghostHtml: m.srcEl.outerHTML,
+        ghostWidth: rect.width,
+        ghostHeight: rect.height,
+        offsetX: m.startX - rect.left,
+        offsetY: m.startY - rect.top,
+        activeDroppableId,
+    }
+}
+
+function trackActiveDroppable(
+    m: Model & { tag: 'dragging' },
+    msg: Msg & { tag: 'pointerMove' },
+): Model {
+    const next = droppableIdAt(msg.x, msg.y, m.draggableTag)
+    if (next === null || next === m.activeDroppableId) return m
+    return { ...m, activeDroppableId: next }
+}
+
+// ---------- Drop event derivation ----------
+
+function dropEventAt(m: Model, x: number, y: number): DropEvent | null {
+    if (m.tag !== 'dragging') return null
+    const target = findNearestDroppable(x, y, m.draggableTag)
+    if (!target) return null
+    return {
+        draggable: { id: m.draggableId, tag: m.draggableTag, data: m.draggableData },
+        droppable: readDroppable(target),
+    }
+}
+
+// ---------- Body-style side effects ----------
+
+function applyDragStyles(dragging: boolean) {
+    document.body.style.userSelect = dragging ? 'none' : ''
+    document.body.style.cursor = dragging ? 'grabbing' : ''
+}
+
+// ---------- Ghost position (CSS variables, no React render per frame) ----------
+
+const GHOST_VAR_X = '--sortable-ghost-x'
+const GHOST_VAR_Y = '--sortable-ghost-y'
+
+function updateGhostPosition(x: number, y: number) {
+    const root = document.documentElement.style
+    root.setProperty(GHOST_VAR_X, `${x}px`)
+    root.setProperty(GHOST_VAR_Y, `${y}px`)
+}
+
+// ---------- Context ----------
+
+type Ctx = {
+    state: Model
+    dispatch: (msg: Msg) => void
+    threshold: number
+}
+
+const SortableCtx = createContext<Ctx | null>(null)
+
+function useCtx(): Ctx {
+    const c = useContext(SortableCtx)
+    if (!c) throw new Error('useDraggable / useDroppable / <Ghost> must be inside <SortableProvider>')
+    return c
+}
+
+// ---------- Provider ----------
+
 type ProviderProps = {
     children: ReactNode
     onDrop: (e: DropEvent) => void
@@ -93,133 +208,33 @@ type ProviderProps = {
 }
 
 function SortableProvider({ children, onDrop, threshold = 5 }: ProviderProps) {
-    const [state, setState] = useState<Model>({ tag: 'idle' })
+    const [state, setState] = useState<Model>(idle)
 
-    function startPress(
-        draggableId: string,
-        draggableTag: string,
-        draggableData: unknown,
-        srcEl: HTMLElement,
-        e: ReactPointerEvent<HTMLElement>,
-    ) {
-        const pointerId = e.pointerId
-        setState({
-            tag: 'pressed',
-            pointerId,
-            draggableId,
-            draggableTag,
-            draggableData,
-            srcEl,
-            startX: e.clientX,
-            startY: e.clientY,
+    function dispatch(msg: Msg) {
+        setState((m) => {
+            const next = step(m, msg)
+            // Body styles follow the dragging-or-not transition.
+            if ((m.tag === 'dragging') !== (next.tag === 'dragging')) {
+                applyDragStyles(next.tag === 'dragging')
+            }
+            // Drop-event derivation happens at the moment of pointerUp on a
+            // dragging model. This is the one callback effect we run here.
+            if (msg.tag === 'pointerUp') {
+                const drop = dropEventAt(m, msg.x, msg.y)
+                if (drop) onDrop(drop)
+            }
+            return next
         })
-
-        function detach() {
-            window.removeEventListener('pointermove', onMove)
-            window.removeEventListener('pointerup', onUp)
-            window.removeEventListener('pointercancel', onCancel)
-            window.removeEventListener('keydown', onKey)
-            document.body.style.userSelect = ''
-            document.body.style.cursor = ''
-        }
-
-        function onMove(ev: PointerEvent) {
-            if (ev.pointerId !== pointerId) return
-            setState((m) => {
-                switch (m.tag) {
-                    case 'idle':
-                        return m
-                    case 'pressed': {
-                        if (Math.hypot(ev.clientX - m.startX, ev.clientY - m.startY) < threshold)
-                            return m
-                        const target = findNearestDroppable(ev.clientX, ev.clientY, m.draggableTag)
-                        if (!target) return m
-                        const activeDroppableId = target.getAttribute('data-droppable-id') ?? ''
-                        const rect = m.srcEl.getBoundingClientRect()
-                        document.body.style.userSelect = 'none'
-                        document.body.style.cursor = 'grabbing'
-                        return {
-                            tag: 'dragging',
-                            pointerId: m.pointerId,
-                            draggableId: m.draggableId,
-                            draggableTag: m.draggableTag,
-                            draggableData: m.draggableData,
-                            srcEl: m.srcEl,
-                            ghostHtml: m.srcEl.outerHTML,
-                            ghostWidth: rect.width,
-                            ghostHeight: rect.height,
-                            offsetX: m.startX - rect.left,
-                            offsetY: m.startY - rect.top,
-                            activeDroppableId,
-                        }
-                    }
-                    case 'dragging': {
-                        const target = findNearestDroppable(ev.clientX, ev.clientY, m.draggableTag)
-                        if (!target) return m
-                        const next = target.getAttribute('data-droppable-id') ?? ''
-                        if (next === m.activeDroppableId) return m
-                        return { ...m, activeDroppableId: next }
-                    }
-                    default:
-                        return assertNever(m)
-                }
-            })
-            updateGhostPosition(ev.clientX, ev.clientY)
-        }
-
-        function onUp(ev: PointerEvent) {
-            if (ev.pointerId !== pointerId) return
-            let drop: DropEvent | null = null
-            setState((m) => {
-                if (m.tag === 'dragging') {
-                    const target = findNearestDroppable(ev.clientX, ev.clientY, m.draggableTag)
-                    if (target) {
-                        drop = {
-                            draggable: {
-                                id: m.draggableId,
-                                tag: m.draggableTag,
-                                data: m.draggableData,
-                            },
-                            droppable: readDroppable(target),
-                        }
-                    }
-                }
-                return { tag: 'idle' }
-            })
-            detach()
-            if (drop) onDrop(drop)
-        }
-
-        function onCancel(ev: PointerEvent) {
-            if (ev.pointerId !== pointerId) return
-            setState({ tag: 'idle' })
-            detach()
-        }
-
-        function onKey(ev: KeyboardEvent) {
-            if (ev.key !== 'Escape') return
-            setState({ tag: 'idle' })
-            detach()
-        }
-
-        window.addEventListener('pointermove', onMove)
-        window.addEventListener('pointerup', onUp)
-        window.addEventListener('pointercancel', onCancel)
-        window.addEventListener('keydown', onKey)
     }
 
-    return <SortableCtx.Provider value={{ state, startPress }}>{children}</SortableCtx.Provider>
+    return (
+        <SortableCtx.Provider value={{ state, dispatch, threshold }}>
+            {children}
+        </SortableCtx.Provider>
+    )
 }
 
-// Ghost position is updated imperatively on pointermove (not via React state)
-// so that 60fps cursor tracking doesn't trigger a render per frame.
-const GHOST_VAR_X = '--sortable-ghost-x'
-const GHOST_VAR_Y = '--sortable-ghost-y'
-
-function updateGhostPosition(clientX: number, clientY: number) {
-    document.documentElement.style.setProperty(GHOST_VAR_X, `${clientX}px`)
-    document.documentElement.style.setProperty(GHOST_VAR_Y, `${clientY}px`)
-}
+// ---------- Ghost ----------
 
 function Ghost() {
     const { state } = useCtx()
@@ -245,16 +260,72 @@ function Ghost() {
     )
 }
 
-type DraggableProps = {
-    id: string
-    tag: string
-    data: unknown
-}
+// ---------- useDraggable ----------
+
+type DraggableProps = { id: string; tag: string; data: unknown }
 
 function useDraggable({ id, tag, data }: DraggableProps) {
-    const { state, startPress } = useCtx()
+    const { state, dispatch, threshold } = useCtx()
     const isDragging =
         state.tag === 'dragging' && state.draggableTag === tag && state.draggableId === id
+
+    function onPointerDown(e: ReactPointerEvent<HTMLElement>) {
+        if (e.button !== 0) return
+        if (
+            e.target instanceof Element &&
+            e.target.closest('button,input,textarea,select,a')
+        )
+            return
+        e.stopPropagation()
+        const pointerId = e.pointerId
+        const srcEl = e.currentTarget
+        dispatch({
+            tag: 'pointerDown',
+            pointerId,
+            draggableId: id,
+            draggableTag: tag,
+            draggableData: data,
+            srcEl,
+            x: e.clientX,
+            y: e.clientY,
+        })
+
+        function onMove(ev: PointerEvent) {
+            updateGhostPosition(ev.clientX, ev.clientY)
+            dispatch({
+                tag: 'pointerMove',
+                pointerId,
+                x: ev.clientX,
+                y: ev.clientY,
+                threshold,
+            })
+        }
+        function onUp(ev: PointerEvent) {
+            dispatch({ tag: 'pointerUp', pointerId, x: ev.clientX, y: ev.clientY })
+            detach()
+        }
+        function onCancel() {
+            dispatch({ tag: 'cancel' })
+            detach()
+        }
+        function onKey(ev: KeyboardEvent) {
+            if (ev.key === 'Escape') {
+                dispatch({ tag: 'cancel' })
+                detach()
+            }
+        }
+        function detach() {
+            window.removeEventListener('pointermove', onMove)
+            window.removeEventListener('pointerup', onUp)
+            window.removeEventListener('pointercancel', onCancel)
+            window.removeEventListener('keydown', onKey)
+        }
+
+        window.addEventListener('pointermove', onMove)
+        window.addEventListener('pointerup', onUp)
+        window.addEventListener('pointercancel', onCancel)
+        window.addEventListener('keydown', onKey)
+    }
 
     return {
         isDragging,
@@ -262,24 +333,14 @@ function useDraggable({ id, tag, data }: DraggableProps) {
             'data-draggable-id': id,
             'data-draggable-tag': tag,
             'data-dragging': isDragging || undefined,
-            onPointerDown: (e: ReactPointerEvent<HTMLElement>) => {
-                if (e.button !== 0) return
-                if (
-                    e.target instanceof Element &&
-                    e.target.closest('button,input,textarea,select,a')
-                )
-                    return
-                e.stopPropagation()
-                startPress(id, tag, data, e.currentTarget, e)
-            },
+            onPointerDown,
         },
     }
 }
 
-type DroppableProps = {
-    tag: string
-    data: unknown
-}
+// ---------- useDroppable ----------
+
+type DroppableProps = { tag: string; data: unknown }
 
 function useDroppable({ tag, data }: DroppableProps) {
     const id = useId()
