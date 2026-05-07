@@ -12,7 +12,6 @@ import React, {
 type SourceMeta = { tag: string; id: string }
 
 type TagRegistry = {
-    sources: Set<string>
     beacons: Map<string, (source: SourceMeta) => void>
 }
 
@@ -50,7 +49,7 @@ function useSortable(): SortableCtx {
 function getOrCreateTag(registry: Map<string, TagRegistry>, tag: string): TagRegistry {
     let entry = registry.get(tag)
     if (!entry) {
-        entry = { sources: new Set(), beacons: new Map() }
+        entry = { beacons: new Map() }
         registry.set(tag, entry)
     }
     return entry
@@ -214,13 +213,7 @@ type SortableSourceProps = {
 }
 
 function SortableSource({ tag, id, children, className }: SortableSourceProps) {
-    const { registry, startPress, dragState } = useSortable()
-
-    useEffect(() => {
-        const entry = getOrCreateTag(registry.current, tag)
-        entry.sources.add(id)
-        return () => { entry.sources.delete(id) }
-    }, [registry, tag, id])
+    const { startPress, dragState } = useSortable()
 
     const isDragging =
         dragState.tag === 'dragging' && dragState.source.tag === tag && dragState.source.id === id
