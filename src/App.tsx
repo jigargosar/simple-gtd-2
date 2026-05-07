@@ -3,67 +3,19 @@ import { useState } from 'react'
 import {
     appendTask,
     deleteTask,
-    moveSection,
-    moveTask,
     type Section,
     type Task,
     toggleTask,
     useSections,
     useSectionTasks,
 } from './store'
-import {
-    Ghost,
-    SortableProvider,
-    useDraggable,
-    useDroppable,
-    type DropEvent,
-} from './sortable'
-
-type SectionGap = { kind: 'section-gap'; beforeOrder: string | null; afterOrder: string | null }
-type TaskGap = {
-    kind: 'task-gap'
-    sectionId: string
-    beforeOrder: string | null
-    afterOrder: string | null
-}
-type DroppableData = SectionGap | TaskGap
-
-function assertNever(value: never): never {
-    throw new Error(`unreachable: ${JSON.stringify(value)}`)
-}
-
-function handleDrop(e: DropEvent) {
-    const data = e.droppable.data as DroppableData
-    switch (data.kind) {
-        case 'section-gap':
-            moveSection({
-                id: e.draggable.id,
-                beforeOrder: data.beforeOrder,
-                afterOrder: data.afterOrder,
-            })
-            return
-        case 'task-gap':
-            moveTask({
-                id: e.draggable.id,
-                sectionId: data.sectionId,
-                beforeOrder: data.beforeOrder,
-                afterOrder: data.afterOrder,
-            })
-            return
-        default:
-            return assertNever(data)
-    }
-}
 
 function ViewApp() {
     return (
-        <SortableProvider onDrop={handleDrop}>
-            <div className="min-h-screen bg-gray-50">
-                <ViewHeader />
-                <ViewSections />
-            </div>
-            <Ghost />
-        </SortableProvider>
+        <div className="min-h-screen bg-gray-50">
+            <ViewHeader />
+            <ViewSections />
+        </div>
     )
 }
 
@@ -84,18 +36,8 @@ function ViewSections() {
 
     return (
         <div className="mx-auto flex max-w-xl flex-col px-4 py-8">
-            <SectionGapBeacon
-                beforeOrder={null}
-                afterOrder={sections[0]?.order ?? null}
-            />
-            {sections.map((section, i) => (
-                <div key={section.id} className="flex flex-col">
-                    <ViewSection section={section} />
-                    <SectionGapBeacon
-                        beforeOrder={section.order}
-                        afterOrder={sections[i + 1]?.order ?? null}
-                    />
-                </div>
+            {sections.map((section) => (
+                <ViewSection key={section.id} section={section} />
             ))}
         </div>
     )
@@ -103,43 +45,17 @@ function ViewSections() {
 
 function ViewSection({ section }: { section: Section }) {
     const tasks = useSectionTasks(section.id)
-    const { isDragging, rootProps } = useDraggable({
-        id: section.id,
-        tag: 'section',
-        data: null,
-    })
 
     return (
-        <div
-            {...rootProps}
-            style={
-                isDragging
-                    ? { outline: '2px dashed dodgerblue', outlineOffset: '-2px' }
-                    : undefined
-            }
-        >
-            <div style={isDragging ? { visibility: 'hidden' } : undefined}>
-                <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
-                    {section.title}
-                </h2>
-                {tasks.length === 0 && <ViewEmptySection />}
-                <TaskGapBeacon
-                    sectionId={section.id}
-                    beforeOrder={null}
-                    afterOrder={tasks[0]?.order ?? null}
-                />
-                {tasks.map((task, i) => (
-                    <div key={task.id} className="flex flex-col">
-                        <ViewTask task={task} />
-                        <TaskGapBeacon
-                            sectionId={section.id}
-                            beforeOrder={task.order}
-                            afterOrder={tasks[i + 1]?.order ?? null}
-                        />
-                    </div>
-                ))}
-                <ViewAddTask sectionId={section.id} />
-            </div>
+        <div className="flex flex-col">
+            <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-400 uppercase">
+                {section.title}
+            </h2>
+            {tasks.length === 0 && <ViewEmptySection />}
+            {tasks.map((task) => (
+                <ViewTask key={task.id} task={task} />
+            ))}
+            <ViewAddTask sectionId={section.id} />
         </div>
     )
 }
@@ -149,25 +65,11 @@ function ViewEmptySection() {
 }
 
 function ViewTask({ task: { done, id, title } }: { task: Task }) {
-    const { isDragging, rootProps } = useDraggable({ id, tag: 'task', data: null })
-
     return (
-        <div
-            {...rootProps}
-            style={
-                isDragging
-                    ? { outline: '2px dashed dodgerblue', outlineOffset: '-2px', borderRadius: '0.5rem' }
-                    : undefined
-            }
-        >
-            <div
-                className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm"
-                style={isDragging ? { visibility: 'hidden' } : undefined}
-            >
-                <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
-                <ViewTaskTitle done={done} title={title} />
-                <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
-            </div>
+        <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+            <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
+            <ViewTaskTitle done={done} title={title} />
+            <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
         </div>
     )
 }
@@ -228,50 +130,6 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
             >
                 Add
             </button>
-        </div>
-    )
-}
-
-function SectionGapBeacon({
-    beforeOrder,
-    afterOrder,
-}: {
-    beforeOrder: string | null
-    afterOrder: string | null
-}) {
-    const data: SectionGap = { kind: 'section-gap', beforeOrder, afterOrder }
-    const { rootProps } = useDroppable({ tag: 'section', data })
-    return (
-        <div
-            {...rootProps}
-            className="flex h-2 items-center opacity-15 transition-opacity duration-150 data-[active]:opacity-100"
-        >
-            <div className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-            <div className="h-0.5 flex-1 rounded-full bg-amber-400" />
-            <div className="h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-        </div>
-    )
-}
-
-function TaskGapBeacon({
-    sectionId,
-    beforeOrder,
-    afterOrder,
-}: {
-    sectionId: string
-    beforeOrder: string | null
-    afterOrder: string | null
-}) {
-    const data: TaskGap = { kind: 'task-gap', sectionId, beforeOrder, afterOrder }
-    const { rootProps } = useDroppable({ tag: 'task', data })
-    return (
-        <div
-            {...rootProps}
-            className="flex h-2 items-center opacity-15 transition-opacity duration-150 data-[active]:opacity-100"
-        >
-            <div className="bg-accent h-2 w-2 shrink-0 rounded-full" />
-            <div className="bg-accent h-0.5 flex-1 rounded-full" />
-            <div className="bg-accent h-2 w-2 shrink-0 rounded-full" />
         </div>
     )
 }
