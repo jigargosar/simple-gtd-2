@@ -87,8 +87,12 @@ function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
 }
 
 function ViewTaskTitle(props: { done: boolean; title: string }) {
+    function onPointerDown() {}
     return (
-        <span className={clsx(props.done ? 'text-gray-400 line-through' : 'text-gray-700')}>
+        <span
+            onPointerDown={onPointerDown}
+            className={clsx(props.done ? 'text-gray-400 line-through' : 'text-gray-700')}
+        >
             {props.title}
         </span>
     )
