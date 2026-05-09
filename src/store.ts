@@ -74,34 +74,6 @@ export const appendTask = (sectionId: string, title: string) => {
 export const deleteTask = (id: string) =>
     useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
 
-export const moveTask = (taskId: string, targetSectionId: string, beforeTaskId: string | null) =>
-    useApp.setState((s) => {
-        const targetTasks = getSectionTasks(s.tasks, targetSectionId).filter((t) => t.id !== taskId)
-        const beforeIdx = beforeTaskId === null ? targetTasks.length : targetTasks.findIndex((t) => t.id === beforeTaskId)
-        const after = targetTasks[beforeIdx - 1]?.order ?? null
-        const before = targetTasks[beforeIdx]?.order ?? null
-        const newOrder = orderBetween(after, before)
-        return {
-            tasks: s.tasks.map((t) =>
-                t.id === taskId ? { ...t, sectionId: targetSectionId, order: newOrder } : t,
-            ),
-        }
-    })
-
-export const moveSection = (sectionId: string, afterSectionId: string | null) =>
-    useApp.setState((s) => {
-        const sorted = sortBy(s.sections, prop('order')).filter((sec) => sec.id !== sectionId)
-        const afterIdx = afterSectionId === null ? -1 : sorted.findIndex((sec) => sec.id === afterSectionId)
-        const after = sorted[afterIdx]?.order ?? null
-        const before = sorted[afterIdx + 1]?.order ?? null
-        const newOrder = orderBetween(after, before)
-        return {
-            sections: s.sections.map((sec) =>
-                sec.id === sectionId ? { ...sec, order: newOrder } : sec,
-            ),
-        }
-    })
-
 export const toggleTask = (id: string) =>
     useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
