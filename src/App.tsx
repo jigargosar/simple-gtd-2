@@ -48,7 +48,7 @@ function ViewSection({ section }: { section: Section }) {
 
     return (
         <div className="flex flex-col">
-            <h2 className="pt-10 pb-3 text-xs font-semibold tracking-widest text-gray-600 uppercase">
+            <h2 className="pt-10 pb-3 text-xs font-semibold tracking-widest text-gray-800 uppercase">
                 {section.title}
             </h2>
             <div className="overflow-hidden rounded-lg border border-gray-400 bg-gray-300 shadow-sm">
@@ -79,7 +79,7 @@ function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
             onClick={props.onClick}
             className={clsx(
                 'flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2',
-                props.done ? 'border-accent bg-accent' : 'border-gray-400',
+                props.done ? 'border-accent bg-accent' : 'border-gray-600',
             )}
         >
             {props.done && (
@@ -104,7 +104,7 @@ function ViewTaskTitle(props: { done: boolean; title: string }) {
             onPointerDown={onPointerDown}
             className={clsx(
                 props.done
-                    ? 'text-gray-500 line-through decoration-gray-400'
+                    ? 'text-gray-600 line-through decoration-gray-600'
                     : 'text-gray-900',
             )}
         >
