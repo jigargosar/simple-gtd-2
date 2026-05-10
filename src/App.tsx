@@ -12,7 +12,7 @@ import {
 
 function ViewApp() {
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-200">
             <ViewHeader />
             <ViewSections />
         </div>
@@ -21,8 +21,8 @@ function ViewApp() {
 
 function ViewHeader() {
     return (
-        <header className="border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
-            <div className="mx-auto max-w-xl">
+        <header className="border-b border-gray-300 bg-gray-100 px-6 py-5">
+            <div className="mx-auto max-w-2xl">
                 <span className="text-xl font-semibold tracking-tight text-gray-950">
                     SimpleGTD
                 </span>
@@ -35,7 +35,7 @@ function ViewSections() {
     const sections = useSections()
 
     return (
-        <div className="mx-auto flex max-w-xl flex-col px-4 py-8">
+        <div className="mx-auto flex max-w-2xl flex-col px-6 py-10">
             {sections.map((section) => (
                 <ViewSection key={section.id} section={section} />
             ))}
@@ -48,14 +48,18 @@ function ViewSection({ section }: { section: Section }) {
 
     return (
         <div className="flex flex-col">
-            <h2 className="pt-6 pb-2 text-xs font-semibold tracking-widest text-gray-600 uppercase">
+            <h2 className="pt-10 pb-3 text-xs font-semibold tracking-widest text-gray-600 uppercase">
                 {section.title}
             </h2>
-            {tasks.length === 0 && <ViewEmptySection />}
-            {tasks.map((task) => (
-                <ViewTask key={task.id} task={task} />
-            ))}
-            <ViewAddTask sectionId={section.id} />
+            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                {tasks.length === 0 && <ViewEmptySection />}
+                {tasks.map((task) => (
+                    <ViewTask key={task.id} task={task} />
+                ))}
+                <div className="border-t border-gray-100 px-5 py-2.5">
+                    <ViewAddTask sectionId={section.id} />
+                </div>
+            </div>
         </div>
     )
 }
@@ -66,7 +70,7 @@ function ViewEmptySection() {
 
 function ViewTask({ task: { done, id, title } }: { task: Task }) {
     return (
-        <div className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3 shadow-sm">
+        <div className="group flex items-center gap-4 border-b border-gray-100 px-5 py-4 last:border-b-0">
             <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
             <ViewTaskTitle done={done} title={title} />
             <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
@@ -79,8 +83,8 @@ function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
         <button
             onClick={props.onClick}
             className={clsx(
-                'h-4 w-4 shrink-0 cursor-pointer rounded-full border-2',
-                props.done ? 'border-accent bg-accent' : 'border-gray-500',
+                'h-5 w-5 shrink-0 cursor-pointer rounded-full border',
+                props.done ? 'border-accent bg-accent' : 'border-gray-400',
             )}
         />
     )
@@ -91,7 +95,7 @@ function ViewTaskTitle(props: { done: boolean; title: string }) {
     return (
         <span
             onPointerDown={onPointerDown}
-            className={clsx(props.done ? 'text-gray-500 line-through' : 'text-gray-900')}
+            className={clsx(props.done ? 'text-gray-500 line-through decoration-gray-400' : 'text-gray-900')}
         >
             {props.title}
         </span>
@@ -120,17 +124,17 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     }
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
             <input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
                 placeholder="Add task…"
-                className="focus:border-accent flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400"
+                className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
             />
             <button
                 onClick={submit}
-                className="bg-accent rounded-lg px-3 py-2 text-sm font-medium text-white"
+                className="text-accent text-sm font-medium"
             >
                 Add
             </button>
