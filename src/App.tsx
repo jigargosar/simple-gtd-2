@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import {
     appendTask,
     deleteTask,
@@ -10,22 +10,22 @@ import {
     useSectionTasks,
 } from './store'
 
-// Section accent colors — one warm ink per bucket
-const SECTION_ACCENTS: Record<string, { dot: string; label: string }> = {
-    Inbox: { dot: '#8b6f47', label: '#6b5a3a' },
-    'Next Actions': { dot: '#5c7a5c', label: '#3d5c3d' },
-    Projects: { dot: '#5a6a8a', label: '#3d4f72' },
-    'Waiting For': { dot: '#8a6a5a', label: '#6b4f3d' },
-    'Someday / Maybe': { dot: '#7a6a8a', label: '#5a4d72' },
-}
+// Per-section palette — cycles if more than 5 sections
+const PALETTES = [
+    { bg: 'var(--s0-bg)', acc: 'var(--s0-acc)', light: '#fef4ee' },
+    { bg: 'var(--s1-bg)', acc: 'var(--s1-acc)', light: '#eef6fb' },
+    { bg: 'var(--s2-bg)', acc: 'var(--s2-acc)', light: '#eef8ef' },
+    { bg: 'var(--s3-bg)', acc: 'var(--s3-acc)', light: '#f5f1fe' },
+    { bg: 'var(--s4-bg)', acc: 'var(--s4-acc)', light: '#fef9ee' },
+]
 
-function getAccent(title: string) {
-    return SECTION_ACCENTS[title] ?? { dot: '#6b6560', label: '#4a4540' }
+function palette(i: number) {
+    return PALETTES[i % PALETTES.length]
 }
 
 function ViewApp() {
     return (
-        <div className="min-h-screen" style={{ background: 'var(--color-paper)' }}>
+        <div style={{ minHeight: '100vh', background: 'var(--color-bg)' }}>
             <ViewHeader />
             <ViewSections />
         </div>
@@ -35,38 +35,48 @@ function ViewApp() {
 function ViewHeader() {
     return (
         <header
+            className="anim-header"
             style={{
-                borderBottom: '1px solid var(--color-rule)',
-                background: 'var(--color-paper)',
-                paddingBlock: '1.75rem',
-                paddingInline: '2rem',
+                padding: '1.5rem 2.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
             }}
         >
-            <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
-                <span
+            {/* Circle logo mark */}
+            <div
+                style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    background: 'var(--s0-acc)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                }}
+            >
+                <div
                     style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: '1.375rem',
-                        fontWeight: 600,
-                        color: 'var(--color-ink)',
-                        letterSpacing: '-0.01em',
+                        width: '14px',
+                        height: '14px',
+                        borderRadius: '50%',
+                        background: 'white',
+                        opacity: 0.85,
                     }}
-                >
-                    SimpleGTD
-                </span>
-                <span
-                    style={{
-                        fontFamily: "'DM Mono', monospace",
-                        fontSize: '0.6875rem',
-                        fontWeight: 300,
-                        color: 'var(--color-ink-faint)',
-                        letterSpacing: '0.12em',
-                        textTransform: 'uppercase',
-                    }}
-                >
-                    Getting Things Done
-                </span>
+                />
             </div>
+            <span
+                style={{
+                    fontFamily: "'Syne', sans-serif",
+                    fontWeight: 800,
+                    fontSize: '1.125rem',
+                    letterSpacing: '-0.01em',
+                    color: 'var(--color-ink)',
+                }}
+            >
+                SimpleGTD
+            </span>
         </header>
     )
 }
@@ -79,197 +89,181 @@ function ViewSections() {
             style={{
                 maxWidth: '680px',
                 margin: '0 auto',
-                padding: '2.5rem 2rem 5rem',
+                padding: '0.5rem 2rem 6rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0',
+                gap: '1rem',
             }}
         >
             {sections.map((section, i) => (
-                <ViewSection
-                    key={section.id}
-                    section={section}
-                    animDelay={i * 60}
-                />
+                <ViewSection key={section.id} section={section} paletteIndex={i} animDelay={i * 60} />
             ))}
         </div>
     )
 }
 
-function ViewSection({ section, animDelay }: { section: Section; animDelay: number }) {
+function ViewSection({
+    section,
+    paletteIndex,
+    animDelay,
+}: {
+    section: Section
+    paletteIndex: number
+    animDelay: number
+}) {
     const tasks = useSectionTasks(section.id)
-    const accent = getAccent(section.title)
+    const pal = palette(paletteIndex)
+    const pending = tasks.filter((t) => !t.done).length
 
     return (
         <div
-            className="section-card"
+            className="anim-section"
             style={{
                 animationDelay: `${animDelay}ms`,
-                marginBottom: '2rem',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                border: '1px solid rgba(0,0,0,0.06)',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
             }}
         >
-            {/* Section header */}
+            {/* Colored header band */}
             <div
                 style={{
+                    background: pal.bg,
+                    padding: '1rem 1.25rem 1rem 1.25rem',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem',
-                    paddingBottom: '0.625rem',
-                    paddingTop: '0.25rem',
-                    marginBottom: '0',
+                    gap: '0.75rem',
                 }}
             >
-                <span
+                {/* Circle accent */}
+                <div
                     style={{
-                        width: '6px',
-                        height: '6px',
+                        width: '10px',
+                        height: '10px',
                         borderRadius: '50%',
-                        background: accent.dot,
+                        background: pal.acc,
                         flexShrink: 0,
-                        marginTop: '1px',
                     }}
                 />
                 <span
                     style={{
-                        fontFamily: "'Playfair Display', serif",
+                        fontFamily: "'Syne', sans-serif",
+                        fontWeight: 700,
                         fontSize: '0.8125rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.04em',
-                        color: accent.label,
-                        textTransform: 'uppercase',
+                        letterSpacing: '0.01em',
+                        color: pal.acc,
+                        flex: 1,
                     }}
                 >
                     {section.title}
                 </span>
-                <span
-                    style={{
-                        fontFamily: "'DM Mono', monospace",
-                        fontSize: '0.6875rem',
-                        fontWeight: 300,
-                        color: 'var(--color-ink-faint)',
-                        marginLeft: '0.25rem',
-                    }}
-                >
-                    {tasks.filter((t) => !t.done).length}
-                </span>
+                {/* Count pill */}
+                {pending > 0 && (
+                    <span
+                        style={{
+                            fontFamily: "'Epilogue', sans-serif",
+                            fontSize: '0.6875rem',
+                            fontWeight: 500,
+                            color: pal.acc,
+                            background: 'rgba(255,255,255,0.6)',
+                            borderRadius: '20px',
+                            padding: '1px 8px',
+                            letterSpacing: '0.02em',
+                        }}
+                    >
+                        {pending}
+                    </span>
+                )}
             </div>
 
-            {/* Section card */}
-            <div
-                style={{
-                    borderRadius: '6px',
-                    border: '1px solid var(--color-rule)',
-                    background: '#fff',
-                    boxShadow: '0 1px 3px rgba(26,23,20,0.04), 0 4px 12px rgba(26,23,20,0.03)',
-                    overflow: 'hidden',
-                }}
-            >
-                {/* Left accent bar */}
-                <div style={{ display: 'flex' }}>
-                    <div
-                        style={{
-                            width: '3px',
-                            background: accent.dot,
-                            opacity: 0.35,
-                            flexShrink: 0,
-                        }}
-                    />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        {tasks.length === 0 && (
-                            <div
-                                style={{
-                                    padding: '1rem 1.25rem',
-                                    fontFamily: "'DM Mono', monospace",
-                                    fontSize: '0.75rem',
-                                    fontStyle: 'italic',
-                                    color: 'var(--color-ink-faint)',
-                                    borderBottom: '1px solid var(--color-rule)',
-                                }}
-                            >
-                                No tasks yet
-                            </div>
-                        )}
-                        {tasks.map((task, i) => (
-                            <ViewTask key={task.id} task={task} index={i} totalCount={tasks.length} />
-                        ))}
-
-                        {/* Add task row */}
-                        <div
-                            style={{
-                                borderTop: tasks.length > 0 ? '1px solid var(--color-rule)' : undefined,
-                                background: 'var(--color-paper)',
-                            }}
-                        >
-                            <ViewAddTask sectionId={section.id} accentColor={accent.dot} />
-                        </div>
-                    </div>
-                </div>
+            {/* Task list — white card body */}
+            <div style={{ background: 'white' }}>
+                {tasks.map((task, i) => (
+                    <ViewTask key={task.id} task={task} taskIndex={i} accent={pal.acc} isLast={i === tasks.length - 1} />
+                ))}
+                <ViewAddTask sectionId={section.id} accent={pal.acc} lightBg={pal.light} />
             </div>
         </div>
     )
 }
 
-function ViewTask({ task, index, totalCount }: { task: Task; index: number; totalCount: number }) {
+function ViewTask({
+    task,
+    taskIndex,
+    accent,
+    isLast,
+}: {
+    task: Task
+    taskIndex: number
+    accent: string
+    isLast: boolean
+}) {
     const [removing, setRemoving] = useState(false)
+    const [hovered, setHovered] = useState(false)
 
     function handleDelete() {
         setRemoving(true)
-        setTimeout(() => deleteTask(task.id), 170)
+        setTimeout(() => deleteTask(task.id), 175)
     }
 
     return (
         <div
-            className={clsx('task-row group', removing && 'removing')}
+            className={clsx('anim-task', removing && 'anim-out')}
             style={{
+                animationDelay: `${taskIndex * 30}ms`,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.875rem',
+                gap: '0.75rem',
                 padding: '0.75rem 1.25rem',
-                borderBottom: index < totalCount - 1 ? '1px solid var(--color-rule)' : undefined,
-                transition: 'background 0.12s',
-                animationDelay: `${index * 30}ms`,
-                cursor: 'default',
+                borderBottom: isLast ? 'none' : '1px solid #f2f0ee',
+                background: hovered ? '#fafaf9' : 'white',
+                transition: 'background 0.1s',
             }}
-            onMouseEnter={(e) => {
-                (e.currentTarget as HTMLDivElement).style.background = 'var(--color-paper)'
-            }}
-            onMouseLeave={(e) => {
-                (e.currentTarget as HTMLDivElement).style.background = ''
-            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
         >
-            <ViewTaskCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
-            <ViewTaskTitle done={task.done} title={task.title} />
-            <ViewDeleteButton onClick={handleDelete} />
+            <ViewCheckbox done={task.done} accent={accent} onClick={() => toggleTask(task.id)} />
+            <ViewTitle done={task.done} title={task.title} accent={accent} />
+            <ViewDeleteBtn visible={hovered} onClick={handleDelete} />
         </div>
     )
 }
 
-function ViewTaskCheckbox({ done, onClick }: { done: boolean; onClick: () => void }) {
+function ViewCheckbox({ done, accent, onClick }: { done: boolean; accent: string; onClick: () => void }) {
     return (
         <button
             onClick={onClick}
             style={{
-                width: '18px',
-                height: '18px',
+                width: '20px',
+                height: '20px',
                 borderRadius: '50%',
-                border: done ? '1.5px solid var(--color-accent)' : '1.5px solid var(--color-ink-faint)',
-                background: done ? 'var(--color-accent)' : 'transparent',
+                border: `2px solid ${done ? accent : 'var(--color-faint)'}`,
+                background: done ? accent : 'transparent',
                 flexShrink: 0,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                transition: 'border-color 0.15s, background 0.15s',
                 padding: 0,
+                transition: 'border-color 0.15s, background 0.15s',
+                position: 'relative',
+                overflow: 'hidden',
             }}
         >
             {done && (
-                <svg width="9" height="7" viewBox="0 0 9 7" fill="none" style={{ display: 'block' }}>
+                <svg
+                    className="dot-pop"
+                    width="9"
+                    height="7"
+                    viewBox="0 0 9 7"
+                    fill="none"
+                    style={{ display: 'block', flexShrink: 0 }}
+                >
                     <path
-                        className="check-path drawn"
                         d="M1 3.5L3.5 6L8 1"
                         stroke="white"
-                        strokeWidth="1.5"
+                        strokeWidth="1.75"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
@@ -279,30 +273,29 @@ function ViewTaskCheckbox({ done, onClick }: { done: boolean; onClick: () => voi
     )
 }
 
-function ViewTaskTitle({ done, title }: { done: boolean; title: string }) {
+function ViewTitle({ done, title, accent }: { done: boolean; title: string; accent: string }) {
     return (
         <span
             style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: '0.8125rem',
+                fontFamily: "'Epilogue', sans-serif",
+                fontSize: '0.875rem',
                 fontWeight: done ? 300 : 400,
-                color: done ? 'var(--color-ink-faint)' : 'var(--color-ink)',
+                color: done ? 'var(--color-faint)' : 'var(--color-ink)',
                 flex: 1,
                 minWidth: 0,
-                transition: 'color 0.2s',
-                position: 'relative',
                 display: 'block',
+                transition: 'color 0.2s',
             }}
         >
             <span style={{ position: 'relative', display: 'inline-block' }}>
                 {title}
-                {done && <span className="strike-line" />}
+                {done && <span className="strike-line" style={{ background: accent, opacity: 0.5 }} />}
             </span>
         </span>
     )
 }
 
-function ViewDeleteButton({ onClick }: { onClick: () => void }) {
+function ViewDeleteBtn({ visible, onClick }: { visible: boolean; onClick: () => void }) {
     const [hovered, setHovered] = useState(false)
     return (
         <button
@@ -310,35 +303,31 @@ function ViewDeleteButton({ onClick }: { onClick: () => void }) {
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             style={{
-                marginLeft: 'auto',
                 flexShrink: 0,
-                width: '20px',
-                height: '20px',
+                width: '24px',
+                height: '24px',
                 borderRadius: '50%',
                 border: 'none',
-                background: hovered ? '#fee2e2' : 'transparent',
-                color: hovered ? '#dc2626' : 'var(--color-ink-faint)',
+                background: hovered ? '#fee2e2' : '#f5f5f4',
+                color: hovered ? '#dc2626' : 'var(--color-faint)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                opacity: 0,
-                transition: 'opacity 0.15s, background 0.15s, color 0.15s',
-                fontSize: '0.625rem',
+                fontSize: '0.5625rem',
                 padding: 0,
-                lineHeight: 1,
+                opacity: visible ? 1 : 0,
+                transition: 'opacity 0.15s, background 0.12s, color 0.12s',
             }}
-            className="group-hover:!opacity-100"
         >
             ✕
         </button>
     )
 }
 
-function ViewAddTask({ sectionId, accentColor }: { sectionId: string; accentColor: string }) {
+function ViewAddTask({ sectionId, accent, lightBg }: { sectionId: string; accent: string; lightBg: string }) {
     const [value, setValue] = useState('')
     const [focused, setFocused] = useState(false)
-    const inputRef = useRef<HTMLInputElement>(null)
 
     function submit() {
         const trimmed = value.trim()
@@ -352,27 +341,38 @@ function ViewAddTask({ sectionId, accentColor }: { sectionId: string; accentColo
             style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.625rem',
+                gap: '0.75rem',
                 padding: '0.625rem 1.25rem',
+                background: focused ? lightBg : '#fafaf9',
+                borderTop: '1px solid #f2f0ee',
+                transition: 'background 0.15s',
                 cursor: 'text',
             }}
-            onClick={() => inputRef.current?.focus()}
+            onClick={(e) => {
+                const inp = (e.currentTarget as HTMLDivElement).querySelector('input')
+                inp?.focus()
+            }}
         >
             <span
                 style={{
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.8125rem',
-                    fontWeight: 300,
-                    color: focused || value ? accentColor : 'var(--color-ink-faint)',
-                    transition: 'color 0.15s',
-                    userSelect: 'none',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    border: `2px dashed ${focused ? accent : 'var(--color-faint)'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: focused ? accent : 'var(--color-faint)',
+                    fontSize: '0.875rem',
                     flexShrink: 0,
+                    transition: 'border-color 0.15s, color 0.15s',
+                    lineHeight: 1,
+                    userSelect: 'none',
                 }}
             >
                 +
             </span>
             <input
-                ref={inputRef}
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
@@ -381,37 +381,36 @@ function ViewAddTask({ sectionId, accentColor }: { sectionId: string; accentColo
                 placeholder="Add a task…"
                 style={{
                     flex: 1,
-                    background: 'transparent',
                     border: 'none',
                     outline: 'none',
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: '0.8125rem',
-                    fontWeight: 300,
+                    background: 'transparent',
+                    fontFamily: "'Epilogue', sans-serif",
+                    fontSize: '0.875rem',
+                    fontWeight: 400,
                     color: 'var(--color-ink)',
-                    caretColor: accentColor,
+                    caretColor: accent,
                 }}
-                // inline placeholder style via CSS
             />
             {value.trim() && (
                 <button
                     onClick={submit}
                     style={{
-                        fontFamily: "'DM Mono', monospace",
-                        fontSize: '0.6875rem',
-                        fontWeight: 400,
-                        color: accentColor,
-                        background: 'transparent',
+                        fontFamily: "'Epilogue', sans-serif",
+                        fontSize: '0.75rem',
+                        fontWeight: 500,
+                        color: 'white',
+                        background: accent,
                         border: 'none',
+                        padding: '4px 12px',
+                        borderRadius: '20px',
                         cursor: 'pointer',
-                        padding: '0.125rem 0.375rem',
-                        borderRadius: '3px',
-                        letterSpacing: '0.04em',
-                        transition: 'background 0.12s',
+                        flexShrink: 0,
+                        transition: 'opacity 0.12s',
                     }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'var(--color-paper-dark)')}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = 'transparent')}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
                 >
-                    ↵ add
+                    Add
                 </button>
             )}
         </div>
