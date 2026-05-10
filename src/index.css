@@ -1,5 +1,137 @@
 @import 'tailwindcss';
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400&display=swap');
 
 @theme {
-    --color-accent: dodgerblue;
+    --color-accent: #5c7a5c;
+    --color-accent-warm: #8b6f47;
+    --color-paper: #faf8f4;
+    --color-paper-dark: #f2ede6;
+    --color-rule: #e0d9cf;
+    --color-ink: #1a1714;
+    --color-ink-mid: #6b6560;
+    --color-ink-faint: #b8b0a6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--color-paper);
+}
+
+body {
+    font-family: 'DM Mono', monospace;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    min-height: 100vh;
+}
+
+/* Paper texture overlay */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-size: 256px 256px;
+}
+
+/* Checkbox draw animation */
+@keyframes check-draw {
+    from {
+        stroke-dashoffset: 14;
+        opacity: 0;
+    }
+    to {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+.check-path {
+    stroke-dasharray: 14;
+    stroke-dashoffset: 14;
+}
+
+.check-path.drawn {
+    animation: check-draw 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Task entry animation */
+@keyframes task-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.task-row {
+    animation: task-in 0.18s ease-out both;
+}
+
+/* Delete slide out */
+@keyframes task-out {
+    to {
+        opacity: 0;
+        transform: translateX(8px);
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        margin: 0;
+    }
+}
+
+.task-row.removing {
+    animation: task-out 0.18s ease-in forwards;
+}
+
+/* Strikethrough draw */
+@keyframes strike {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+.strike-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 1px;
+    background: var(--color-ink-mid);
+    animation: strike 0.25s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Section stagger */
+@keyframes section-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section-card {
+    animation: section-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Add-task input placeholder */
+input::placeholder {
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--color-ink-faint);
+}
+
+/* Tailwind opacity utility override for delete button */
+.group:hover .group-hover\:\!opacity-100 {
+    opacity: 1 !important;
 }
