@@ -55,7 +55,7 @@ function ViewSection({ section }: { section: Section }) {
                 {tasks.map((task) => (
                     <ViewTask key={task.id} task={task} />
                 ))}
-                <div className="border-t border-gray-500 px-5 py-2.5">
+                <div className="border-t border-gray-400 bg-gray-400 px-5 py-2">
                     <ViewAddTask sectionId={section.id} />
                 </div>
             </div>
@@ -79,7 +79,7 @@ function ViewTaskDoneMarker(props: { done: boolean; onClick: () => void }) {
             onClick={props.onClick}
             className={clsx(
                 'flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2',
-                props.done ? 'border-accent bg-accent' : 'border-gray-600',
+                props.done ? 'border-accent bg-accent' : 'border-gray-500',
             )}
         >
             {props.done && (
@@ -136,13 +136,13 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
     return (
         <div className="flex items-center gap-3">
-            <span className="text-gray-400">+</span>
+            <span className="text-gray-600">+</span>
             <input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
                 placeholder="Add a task…"
-                className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
+                className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-600"
             />
             {value.trim() && (
                 <button onClick={submit} className="text-accent text-sm font-medium">
