@@ -247,8 +247,6 @@ function ViewCheckbox({ done, accent, onClick }: { done: boolean; accent: string
                 justifyContent: 'center',
                 padding: 0,
                 transition: 'border-color 0.15s, background 0.15s',
-                position: 'relative',
-                overflow: 'hidden',
             }}
         >
             {done && (
