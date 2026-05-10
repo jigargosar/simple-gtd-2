@@ -21,9 +21,9 @@ function ViewApp() {
 
 function ViewHeader() {
     return (
-        <header className="border-b border-gray-400 bg-gray-300 px-6 py-5">
+        <header className="border-b border-gray-600 bg-gray-500 px-6 py-5">
             <div className="mx-auto max-w-2xl">
-                <span className="text-xl font-semibold tracking-tight text-gray-950">
+                <span className="text-xl font-semibold tracking-tight text-gray-50">
                     SimpleGTD
                 </span>
             </div>
@@ -51,12 +51,11 @@ function ViewSection({ section }: { section: Section }) {
             <h2 className="pt-10 pb-3 text-xs font-semibold tracking-widest text-gray-600 uppercase">
                 {section.title}
             </h2>
-            <div className="overflow-hidden rounded-lg border border-gray-300 bg-gray-100 shadow-sm">
-                {tasks.length === 0 && <ViewEmptySection />}
+            <div className="overflow-hidden rounded-lg border border-gray-400 bg-gray-300 shadow-sm">
                 {tasks.map((task) => (
                     <ViewTask key={task.id} task={task} />
                 ))}
-                <div className="border-t border-gray-100 px-5 py-2.5">
+                <div className="border-t border-gray-400 px-5 py-2.5">
                     <ViewAddTask sectionId={section.id} />
                 </div>
             </div>
@@ -65,12 +64,12 @@ function ViewSection({ section }: { section: Section }) {
 }
 
 function ViewEmptySection() {
-    return <p className="py-1 text-sm text-gray-500">No tasks yet.</p>
+    return <p className="border-b border-gray-400 px-5 py-4 text-sm text-gray-600">No tasks yet.</p>
 }
 
 function ViewTask({ task: { done, id, title } }: { task: Task }) {
     return (
-        <div className="group flex items-center gap-4 border-b border-gray-100 px-5 py-4 last:border-b-0">
+        <div className="group flex items-center gap-4 border-b border-gray-400 px-5 py-4 last:border-b-0">
             <ViewTaskDoneMarker done={done} onClick={() => toggleTask(id)} />
             <ViewTaskTitle done={done} title={title} />
             <ViewDeleteTaskIcon onClick={() => deleteTask(id)} />
@@ -95,7 +94,7 @@ function ViewTaskTitle(props: { done: boolean; title: string }) {
     return (
         <span
             onPointerDown={onPointerDown}
-            className={clsx(props.done ? 'text-gray-500 line-through decoration-gray-400' : 'text-gray-900')}
+            className={clsx(props.done ? 'text-gray-600 line-through decoration-gray-600' : 'text-gray-900')}
         >
             {props.title}
         </span>
