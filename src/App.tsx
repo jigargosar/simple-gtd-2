@@ -51,7 +51,7 @@ function ViewSection({ section }: { section: Section }) {
             <h2 className="pt-10 pb-3 text-xs font-semibold tracking-widest text-gray-600 uppercase">
                 {section.title}
             </h2>
-            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-lg border border-gray-300 bg-gray-100 shadow-sm">
                 {tasks.length === 0 && <ViewEmptySection />}
                 {tasks.map((task) => (
                     <ViewTask key={task.id} task={task} />
