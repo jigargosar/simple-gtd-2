@@ -12,7 +12,7 @@ import {
 
 function ViewApp() {
     return (
-        <div className="min-h-screen bg-gray-200">
+        <div className="min-h-screen bg-gray-400">
             <ViewHeader />
             <ViewSections />
         </div>
@@ -21,7 +21,7 @@ function ViewApp() {
 
 function ViewHeader() {
     return (
-        <header className="border-b border-gray-300 bg-gray-100 px-6 py-5">
+        <header className="border-b border-gray-400 bg-gray-300 px-6 py-5">
             <div className="mx-auto max-w-2xl">
                 <span className="text-xl font-semibold tracking-tight text-gray-950">
                     SimpleGTD
