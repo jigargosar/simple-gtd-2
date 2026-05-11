@@ -1,16 +1,19 @@
 import { clsx } from 'clsx'
-import { useState } from 'react'
+import { useEffect, useReducer, useState } from 'react'
+import { DragDropProvider, type DragOverEvent } from '@dnd-kit/react'
+import { useSortable } from '@dnd-kit/react/sortable'
+import { move } from '@dnd-kit/helpers'
 import {
     appendTask,
     deleteTask,
-    type Section,
+    reorderSections,
+    reorderTasks,
     type Task,
     toggleTask,
+    useAllTasks,
     useSections,
-    useSectionTasks,
 } from './store'
 
-// Per-section palette — cycles if more than 5 sections
 const PALETTES = [
     { bg: 'var(--s0-bg)', acc: 'var(--s0-acc)', light: '#fef4ee' },
     { bg: 'var(--s1-bg)', acc: 'var(--s1-acc)', light: '#eef6fb' },
@@ -21,6 +24,83 @@ const PALETTES = [
 
 function palette(i: number) {
     return PALETTES[i % PALETTES.length]
+}
+
+type TaskGroups = Record<string, string[]>
+
+function buildTaskGroups(sectionIds: string[], allTasks: Task[]): TaskGroups {
+    const out: TaskGroups = {}
+    for (const id of sectionIds) out[id] = []
+    for (const t of allTasks) {
+        if (out[t.sectionId]) out[t.sectionId].push(t.id)
+    }
+    return out
+}
+
+// Drag state machine. The phase tag determines what the rest means:
+//   idle      — `sections` and `tasks` mirror the store; no drag.
+//   dragging  — mid-drag preview; `snapshot` holds the pre-drag state for cancel.
+//   committed — drop succeeded; an effect picks this up, calls store mutators,
+//               and dispatches RESET. Existing only between END and the effect.
+//
+// The reducer is the only writer of `sections`/`tasks`, so onDragEnd reads the
+// post-onDragOver value through the same dispatch chain. No closure to be stale.
+type Snapshot = { sections: string[]; tasks: TaskGroups }
+
+type DragState =
+    | { tag: 'idle'; sections: string[]; tasks: TaskGroups }
+    | { tag: 'dragging'; sections: string[]; tasks: TaskGroups; snapshot: Snapshot }
+    | { tag: 'committed'; sections: string[]; tasks: TaskGroups; kind: 'task' | 'section' }
+
+type DragAction =
+    | { tag: 'SYNC'; sections: string[]; tasks: TaskGroups }
+    | { tag: 'START' }
+    | { tag: 'OVER_TASK'; event: DragOverEvent }
+    | { tag: 'OVER_SECTION'; event: DragOverEvent }
+    | { tag: 'END'; kind: 'task' | 'section' }
+    | { tag: 'CANCEL' }
+    | { tag: 'RESET' }
+
+function assertNever(x: never): never {
+    throw new Error(`unreachable: ${JSON.stringify(x)}`)
+}
+
+function dragReducer(state: DragState, action: DragAction): DragState {
+    switch (action.tag) {
+        case 'SYNC':
+            // Only resync when idle — never overwrite a drag in progress.
+            if (state.tag !== 'idle') return state
+            return { tag: 'idle', sections: action.sections, tasks: action.tasks }
+        case 'START':
+            if (state.tag !== 'idle') return state
+            return {
+                tag: 'dragging',
+                sections: state.sections,
+                tasks: state.tasks,
+                snapshot: { sections: state.sections, tasks: structuredClone(state.tasks) },
+            }
+        case 'OVER_TASK':
+            if (state.tag !== 'dragging') return state
+            return { ...state, tasks: move(state.tasks, action.event) }
+        case 'OVER_SECTION':
+            if (state.tag !== 'dragging') return state
+            return { ...state, sections: move(state.sections, action.event) }
+        case 'END':
+            if (state.tag !== 'dragging') return state
+            return {
+                tag: 'committed',
+                sections: state.sections,
+                tasks: state.tasks,
+                kind: action.kind,
+            }
+        case 'CANCEL':
+            if (state.tag !== 'dragging') return state
+            return { tag: 'idle', sections: state.snapshot.sections, tasks: state.snapshot.tasks }
+        case 'RESET':
+            return { tag: 'idle', sections: state.sections, tasks: state.tasks }
+        default:
+            return assertNever(action)
+    }
 }
 
 function ViewApp() {
@@ -43,7 +123,6 @@ function ViewHeader() {
                 gap: '1rem',
             }}
         >
-            {/* Circle logo mark */}
             <div
                 style={{
                     width: '36px',
@@ -82,61 +161,165 @@ function ViewHeader() {
 }
 
 function ViewSections() {
-    const sections = useSections()
+    const storeSections = useSections()
+    const allTasks = useAllTasks()
+    const taskById = new Map(allTasks.map((t) => [t.id, t]))
+    const sectionTitleById = new Map(storeSections.map((s) => [s.id, s.title]))
+
+    const [drag, dispatch] = useReducer(dragReducer, { storeSections, allTasks }, initDragState)
+
+    // SYNC the mirror from store whenever store changes, but the reducer
+    // ignores SYNC during a drag — so this never clobbers in-progress state.
+    useEffect(() => {
+        const ids = storeSections.map((s) => s.id)
+        dispatch({ tag: 'SYNC', sections: ids, tasks: buildTaskGroups(ids, allTasks) })
+    }, [storeSections, allTasks])
+
+    // After END, commit to store and RESET. Splitting the commit out as an
+    // effect keeps the reducer pure.
+    useEffect(() => {
+        if (drag.tag !== 'committed') return
+        switch (drag.kind) {
+            case 'task':
+                reorderTasks(drag.tasks)
+                break
+            case 'section':
+                reorderSections(drag.sections)
+                break
+            default:
+                assertNever(drag.kind)
+        }
+        dispatch({ tag: 'RESET' })
+    }, [drag])
 
     return (
-        <div
-            style={{
-                maxWidth: '680px',
-                margin: '0 auto',
-                padding: '0.5rem 2rem 6rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
+        <DragDropProvider
+            onDragStart={() => dispatch({ tag: 'START' })}
+            onDragOver={(event) => {
+                const src = event.operation.source
+                if (!src) return
+                switch (src.type) {
+                    case 'task':
+                        dispatch({ tag: 'OVER_TASK', event })
+                        return
+                    case 'section':
+                        dispatch({ tag: 'OVER_SECTION', event })
+                        return
+                    default:
+                        throw new Error(`unknown drag source type: ${src.type}`)
+                }
+            }}
+            onDragEnd={(event) => {
+                if (event.canceled) {
+                    dispatch({ tag: 'CANCEL' })
+                    return
+                }
+                const src = event.operation.source
+                if (!src) return
+                switch (src.type) {
+                    case 'task':
+                        dispatch({ tag: 'END', kind: 'task' })
+                        return
+                    case 'section':
+                        dispatch({ tag: 'END', kind: 'section' })
+                        return
+                    default:
+                        throw new Error(`unknown drag source type: ${src.type}`)
+                }
             }}
         >
-            {sections.map((section, i) => (
-                <ViewSection key={section.id} section={section} paletteIndex={i} animDelay={i * 60} />
-            ))}
-        </div>
+            <div
+                style={{
+                    maxWidth: '680px',
+                    margin: '0 auto',
+                    padding: '0.5rem 2rem 6rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                }}
+            >
+                {drag.sections.map((sectionId, i) => {
+                    const ids = drag.tasks[sectionId] ?? []
+                    const tasks = ids
+                        .map((id) => taskById.get(id))
+                        .filter((t): t is Task => t !== undefined)
+                    return (
+                        <ViewSection
+                            key={sectionId}
+                            sectionId={sectionId}
+                            title={sectionTitleById.get(sectionId) ?? ''}
+                            index={i}
+                            paletteIndex={i}
+                            animDelay={i * 60}
+                            tasks={tasks}
+                        />
+                    )
+                })}
+            </div>
+        </DragDropProvider>
     )
 }
 
+function initDragState(arg: {
+    storeSections: { id: string }[]
+    allTasks: Task[]
+}): DragState {
+    const ids = arg.storeSections.map((s) => s.id)
+    return { tag: 'idle', sections: ids, tasks: buildTaskGroups(ids, arg.allTasks) }
+}
+
 function ViewSection({
-    section,
+    sectionId,
+    title,
+    index,
     paletteIndex,
     animDelay,
+    tasks,
 }: {
-    section: Section
+    sectionId: string
+    title: string
+    index: number
     paletteIndex: number
     animDelay: number
+    tasks: Task[]
 }) {
-    const tasks = useSectionTasks(section.id)
     const pal = palette(paletteIndex)
     const pending = tasks.filter((t) => !t.done).length
 
+    const { ref: rootRef, handleRef: headerRef, isDragging } = useSortable({
+        id: sectionId,
+        index,
+        type: 'section',
+        accept: 'section',
+    })
+
     return (
         <div
+            ref={rootRef}
             className="anim-section"
             style={{
                 animationDelay: `${animDelay}ms`,
                 borderRadius: '16px',
                 overflow: 'hidden',
                 border: '1px solid rgba(0,0,0,0.06)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                boxShadow: isDragging
+                    ? '0 8px 24px rgba(0,0,0,0.12)'
+                    : '0 2px 8px rgba(0,0,0,0.04)',
+                opacity: isDragging ? 0.85 : 1,
             }}
         >
-            {/* Colored header band */}
             <div
+                ref={headerRef}
                 style={{
                     background: pal.bg,
-                    padding: '1rem 1.25rem 1rem 1.25rem',
+                    padding: '1rem 1.25rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.75rem',
+                    cursor: 'grab',
+                    touchAction: 'none',
                 }}
             >
-                {/* Circle accent */}
                 <div
                     style={{
                         width: '10px',
@@ -156,9 +339,8 @@ function ViewSection({
                         flex: 1,
                     }}
                 >
-                    {section.title}
+                    {title}
                 </span>
-                {/* Count pill */}
                 {pending > 0 && (
                     <span
                         style={{
@@ -177,12 +359,18 @@ function ViewSection({
                 )}
             </div>
 
-            {/* Task list — white card body */}
             <div style={{ background: 'white' }}>
                 {tasks.map((task, i) => (
-                    <ViewTask key={task.id} task={task} taskIndex={i} accent={pal.acc} isLast={i === tasks.length - 1} />
+                    <ViewTask
+                        key={task.id}
+                        task={task}
+                        index={i}
+                        sectionId={sectionId}
+                        accent={pal.acc}
+                        isLast={i === tasks.length - 1}
+                    />
                 ))}
-                <ViewAddTask sectionId={section.id} accent={pal.acc} lightBg={pal.light} />
+                <ViewAddTask sectionId={sectionId} accent={pal.acc} lightBg={pal.light} />
             </div>
         </div>
     )
@@ -190,17 +378,27 @@ function ViewSection({
 
 function ViewTask({
     task,
-    taskIndex,
+    index,
+    sectionId,
     accent,
     isLast,
 }: {
     task: Task
-    taskIndex: number
+    index: number
+    sectionId: string
     accent: string
     isLast: boolean
 }) {
     const [removing, setRemoving] = useState(false)
     const [hovered, setHovered] = useState(false)
+
+    const { ref: rowRef, handleRef: gripRef, isDragging } = useSortable({
+        id: task.id,
+        index,
+        group: sectionId,
+        type: 'task',
+        accept: 'task',
+    })
 
     function handleDelete() {
         setRemoving(true)
@@ -209,20 +407,23 @@ function ViewTask({
 
     return (
         <div
+            ref={rowRef}
             className={clsx('anim-task', removing && 'anim-out')}
             style={{
-                animationDelay: `${taskIndex * 30}ms`,
+                animationDelay: `${index * 30}ms`,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 1.25rem',
+                gap: '0.5rem',
+                padding: '0.75rem 1.25rem 0.75rem 0.5rem',
                 borderBottom: isLast ? 'none' : '1px solid #f2f0ee',
-                background: hovered ? '#fafaf9' : 'white',
+                background: isDragging ? '#f5f5f4' : hovered ? '#fafaf9' : 'white',
+                opacity: isDragging ? 0.6 : 1,
                 transition: 'background 0.1s',
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
+            <ViewDragHandle handleRef={gripRef} visible={hovered} />
             <ViewCheckbox done={task.done} accent={accent} onClick={() => toggleTask(task.id)} />
             <ViewTitle done={task.done} title={task.title} accent={accent} />
             <ViewDeleteBtn visible={hovered} onClick={handleDelete} />
@@ -230,7 +431,53 @@ function ViewTask({
     )
 }
 
-function ViewCheckbox({ done, accent, onClick }: { done: boolean; accent: string; onClick: () => void }) {
+function ViewDragHandle({
+    handleRef,
+    visible,
+}: {
+    handleRef: (el: Element | null) => void
+    visible: boolean
+}) {
+    return (
+        <span
+            ref={handleRef}
+            aria-label="Drag task"
+            style={{
+                width: '18px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'grab',
+                color: 'var(--color-faint)',
+                opacity: visible ? 1 : 0,
+                transition: 'opacity 0.15s',
+                touchAction: 'none',
+                userSelect: 'none',
+                flexShrink: 0,
+            }}
+        >
+            <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
+                <circle cx="2" cy="2" r="1.2" fill="currentColor" />
+                <circle cx="8" cy="2" r="1.2" fill="currentColor" />
+                <circle cx="2" cy="7" r="1.2" fill="currentColor" />
+                <circle cx="8" cy="7" r="1.2" fill="currentColor" />
+                <circle cx="2" cy="12" r="1.2" fill="currentColor" />
+                <circle cx="8" cy="12" r="1.2" fill="currentColor" />
+            </svg>
+        </span>
+    )
+}
+
+function ViewCheckbox({
+    done,
+    accent,
+    onClick,
+}: {
+    done: boolean
+    accent: string
+    onClick: () => void
+}) {
     return (
         <button
             onClick={onClick}
@@ -287,7 +534,9 @@ function ViewTitle({ done, title, accent }: { done: boolean; title: string; acce
         >
             <span style={{ position: 'relative', display: 'inline-block' }}>
                 {title}
-                {done && <span className="strike-line" style={{ background: accent, opacity: 0.5 }} />}
+                {done && (
+                    <span className="strike-line" style={{ background: accent, opacity: 0.5 }} />
+                )}
             </span>
         </span>
     )
@@ -323,7 +572,15 @@ function ViewDeleteBtn({ visible, onClick }: { visible: boolean; onClick: () => 
     )
 }
 
-function ViewAddTask({ sectionId, accent, lightBg }: { sectionId: string; accent: string; lightBg: string }) {
+function ViewAddTask({
+    sectionId,
+    accent,
+    lightBg,
+}: {
+    sectionId: string
+    accent: string
+    lightBg: string
+}) {
     const [value, setValue] = useState('')
     const [focused, setFocused] = useState(false)
 
@@ -405,8 +662,12 @@ function ViewAddTask({ sectionId, accent, lightBg }: { sectionId: string; accent
                         flexShrink: 0,
                         transition: 'opacity 0.12s',
                     }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
+                    onMouseEnter={(e) => {
+                        ;(e.currentTarget as HTMLButtonElement).style.opacity = '0.85'
+                    }}
+                    onMouseLeave={(e) => {
+                        ;(e.currentTarget as HTMLButtonElement).style.opacity = '1'
+                    }}
                 >
                     Add
                 </button>

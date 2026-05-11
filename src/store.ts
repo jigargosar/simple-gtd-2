@@ -19,14 +19,9 @@ export type Section = {
     title: string
 }
 
-type Point = { x: number; y: number }
-
-type Sortable = 'NotSorting' | { tag: 'PointerDown'; pt: Point } | { tag: 'Dragging' }
-
 type AppState = {
     sections: Section[]
     tasks: Task[]
-    sortable: Sortable
 }
 
 const useApp = create<AppState>()(
@@ -34,10 +29,6 @@ const useApp = create<AppState>()(
         name: 'simple-gtd',
         version: 1,
         partialize: ({ sections, tasks }) => ({ sections, tasks }),
-        // migrate: (persisted, fromVersion) => {
-        //     if (fromVersion === 0) return mockState()
-        //     return persisted as AppState
-        // },
     }),
 )
 
@@ -55,6 +46,10 @@ export function useSections() {
 
 export function useSectionTasks(sectionId: string) {
     return useApp(useShallow((s) => getSectionTasks(s.tasks, sectionId)))
+}
+
+export function useAllTasks() {
+    return useApp(useShallow((s) => sortBy(s.tasks, prop('order'))))
 }
 
 export const appendTask = (sectionId: string, title: string) => {
@@ -79,6 +74,38 @@ export const toggleTask = (id: string) =>
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     }))
 
+/**
+ * Commit a new task ordering. `groups` maps sectionId -> ordered list of task ids
+ * for that section after a drag. Tasks not present in any group are left untouched.
+ */
+export const reorderTasks = (groups: Record<string, string[]>) =>
+    useApp.setState((s) => {
+        const newOrders = new Map<string, { sectionId: string; order: string }>()
+        for (const [sectionId, ids] of Object.entries(groups)) {
+            const keys = generateNKeysBetween(null, null, ids.length)
+            ids.forEach((id, i) => newOrders.set(id, { sectionId, order: keys[i] }))
+        }
+        return {
+            tasks: s.tasks.map((t) => {
+                const next = newOrders.get(t.id)
+                return next ? { ...t, sectionId: next.sectionId, order: next.order } : t
+            }),
+        }
+    })
+
+/** Commit a new section ordering by id. */
+export const reorderSections = (orderedIds: string[]) =>
+    useApp.setState((s) => {
+        const keys = generateNKeysBetween(null, null, orderedIds.length)
+        const orderById = new Map(orderedIds.map((id, i) => [id, keys[i]]))
+        return {
+            sections: s.sections.map((sec) => {
+                const order = orderById.get(sec.id)
+                return order !== undefined ? { ...sec, order } : sec
+            }),
+        }
+    })
+
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
 }
@@ -87,7 +114,7 @@ function orderBetween(a: string | null | undefined, b: string | null | undefined
 
 function mockState(): AppState {
     const sections = mockSections()
-    return { sections, tasks: mockTasks(sections), sortable: 'NotSorting' }
+    return { sections, tasks: mockTasks(sections) }
 }
 
 function mockSections(): Section[] {

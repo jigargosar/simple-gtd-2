@@ -20,15 +20,15 @@ Single-page GTD app: sections contain tasks, both ordered via fractional indexin
 **Data model** (`src/store.ts`):
 - `Section { id, order, title }`
 - `Task { id, sectionId, order, title, done }`
-- `AppState { sections, tasks, sortable }` — `sections` and `tasks` are persisted to localStorage via Zustand `persist` middleware; `sortable` is excluded via `partialize`
+- `AppState { sections, tasks }` — both persisted to localStorage via Zustand `persist` middleware (key `simple-gtd`, `version: 1`).
 
-**State** is a single Zustand store (`useApp`). Selectors (`useSections`, `useSectionTasks`) use `useShallow` for referential stability. All mutations are imperative actions exported directly from `store.ts` (`appendTask`, `deleteTask`, `toggleTask`) — they call `useApp.setState` directly, not through hooks.
+**State** is a single Zustand store (`useApp`). Selectors (`useSections`, `useSectionTasks`, `useAllTasks`) use `useShallow` for referential stability. All mutations are imperative actions exported directly from `store.ts` (`appendTask`, `deleteTask`, `toggleTask`, `reorderTasks`, `reorderSections`) — they call `useApp.setState` directly, not through hooks.
 
-`sortable: Sortable` tracks drag pointer state as a union: `'NotSorting' | { tag: 'PointerDown'; pt: Point } | { tag: 'Dragging' }`. Note: `'NotSorting'` is a bare string literal — not a tagged variant — so a single `switch (s.tag)` won't exhaust it. DnD reordering is in-progress; no `Beacon` components are present in `App.tsx` yet.
+**Ordering** uses `fractional-indexing` (`generateKeyBetween`, `generateNKeysBetween`) so items can be reordered or inserted without renumbering. Note: `reorderTasks(groups)` regenerates evenly-spaced keys for every group it receives, and the call site (`onDragEnd`) currently passes the entire `liveTasks` map — so every drop rewrites the order key of every task across every section. Same for `reorderSections`. Acceptable at current scale; revisit if the task count grows or if persist writes become a hot path.
 
-**Ordering** uses `fractional-indexing` (`generateKeyBetween`, `generateNKeysBetween`) so items can be reordered or inserted without renumbering.
+**Drag-and-drop** (`@dnd-kit/react` + `@dnd-kit/helpers`): `ViewSections` wraps the layout in `<DragDropProvider>`, mirrors the store into local `liveSectionIds` / `liveTasks` plus parallel refs (`liveSectionsRef`, `liveTasksRef`) for synchronous reads in `onDragEnd`. Sections are sortables (`type/accept: 'section'`, drag handle = colored header band); tasks are sortables (`type/accept: 'task'`, `group: sectionId`, drag handle = grip icon on hover). `onDragOver` applies `move(...)` to the live mirror for optimistic feedback; `onDragEnd` commits to the store via `reorderTasks` / `reorderSections`. On cancel, the live state is restored from a snapshot taken at `onDragStart`.
 
-**Mock data / seeding**: `mockState()` is the Zustand store initializer — it runs once on first load to seed localStorage with 5 sections and 3 tasks each. It is not a test fixture. Sections are currently read-only (no `appendSection`/`deleteSection` actions). A `migrate` hook is stubbed but commented out; uncomment and implement it when bumping `version` in the `persist` config.
+**Mock data / seeding**: `mockState()` is the Zustand store initializer — it runs once on first load to seed localStorage with 5 sections and 3 tasks each. It is not a test fixture. Sections are currently read-only (no `appendSection`/`deleteSection` actions). When bumping `version` in the `persist` config, add a `migrate` callback to `persist`'s options.
 
 **UI** (`src/App.tsx`) component tree: `ViewApp → ViewHeader + ViewSections → ViewSection → ViewTask`. `ViewTask` renders four sub-components: `ViewCheckbox`, `ViewTitle`, `ViewDeleteBtn`, and `ViewAddTask` (the add-task row lives at the bottom of each section). No routing; single view.
 
