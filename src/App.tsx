@@ -1,8 +1,11 @@
 import { clsx } from 'clsx'
 import { useState } from 'react'
+import { DragDropProvider, useDraggable, useDroppable } from '@dnd-kit/react'
 import {
     appendTask,
     deleteTask,
+    moveSection,
+    moveTask,
     type Section,
     type Task,
     toggleTask,
@@ -10,7 +13,6 @@ import {
     useSectionTasks,
 } from './store'
 
-// Per-section palette — cycles if more than 5 sections
 const PALETTES = [
     { bg: 'var(--s0-bg)', acc: 'var(--s0-acc)', light: '#fef4ee' },
     { bg: 'var(--s1-bg)', acc: 'var(--s1-acc)', light: '#eef6fb' },
@@ -22,6 +24,10 @@ const PALETTES = [
 function palette(i: number) {
     return PALETTES[i % PALETTES.length]
 }
+
+type TaskMarkerData = { kind: 'taskMarker'; sectionId: string; index: number }
+type SectionMarkerData = { kind: 'sectionMarker'; index: number }
+type MarkerData = TaskMarkerData | SectionMarkerData
 
 function ViewApp() {
     return (
@@ -43,7 +49,6 @@ function ViewHeader() {
                 gap: '1rem',
             }}
         >
-            {/* Circle logo mark */}
             <div
                 style={{
                     width: '36px',
@@ -85,20 +90,44 @@ function ViewSections() {
     const sections = useSections()
 
     return (
-        <div
-            style={{
-                maxWidth: '680px',
-                margin: '0 auto',
-                padding: '0.5rem 2rem 6rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
+        <DragDropProvider
+            onDragEnd={(event) => {
+                if (event.canceled) return
+                const src = event.operation.source
+                const tgt = event.operation.target
+                if (!src || !tgt) return
+                const data = tgt.data as MarkerData | undefined
+                if (!data) return
+                switch (data.kind) {
+                    case 'taskMarker':
+                        moveTask(src.id as string, data.sectionId, data.index)
+                        return
+                    case 'sectionMarker':
+                        moveSection(src.id as string, data.index)
+                        return
+                    default:
+                        throw new Error(`unknown marker kind: ${(data as { kind: string }).kind}`)
+                }
             }}
         >
-            {sections.map((section, i) => (
-                <ViewSection key={section.id} section={section} paletteIndex={i} animDelay={i * 60} />
-            ))}
-        </div>
+            <div
+                style={{
+                    maxWidth: '680px',
+                    margin: '0 auto',
+                    padding: '0.5rem 2rem 6rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <SectionMarker index={0} />
+                {sections.map((section, i) => (
+                    <div key={section.id}>
+                        <ViewSection section={section} paletteIndex={i} animDelay={i * 60} />
+                        <SectionMarker index={i + 1} />
+                    </div>
+                ))}
+            </div>
+        </DragDropProvider>
     )
 }
 
@@ -115,28 +144,38 @@ function ViewSection({
     const pal = palette(paletteIndex)
     const pending = tasks.filter((t) => !t.done).length
 
+    const { ref: rootRef, handleRef: headerRef, isDragging } = useDraggable({
+        id: section.id,
+        type: 'section',
+    })
+
     return (
         <div
+            ref={rootRef}
             className="anim-section"
             style={{
                 animationDelay: `${animDelay}ms`,
                 borderRadius: '16px',
                 overflow: 'hidden',
                 border: '1px solid rgba(0,0,0,0.06)',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                boxShadow: isDragging
+                    ? '0 8px 24px rgba(0,0,0,0.12)'
+                    : '0 2px 8px rgba(0,0,0,0.04)',
+                opacity: isDragging ? 0.4 : 1,
             }}
         >
-            {/* Colored header band */}
             <div
+                ref={headerRef}
                 style={{
                     background: pal.bg,
-                    padding: '1rem 1.25rem 1rem 1.25rem',
+                    padding: '1rem 1.25rem',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.75rem',
+                    cursor: 'grab',
+                    touchAction: 'none',
                 }}
             >
-                {/* Circle accent */}
                 <div
                     style={{
                         width: '10px',
@@ -158,7 +197,6 @@ function ViewSection({
                 >
                     {section.title}
                 </span>
-                {/* Count pill */}
                 {pending > 0 && (
                     <span
                         style={{
@@ -177,13 +215,90 @@ function ViewSection({
                 )}
             </div>
 
-            {/* Task list — white card body */}
             <div style={{ background: 'white' }}>
+                <TaskMarker sectionId={section.id} index={0} accent={pal.acc} />
                 {tasks.map((task, i) => (
-                    <ViewTask key={task.id} task={task} taskIndex={i} accent={pal.acc} isLast={i === tasks.length - 1} />
+                    <div key={task.id}>
+                        <ViewTask
+                            task={task}
+                            taskIndex={i}
+                            accent={pal.acc}
+                            isLast={i === tasks.length - 1}
+                        />
+                        <TaskMarker sectionId={section.id} index={i + 1} accent={pal.acc} />
+                    </div>
                 ))}
                 <ViewAddTask sectionId={section.id} accent={pal.acc} lightBg={pal.light} />
             </div>
+        </div>
+    )
+}
+
+function TaskMarker({
+    sectionId,
+    index,
+    accent,
+}: {
+    sectionId: string
+    index: number
+    accent: string
+}) {
+    const data: TaskMarkerData = { kind: 'taskMarker', sectionId, index }
+    const { ref: zoneRef, isDropTarget } = useDroppable({
+        id: `task-marker:${sectionId}:${index}`,
+        accept: 'task',
+        data,
+    })
+    return (
+        <div
+            ref={zoneRef}
+            style={{
+                height: '8px',
+                margin: '-4px 0',
+                display: 'flex',
+                alignItems: 'center',
+                pointerEvents: 'auto',
+            }}
+        >
+            <div
+                style={{
+                    flex: 1,
+                    height: isDropTarget ? '3px' : '0px',
+                    background: accent,
+                    borderRadius: '2px',
+                    margin: '0 1.25rem',
+                    transition: 'height 0.12s',
+                }}
+            />
+        </div>
+    )
+}
+
+function SectionMarker({ index }: { index: number }) {
+    const data: SectionMarkerData = { kind: 'sectionMarker', index }
+    const { ref: zoneRef, isDropTarget } = useDroppable({
+        id: `section-marker:${index}`,
+        accept: 'section',
+        data,
+    })
+    return (
+        <div
+            ref={zoneRef}
+            style={{
+                height: '16px',
+                display: 'flex',
+                alignItems: 'center',
+            }}
+        >
+            <div
+                style={{
+                    flex: 1,
+                    height: isDropTarget ? '3px' : '0px',
+                    background: 'var(--color-ink)',
+                    borderRadius: '2px',
+                    transition: 'height 0.12s',
+                }}
+            />
         </div>
     )
 }
@@ -202,6 +317,11 @@ function ViewTask({
     const [removing, setRemoving] = useState(false)
     const [hovered, setHovered] = useState(false)
 
+    const { ref: rowRef, handleRef: gripRef, isDragging } = useDraggable({
+        id: task.id,
+        type: 'task',
+    })
+
     function handleDelete() {
         setRemoving(true)
         setTimeout(() => deleteTask(task.id), 175)
@@ -209,20 +329,23 @@ function ViewTask({
 
     return (
         <div
+            ref={rowRef}
             className={clsx('anim-task', removing && 'anim-out')}
             style={{
                 animationDelay: `${taskIndex * 30}ms`,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.75rem 1.25rem',
+                gap: '0.5rem',
+                padding: '0.75rem 1.25rem 0.75rem 0.5rem',
                 borderBottom: isLast ? 'none' : '1px solid #f2f0ee',
                 background: hovered ? '#fafaf9' : 'white',
+                opacity: isDragging ? 0.4 : 1,
                 transition: 'background 0.1s',
             }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
+            <ViewDragHandle handleRef={gripRef} visible={hovered} />
             <ViewCheckbox done={task.done} accent={accent} onClick={() => toggleTask(task.id)} />
             <ViewTitle done={task.done} title={task.title} accent={accent} />
             <ViewDeleteBtn visible={hovered} onClick={handleDelete} />
@@ -230,7 +353,53 @@ function ViewTask({
     )
 }
 
-function ViewCheckbox({ done, accent, onClick }: { done: boolean; accent: string; onClick: () => void }) {
+function ViewDragHandle({
+    handleRef,
+    visible,
+}: {
+    handleRef: (el: Element | null) => void
+    visible: boolean
+}) {
+    return (
+        <span
+            ref={handleRef}
+            aria-label="Drag task"
+            style={{
+                width: '18px',
+                height: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'grab',
+                color: 'var(--color-faint)',
+                opacity: visible ? 1 : 0,
+                transition: 'opacity 0.15s',
+                touchAction: 'none',
+                userSelect: 'none',
+                flexShrink: 0,
+            }}
+        >
+            <svg width="10" height="14" viewBox="0 0 10 14" fill="none">
+                <circle cx="2" cy="2" r="1.2" fill="currentColor" />
+                <circle cx="8" cy="2" r="1.2" fill="currentColor" />
+                <circle cx="2" cy="7" r="1.2" fill="currentColor" />
+                <circle cx="8" cy="7" r="1.2" fill="currentColor" />
+                <circle cx="2" cy="12" r="1.2" fill="currentColor" />
+                <circle cx="8" cy="12" r="1.2" fill="currentColor" />
+            </svg>
+        </span>
+    )
+}
+
+function ViewCheckbox({
+    done,
+    accent,
+    onClick,
+}: {
+    done: boolean
+    accent: string
+    onClick: () => void
+}) {
     return (
         <button
             onClick={onClick}
@@ -287,7 +456,9 @@ function ViewTitle({ done, title, accent }: { done: boolean; title: string; acce
         >
             <span style={{ position: 'relative', display: 'inline-block' }}>
                 {title}
-                {done && <span className="strike-line" style={{ background: accent, opacity: 0.5 }} />}
+                {done && (
+                    <span className="strike-line" style={{ background: accent, opacity: 0.5 }} />
+                )}
             </span>
         </span>
     )
@@ -323,7 +494,15 @@ function ViewDeleteBtn({ visible, onClick }: { visible: boolean; onClick: () => 
     )
 }
 
-function ViewAddTask({ sectionId, accent, lightBg }: { sectionId: string; accent: string; lightBg: string }) {
+function ViewAddTask({
+    sectionId,
+    accent,
+    lightBg,
+}: {
+    sectionId: string
+    accent: string
+    lightBg: string
+}) {
     const [value, setValue] = useState('')
     const [focused, setFocused] = useState(false)
 
@@ -405,8 +584,12 @@ function ViewAddTask({ sectionId, accent, lightBg }: { sectionId: string; accent
                         flexShrink: 0,
                         transition: 'opacity 0.12s',
                     }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.85' }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.opacity = '1' }}
+                    onMouseEnter={(e) => {
+                        ;(e.currentTarget as HTMLButtonElement).style.opacity = '0.85'
+                    }}
+                    onMouseLeave={(e) => {
+                        ;(e.currentTarget as HTMLButtonElement).style.opacity = '1'
+                    }}
                 >
                     Add
                 </button>

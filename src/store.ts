@@ -19,14 +19,9 @@ export type Section = {
     title: string
 }
 
-type Point = { x: number; y: number }
-
-type Sortable = 'NotSorting' | { tag: 'PointerDown'; pt: Point } | { tag: 'Dragging' }
-
 type AppState = {
     sections: Section[]
     tasks: Task[]
-    sortable: Sortable
 }
 
 const useApp = create<AppState>()(
@@ -34,10 +29,6 @@ const useApp = create<AppState>()(
         name: 'simple-gtd',
         version: 1,
         partialize: ({ sections, tasks }) => ({ sections, tasks }),
-        // migrate: (persisted, fromVersion) => {
-        //     if (fromVersion === 0) return mockState()
-        //     return persisted as AppState
-        // },
     }),
 )
 
@@ -79,6 +70,51 @@ export const toggleTask = (id: string) =>
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     }))
 
+/**
+ * Move a task to (sectionId, index). `index` is the position among tasks in
+ * that section *after* the move — i.e., the slot the user dropped on. The
+ * moved task itself is excluded when picking neighbors.
+ */
+export const moveTask = (taskId: string, sectionId: string, index: number) =>
+    useApp.setState((s) => {
+        const task = s.tasks.find((t) => t.id === taskId)
+        if (!task) return s
+        const peers = pipe(
+            s.tasks,
+            filter((t) => t.sectionId === sectionId && t.id !== taskId),
+            sortBy(prop('order')),
+        )
+        const prev = peers[index - 1]?.order ?? null
+        const next = peers[index]?.order ?? null
+        if (task.sectionId === sectionId && task.order === prev) return s
+        const newOrder = generateKeyBetween(prev, next)
+        return {
+            tasks: s.tasks.map((t) =>
+                t.id === taskId ? { ...t, sectionId, order: newOrder } : t,
+            ),
+        }
+    })
+
+export const moveSection = (sectionId: string, index: number) =>
+    useApp.setState((s) => {
+        const section = s.sections.find((sec) => sec.id === sectionId)
+        if (!section) return s
+        const peers = pipe(
+            s.sections,
+            filter((sec) => sec.id !== sectionId),
+            sortBy(prop('order')),
+        )
+        const prev = peers[index - 1]?.order ?? null
+        const next = peers[index]?.order ?? null
+        if (section.order === prev) return s
+        const newOrder = generateKeyBetween(prev, next)
+        return {
+            sections: s.sections.map((sec) =>
+                sec.id === sectionId ? { ...sec, order: newOrder } : sec,
+            ),
+        }
+    })
+
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
 }
@@ -87,7 +123,7 @@ function orderBetween(a: string | null | undefined, b: string | null | undefined
 
 function mockState(): AppState {
     const sections = mockSections()
-    return { sections, tasks: mockTasks(sections), sortable: 'NotSorting' }
+    return { sections, tasks: mockTasks(sections) }
 }
 
 function mockSections(): Section[] {
