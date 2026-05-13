@@ -1,75 +1,47 @@
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Epilogue:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
 @theme {
-    --color-ink: #1c1917;
-    --color-mid: #78716c;
-    --color-faint: #c5bfb9;
-    --color-bg: #f9f7f4;
+    --color-accent: #1e90ff;
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
-
-html, body {
-    background: var(--color-bg);
-    color: var(--color-ink);
-    font-family: 'Epilogue', sans-serif;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-}
-
-/* ── Section palette ── */
-:root {
-    --s0-bg: #fde8d8;   /* peach  */
-    --s0-acc: #e8642a;
-    --s1-bg: #d8edf5;   /* sky    */
-    --s1-acc: #2a7eb8;
-    --s2-bg: #ddf0df;   /* mint   */
-    --s2-acc: #2e8c45;
-    --s3-bg: #ede8fd;   /* lavender */
-    --s3-acc: #6e42d8;
-    --s4-bg: #fdf0d8;   /* butter */
-    --s4-acc: #c48a14;
-}
-
-/* ── Animations ── */
 @keyframes pop-in {
-    0%   { opacity: 0; transform: scale(0.92) translateY(10px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 @keyframes task-in {
-    from { opacity: 0; transform: translateX(-8px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateX(-4px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 @keyframes task-out {
-    to { opacity: 0; transform: translateX(12px) scale(0.96); }
+    to { opacity: 0; transform: translateX(8px); }
 }
 @keyframes dot-pop {
-    0%   { transform: scale(0); }
-    60%  { transform: scale(1.3); }
+    0% { transform: scale(0); }
+    60% { transform: scale(1.3); }
     100% { transform: scale(1); }
 }
 @keyframes strike-anim {
     from { width: 0; }
-    to   { width: 100%; }
+    to { width: 100%; }
 }
 @keyframes header-in {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.anim-header { animation: header-in 0.4s cubic-bezier(0.22,1,0.36,1) both; }
-.anim-section { animation: pop-in 0.45s cubic-bezier(0.22,1,0.36,1) both; }
-.anim-task    { animation: task-in 0.25s cubic-bezier(0.22,1,0.36,1) both; }
-.anim-out     { animation: task-out 0.18s ease-in forwards; }
-.dot-pop      { animation: dot-pop 0.22s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-.strike-line  {
-    position: absolute; top: 50%; left: 0; height: 1.5px;
-    animation: strike-anim 0.2s cubic-bezier(0.22,1,0.36,1) forwards;
+.anim-header { animation: header-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-section { animation: pop-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-task { animation: task-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-out { animation: task-out 0.18s ease-in forwards; }
+.dot-pop { animation: dot-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.strike-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 1.5px;
+    background: var(--color-stone-400);
+    animation: strike-anim 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-input::placeholder {
-    font-family: 'Epilogue', sans-serif;
-    font-style: italic;
-    font-weight: 300;
-}
+input::placeholder { font-style: italic; }
