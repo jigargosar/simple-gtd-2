@@ -7,6 +7,7 @@ import {
     type Task,
     toggleTask,
     useSections,
+    useSectionPendingCount,
     useSectionTasks,
 } from './store'
 
@@ -47,7 +48,7 @@ function ViewSections() {
 
 function ViewSection({ section, animDelay }: { section: Section; animDelay: number }) {
     const tasks = useSectionTasks(section.id)
-    const pending = tasks.filter((t) => !t.done).length
+    const pending = useSectionPendingCount(section.id)
 
     return (
         <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>

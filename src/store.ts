@@ -57,6 +57,10 @@ export function useSectionTasks(sectionId: string) {
     return useApp(useShallow((s) => getSectionTasks(s.tasks, sectionId)))
 }
 
+export function useSectionPendingCount(sectionId: string) {
+    return useApp((s) => getSectionTasks(s.tasks, sectionId).filter((t) => !t.done).length)
+}
+
 export const appendTask = (sectionId: string, title: string) => {
     const lastOrder = getSectionTasks(useApp.getState().tasks, sectionId).at(-1)?.order ?? null
     const newTask = {
