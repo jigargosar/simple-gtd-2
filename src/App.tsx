@@ -52,10 +52,10 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
 
     return (
         <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>
-            <h2 className="mb-3 text-xs font-semibold tracking-wider text-stone-500 uppercase">
+            <h2 className="mb-3 text-xs font-semibold tracking-wider text-stone-600 uppercase">
                 {section.title}
                 {pending > 0 && (
-                    <span className="ml-2 font-normal tabular-nums text-stone-400">
+                    <span className="ml-2 font-normal tabular-nums text-stone-500">
                         · {pending}
                     </span>
                 )}
@@ -101,8 +101,8 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
             className={clsx(
                 'flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 p-0 transition',
                 done
-                    ? 'border-stone-300 bg-stone-300'
-                    : 'border-stone-300 bg-transparent hover:border-stone-500',
+                    ? 'border-stone-600 bg-stone-600'
+                    : 'border-stone-500 bg-transparent hover:border-stone-700',
             )}
         >
             {done && (
@@ -132,7 +132,7 @@ function ViewTitle({ done, title }: { done: boolean; title: string }) {
         <span
             className={clsx(
                 'block min-w-0 flex-1 text-base transition',
-                done ? 'text-stone-400' : 'text-stone-900',
+                done ? 'text-stone-500' : 'text-stone-900',
             )}
         >
             <span className="relative inline-block">
@@ -148,7 +148,7 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
         <button
             onClick={onClick}
             aria-label="Delete task"
-            className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-stone-400 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 hover:text-red-600"
+            className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-stone-500 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 hover:text-red-700"
         >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
                 <path
@@ -174,7 +174,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
     return (
         <li className="group flex items-center gap-3 py-2 transition focus-within:bg-stone-100/40">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-stone-400 transition select-none group-focus-within:text-accent">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-stone-500 transition select-none group-focus-within:text-accent">
                 +
             </span>
             <input
@@ -182,7 +182,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                 onChange={(e) => setValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
                 placeholder="Add a task…"
-                className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none placeholder:text-stone-400"
+                className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none placeholder:text-stone-500"
             />
             {value.trim() && (
                 <button

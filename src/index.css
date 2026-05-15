@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-    --color-accent: #1e90ff;
+    --color-accent: oklch(48.8% 0.243 264.376); /* Tailwind blue-700 */
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -40,8 +40,6 @@
     top: 50%;
     left: 0;
     height: 1.5px;
-    background: var(--color-stone-400);
+    background: var(--color-stone-500);
     animation: strike-anim 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-
-input::placeholder { font-style: italic; }
