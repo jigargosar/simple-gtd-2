@@ -95,16 +95,16 @@ function mockState(): AppState {
 }
 
 function mockSections(): Section[] {
-    return generateNKeysBetween(null, null, mockSectionData().length).map((order, i) => ({
+    return generateNKeysBetween(null, null, mockSectionData.length).map((order, i) => ({
         id: uuidv4(),
         order,
-        title: mockSectionData()[i].title,
+        title: mockSectionData[i].title,
     }))
 }
 
 function mockTasks(sections: Section[]): Task[] {
     return sections.flatMap((section, i) => {
-        const tasks = mockSectionData()[i].tasks
+        const tasks = mockSectionData[i].tasks
         return generateNKeysBetween(null, null, tasks.length).map((order, j) => ({
             id: uuidv4(),
             sectionId: section.id,
@@ -114,8 +114,7 @@ function mockTasks(sections: Section[]): Task[] {
     })
 }
 
-function mockSectionData(): { title: string; tasks: { title: string; done: boolean }[] }[] {
-    return [
+const mockSectionData: { title: string; tasks: { title: string; done: boolean }[] }[] = [
         {
             title: 'Inbox',
             tasks: [
@@ -156,5 +155,4 @@ function mockSectionData(): { title: string; tasks: { title: string; done: boole
                 { title: 'Set up home lab', done: false },
             ],
         },
-    ]
-}
+]
