@@ -147,17 +147,9 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            aria-label="Delete task"
-            className="flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded-full p-0 text-stone-500 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 hover:text-red-700"
+            className="shrink-0 cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50"
         >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-                <path
-                    d="M1 1L9 9M9 1L1 9"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                />
-            </svg>
+            Trash
         </button>
     )
 }
