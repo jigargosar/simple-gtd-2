@@ -158,9 +158,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     const [value, setValue] = useState('')
 
     function submit() {
-        const trimmed = value.trim()
-        if (!trimmed) return
-        appendTask(sectionId, trimmed)
+        appendTask(sectionId, value)
         setValue('')
     }
 

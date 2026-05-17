@@ -62,12 +62,14 @@ export function useSectionPendingCount(sectionId: string) {
 }
 
 export const appendTask = (sectionId: string, title: string) => {
+    const trimmed = title.trim()
+    if (!trimmed) return
     const lastOrder = getSectionTasks(useApp.getState().tasks, sectionId).at(-1)?.order ?? null
     const newTask = {
         id: uuidv4(),
         sectionId,
         order: orderBetween(lastOrder, null),
-        title,
+        title: trimmed,
         done: false,
     }
     useApp.setState((s) => ({
