@@ -1,6 +1,6 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import { useShallow } from 'zustand/react/shallow'
+import { observable } from '@legendapp/state'
+import { syncObservable } from '@legendapp/state/sync'
+import { ObservablePersistLocalStorage } from '@legendapp/state/persist-plugins/local-storage'
 import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing'
 import { filter, pipe, sortBy, prop } from 'remeda'
 import { v4 as uuidv4 } from 'uuid'
@@ -23,25 +23,31 @@ type Point = { x: number; y: number }
 
 type Sortable = 'NotSorting' | { tag: 'PointerDown'; pt: Point } | { tag: 'Dragging' }
 
-type AppState = {
+type Data = {
     sections: Section[]
     tasks: Task[]
-    sortable: Sortable
 }
 
-const useApp = create<AppState>()(
-    persist(mockState, {
-        name: 'simple-gtd',
-        version: 1,
-        partialize: ({ sections, tasks }) => ({ sections, tasks }),
-        // migrate: (persisted, fromVersion) => {
-        //     if (fromVersion === 0) return mockState()
-        //     return persisted as AppState
-        // },
-    }),
+// Persisted state
+export const data$ = observable<Data>(mockData())
+
+syncObservable(data$, {
+    persist: {
+        name: 'simple-gtd-v2',
+        plugin: ObservablePersistLocalStorage,
+    },
+})
+
+// Ephemeral UI state (not persisted)
+export const ui$ = observable<{ sortable: Sortable }>({ sortable: 'NotSorting' })
+
+// Derivations
+
+export const sortedSections$ = observable<Section[]>(() =>
+    sortBy(data$.sections.get(), prop('order')),
 )
 
-function getSectionTasks(tasks: Task[], sectionId: string) {
+export function sectionTasks(tasks: Task[], sectionId: string): Task[] {
     return pipe(
         tasks,
         filter((t) => t.sectionId === sectionId),
@@ -49,39 +55,32 @@ function getSectionTasks(tasks: Task[], sectionId: string) {
     )
 }
 
-export function useSections() {
-    return useApp(useShallow((s) => sortBy(s.sections, prop('order'))))
+export function sectionPendingCount(tasks: Task[], sectionId: string): number {
+    return sectionTasks(tasks, sectionId).filter((t) => !t.done).length
 }
 
-export function useSectionTasks(sectionId: string) {
-    return useApp(useShallow((s) => getSectionTasks(s.tasks, sectionId)))
-}
-
-export function useSectionPendingCount(sectionId: string) {
-    return useApp((s) => getSectionTasks(s.tasks, sectionId).filter((t) => !t.done).length)
-}
+// Actions
 
 export const appendTask = (sectionId: string, title: string) => {
-    const lastOrder = getSectionTasks(useApp.getState().tasks, sectionId).at(-1)?.order ?? null
-    const newTask = {
+    const lastOrder = sectionTasks(data$.tasks.get(), sectionId).at(-1)?.order ?? null
+    data$.tasks.push({
         id: uuidv4(),
         sectionId,
         order: orderBetween(lastOrder, null),
         title,
         done: false,
-    }
-    useApp.setState((s) => ({
-        tasks: [...s.tasks, newTask],
-    }))
+    })
 }
 
-export const deleteTask = (id: string) =>
-    useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
+export const deleteTask = (id: string) => {
+    data$.tasks.set((tasks) => tasks.filter((t) => t.id !== id))
+}
 
-export const toggleTask = (id: string) =>
-    useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
-    }))
+export const toggleTask = (id: string) => {
+    data$.tasks.set((tasks) =>
+        tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
+    )
+}
 
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
@@ -91,10 +90,10 @@ function orderBetween(a: string | null | undefined, b: string | null | undefined
 
 type MockSectionData = { title: string; tasks: { title: string; done: boolean }[] }[]
 
-function mockState(): AppState {
+function mockData(): Data {
     const data = mockSectionData()
     const sections = mockSections(data)
-    return { sections, tasks: mockTasks(sections, data), sortable: 'NotSorting' }
+    return { sections, tasks: mockTasks(sections, data) }
 }
 
 function mockSections(data: MockSectionData): Section[] {

@@ -1,14 +1,16 @@
 import { clsx } from 'clsx'
 import { useState } from 'react'
+import { observer, use$ } from '@legendapp/state/react'
 import {
     appendTask,
+    data$,
     deleteTask,
     type Section,
+    sectionPendingCount,
+    sectionTasks,
+    sortedSections$,
     type Task,
     toggleTask,
-    useSections,
-    useSectionPendingCount,
-    useSectionTasks,
 } from './store'
 
 function ViewApp() {
@@ -32,8 +34,8 @@ function ViewHeader() {
     )
 }
 
-function ViewSections() {
-    const sections = useSections()
+const ViewSections = observer(function ViewSections() {
+    const sections = use$(sortedSections$)
 
     return (
         <main className="mx-auto max-w-2xl px-6 pb-24">
@@ -44,11 +46,17 @@ function ViewSections() {
             </div>
         </main>
     )
-}
+})
 
-function ViewSection({ section, animDelay }: { section: Section; animDelay: number }) {
-    const tasks = useSectionTasks(section.id)
-    const pending = useSectionPendingCount(section.id)
+const ViewSection = observer(function ViewSection({
+    section,
+    animDelay,
+}: {
+    section: Section
+    animDelay: number
+}) {
+    const tasks = use$(() => sectionTasks(data$.tasks.get(), section.id))
+    const pending = use$(() => sectionPendingCount(data$.tasks.get(), section.id))
 
     return (
         <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>
@@ -68,7 +76,7 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
             </ul>
         </section>
     )
-}
+})
 
 function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
     const [removing, setRemoving] = useState(false)
