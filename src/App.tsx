@@ -132,13 +132,10 @@ function ViewTitle({ done, title }: { done: boolean; title: string }) {
         <span
             className={clsx(
                 'block min-w-0 flex-1 text-base transition',
-                done ? 'text-stone-500' : 'text-stone-900',
+                done ? 'text-stone-500 line-through' : 'text-stone-900',
             )}
         >
-            <span className="relative inline-block">
-                {title}
-                {done && <span className="strike-line" />}
-            </span>
+            {title}
         </span>
     )
 }
