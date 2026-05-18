@@ -39,7 +39,11 @@ function ViewSections() {
         <main className="mx-auto max-w-2xl px-6 pb-24">
             <div className="flex flex-col gap-10">
                 {sections.map((section, i) => (
-                    <ViewSection key={section.id} section={section} animDelay={i * 60} />
+                    <ViewSection
+                        key={section.id}
+                        section={section}
+                        animDelay={Math.min(i, 6) * 60}
+                    />
                 ))}
             </div>
         </main>
@@ -73,22 +77,20 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
 function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
     const [removing, setRemoving] = useState(false)
 
-    function handleDelete() {
-        setRemoving(true)
-        setTimeout(() => deleteTask(task.id), 175)
-    }
-
     return (
         <li
             className={clsx(
                 'anim-task group flex items-center gap-3 py-2 transition hover:bg-stone-100/60',
                 removing && 'anim-out',
             )}
-            style={{ animationDelay: `${taskIndex * 30}ms` }}
+            style={{ animationDelay: `${Math.min(taskIndex, 8) * 30}ms` }}
+            onAnimationEnd={(e) => {
+                if (e.animationName === 'task-out') deleteTask(task.id)
+            }}
         >
             <ViewCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
             <ViewTitle done={task.done} title={task.title} />
-            <ViewDeleteBtn onClick={handleDelete} />
+            <ViewDeleteBtn onClick={() => setRemoving(true)} />
         </li>
     )
 }
@@ -144,7 +146,7 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            className="shrink-0 cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50"
+            className="shrink-0 cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none group-focus-within:opacity-100"
         >
             Trash
         </button>

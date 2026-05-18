@@ -64,17 +64,17 @@ export function useSectionPendingCount(sectionId: string) {
 export const appendTask = (sectionId: string, title: string) => {
     const trimmed = title.trim()
     if (!trimmed) return
-    const lastOrder = getSectionTasks(useApp.getState().tasks, sectionId).at(-1)?.order ?? null
-    const newTask = {
-        id: uuidv4(),
-        sectionId,
-        order: orderBetween(lastOrder, null),
-        title: trimmed,
-        done: false,
-    }
-    useApp.setState((s) => ({
-        tasks: [...s.tasks, newTask],
-    }))
+    useApp.setState((s) => {
+        const lastOrder = getSectionTasks(s.tasks, sectionId).at(-1)?.order ?? null
+        const newTask = {
+            id: uuidv4(),
+            sectionId,
+            order: orderBetween(lastOrder, null),
+            title: trimmed,
+            done: false,
+        }
+        return { tasks: [...s.tasks, newTask] }
+    })
 }
 
 export const deleteTask = (id: string) =>
