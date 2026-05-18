@@ -101,7 +101,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
             onClick={onClick}
             aria-label={done ? 'Mark not done' : 'Mark done'}
             className={clsx(
-                'flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 p-0 transition',
+                'flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 p-0 transition focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:outline-none',
                 done
                     ? 'border-stone-600 bg-stone-600'
                     : 'border-stone-500 bg-transparent hover:border-stone-700',
