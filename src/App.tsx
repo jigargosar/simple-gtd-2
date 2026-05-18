@@ -57,10 +57,10 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
 
     return (
         <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>
-            <h2 className="mb-3 text-xs font-semibold tracking-wider text-stone-600 uppercase">
+            <h2 className="mb-3 text-sm font-semibold tracking-wide text-stone-600 uppercase">
                 {section.title}
                 {pending > 0 && (
-                    <span className="ml-2 font-normal tabular-nums text-stone-500">
+                    <span className="ml-2 font-normal tabular-nums text-stone-600">
                         · {pending}
                     </span>
                 )}
@@ -135,7 +135,7 @@ function ViewTitle({ done, title }: { done: boolean; title: string }) {
         <span
             className={clsx(
                 'block min-w-0 flex-1 text-base transition',
-                done ? 'text-stone-500 line-through' : 'text-stone-900',
+                done ? 'text-stone-600 line-through' : 'text-stone-900',
             )}
         >
             {title}
@@ -164,7 +164,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
     return (
         <li className="group flex items-center gap-3 py-2 transition focus-within:bg-stone-100/40">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-stone-500 transition select-none group-focus-within:text-accent">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-stone-600 transition select-none group-focus-within:text-accent">
                 +
             </span>
             <input
@@ -174,7 +174,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                     if (e.key === 'Enter') submit()
                 }}
                 placeholder="Add a task…"
-                className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none placeholder:text-stone-500"
+                className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none placeholder:text-stone-600"
             />
             {value.trim() && (
                 <button
