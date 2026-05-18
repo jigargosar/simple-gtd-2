@@ -1,4 +1,5 @@
 import { clsx } from 'clsx'
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import {
     appendTask,
@@ -146,9 +147,9 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            className="shrink-0 cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none group-focus-within:opacity-100"
+            className="shrink-0 cursor-pointer rounded-md p-1.5 text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none group-focus-within:opacity-100"
         >
-            Trash
+            <Trash2 className="size-4" />
         </button>
     )
 }

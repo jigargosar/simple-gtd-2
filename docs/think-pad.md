@@ -1,8 +1,0 @@
-# Issues
-
-1. ✅ ~~**Delete timer 175ms vs `anim-out` 180ms, no `clearTimeout` (`App.tsx:78`, `index.css:36`)** — unmounts ~5ms early; two magic numbers that must stay in sync; stale timer survives unmount (safe only because `deleteTask` is id-filtered).~~ Replaced the magic-number `setTimeout` with `onAnimationEnd` gated on `e.animationName === 'task-out'` — no duplicated constant, no stale timer.
-2. ✅ ~~**Trash button has no focus-visible state (`App.tsx:150`)** — `opacity-0 group-hover:opacity-100` with no `group-focus-within` / `focus-visible`; Tab-focusing it produces zero visible change.~~ Added `group-focus-within:opacity-100 focus-visible:opacity-100` plus a `focus-visible` ring/bg.
-3. ✅ ~~**`appendTask` computes `order` from a pre-`setState` snapshot (`store.ts:67`)** — speculative, not a live bug: safe only because zustand `setState` is synchronous; fragile pattern, should compute inside the `setState(s => …)` updater.~~ `order` now computed inside the `setState` updater from live `s.tasks`.
-4. ⚠️ N/A — **no `.strike-line` class exists** in `index.css` (file is 34 lines; ref `index.css:38-45` is stale). Strike-through is Tailwind `line-through` on `ViewTitle`; no centering bug to fix.
-5. ✅ ~~**Unbounded entrance stagger (`App.tsx:42`, `87`)** — `i*60` / `taskIndex*30` delay → ~870ms for the 30th item; reveal drags at scale.~~ Capped: sections `Math.min(i, 6) * 60` (≤360ms), tasks `Math.min(taskIndex, 8) * 30` (≤240ms).
-6. **Empty-state dead end** — delete-all leaves empty sections with no add-section UI and no reseed; product gap, not a code bug. *(Not addressed — needs a product decision; out of scope for this bug pass.)*
