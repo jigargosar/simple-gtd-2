@@ -170,7 +170,9 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
             <input
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && submit()}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') submit()
+                }}
                 placeholder="Add a task…"
                 className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none placeholder:text-stone-500"
             />
