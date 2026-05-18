@@ -57,10 +57,10 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
 
     return (
         <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>
-            <h2 className="mb-3 text-sm font-semibold tracking-wide text-stone-600 uppercase">
+            <h2 className="mb-4 flex items-baseline gap-2 border-b border-stone-200 pb-2 text-lg font-bold text-stone-500">
                 {section.title}
                 {pending > 0 && (
-                    <span className="ml-2 font-normal tabular-nums text-stone-600">
+                    <span className="text-sm font-medium tabular-nums text-stone-600">
                         · {pending}
                     </span>
                 )}
