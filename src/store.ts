@@ -85,6 +85,14 @@ export const toggleTask = (id: string) =>
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     }))
 
+export const updateTaskTitle = (id: string, title: string) => {
+    const trimmed = title.trim()
+    if (!trimmed) return
+    useApp.setState((s) => ({
+        tasks: s.tasks.map((t) => (t.id === id ? { ...t, title: trimmed } : t)),
+    }))
+}
+
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
 }

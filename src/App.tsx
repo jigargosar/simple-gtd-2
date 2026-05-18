@@ -7,6 +7,7 @@ import {
     type Section,
     type Task,
     toggleTask,
+    updateTaskTitle,
     useSections,
     useSectionPendingCount,
     useSectionTasks,
@@ -77,6 +78,7 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
 
 function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
     const [removing, setRemoving] = useState(false)
+    const [editing, setEditing] = useState(false)
 
     return (
         <li
@@ -90,7 +92,22 @@ function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
             }}
         >
             <ViewCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
-            <ViewTitle done={task.done} title={task.title} />
+            {editing ? (
+                <ViewTitleEditor
+                    title={task.title}
+                    onSave={(next) => {
+                        updateTaskTitle(task.id, next)
+                        setEditing(false)
+                    }}
+                    onCancel={() => setEditing(false)}
+                />
+            ) : (
+                <ViewTitle
+                    done={task.done}
+                    title={task.title}
+                    onEdit={() => setEditing(true)}
+                />
+            )}
             <ViewDeleteBtn onClick={() => setRemoving(true)} />
         </li>
     )
@@ -130,16 +147,52 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
     )
 }
 
-function ViewTitle({ done, title }: { done: boolean; title: string }) {
+function ViewTitle({
+    done,
+    title,
+    onEdit,
+}: {
+    done: boolean
+    title: string
+    onEdit: () => void
+}) {
     return (
         <span
+            onDoubleClick={onEdit}
             className={clsx(
-                'block min-w-0 flex-1 text-base transition',
+                'block min-w-0 flex-1 cursor-text text-base transition',
                 done ? 'text-stone-600 line-through' : 'text-stone-900',
             )}
         >
             {title}
         </span>
+    )
+}
+
+function ViewTitleEditor({
+    title,
+    onSave,
+    onCancel,
+}: {
+    title: string
+    onSave: (next: string) => void
+    onCancel: () => void
+}) {
+    const [value, setValue] = useState(title)
+
+    return (
+        <input
+            autoFocus
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onFocus={(e) => e.target.select()}
+            onBlur={() => onSave(value)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') onSave(value)
+                if (e.key === 'Escape') onCancel()
+            }}
+            className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none"
+        />
     )
 }
 
