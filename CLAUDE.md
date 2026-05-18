@@ -29,4 +29,4 @@ pnpm preview           # serve the production build locally
 4. **React Compiler is active** — automatic memoization; do not add manual `useMemo` / `useCallback`.
 5. **Tighten TypeScript and ESLint when feasible.** ESLint currently uses `tseslint.configs.recommended` (not `recommendedTypeChecked`) with no `parserOptions.project`; `README.md` documents the type-checked upgrade path.
 6. **Prettier**: single quotes, no semicolons, tab width 4, print width 100; Tailwind class sorting via `prettier-plugin-tailwindcss`. Match these when generating code to avoid reformatter churn.
-7. **Accessibility is OUT OF SCOPE.** Do NOT add, analyze, or account for `aria-*` — deferred to a dedicated future pass.
+7. **ARIA and semantic HTML are OUT OF SCOPE.** Do NOT add, analyze, or account for them — deferred to a dedicated future pass.
