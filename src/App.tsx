@@ -206,7 +206,7 @@ function ViewTitleEditor({
             }}
             className={clsx(
                 titleBox,
-                'caret-accent ring-accent bg-white text-stone-900 ring-2 outline-none',
+                'caret-accent bg-white text-stone-900 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none',
             )}
         />
     )

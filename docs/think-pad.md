@@ -10,6 +10,8 @@ need to handle sudden apperance of add button when adding task, should we even h
 
 post edit display is multiline but edit is a single line field, heeds fixing
 
+clickable areas should not artifically restrict UX by making user hunt!
+
 ---
 clear airia- stuff...
 ---
