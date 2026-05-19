@@ -1,6 +1,6 @@
 import { clsx } from 'clsx'
-import { Trash2 } from 'lucide-react'
-import { useState } from 'react'
+import { Pencil, Trash2 } from 'lucide-react'
+import { useRef, useState } from 'react'
 import {
     appendTask,
     deleteTask,
@@ -102,13 +102,16 @@ function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
                     onCancel={() => setEditing(false)}
                 />
             ) : (
-                <ViewTitle
-                    done={task.done}
-                    title={task.title}
-                    onEdit={() => setEditing(true)}
-                />
+                <>
+                    <ViewTitle
+                        done={task.done}
+                        title={task.title}
+                        onEdit={() => setEditing(true)}
+                    />
+                    <ViewEditBtn onClick={() => setEditing(true)} />
+                    <ViewDeleteBtn onClick={() => setRemoving(true)} />
+                </>
             )}
-            <ViewDeleteBtn onClick={() => setRemoving(true)} />
         </li>
     )
 }
@@ -147,6 +150,13 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
     )
 }
 
+// Static title and the editor input MUST share this exact box so swapping
+// between them produces zero layout shift. -mx-2/px-2 net to zero horizontal
+// text offset (keeps title aligned with the "+ Add a task" row) while giving
+// the editor's background/ring side breathing room. leading-6 equals
+// text-base's default line-height, so row height is identical in both states.
+const titleBox = 'block min-w-0 flex-1 -mx-2 rounded-md px-2 text-base leading-6'
+
 function ViewTitle({
     done,
     title,
@@ -158,9 +168,10 @@ function ViewTitle({
 }) {
     return (
         <span
-            onDoubleClick={onEdit}
+            onClick={onEdit}
             className={clsx(
-                'block min-w-0 flex-1 cursor-text text-base transition',
+                titleBox,
+                'cursor-text transition select-none',
                 done ? 'text-stone-600 line-through' : 'text-stone-900',
             )}
         >
@@ -179,20 +190,44 @@ function ViewTitleEditor({
     onCancel: () => void
 }) {
     const [value, setValue] = useState(title)
+    // Escape sets editing=false, which unmounts this input and fires onBlur.
+    // This flag makes blur a no-op once Enter/Escape has already resolved the edit.
+    const finished = useRef(false)
 
     return (
         <input
             autoFocus
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            onFocus={(e) => e.target.select()}
-            onBlur={() => onSave(value)}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') onSave(value)
-                if (e.key === 'Escape') onCancel()
+            onBlur={() => {
+                if (!finished.current) onSave(value)
             }}
-            className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none"
+            onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                    finished.current = true
+                    onSave(value)
+                }
+                if (e.key === 'Escape') {
+                    finished.current = true
+                    onCancel()
+                }
+            }}
+            className={clsx(
+                titleBox,
+                'bg-white text-stone-900 caret-accent ring-2 ring-accent outline-none',
+            )}
         />
+    )
+}
+
+function ViewEditBtn({ onClick }: { onClick: () => void }) {
+    return (
+        <button
+            onClick={onClick}
+            className="shrink-0 cursor-pointer rounded-md p-1 text-stone-600 opacity-0 transition group-hover:opacity-100 hover:bg-stone-200 focus-visible:bg-stone-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none group-focus-within:opacity-100"
+        >
+            <Pencil className="size-4" />
+        </button>
     )
 }
 
@@ -200,7 +235,7 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            className="shrink-0 cursor-pointer rounded-md p-1.5 text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none group-focus-within:opacity-100"
+            className="shrink-0 cursor-pointer rounded-md p-1 text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none group-focus-within:opacity-100"
         >
             <Trash2 className="size-4" />
         </button>
