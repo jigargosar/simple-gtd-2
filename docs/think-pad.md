@@ -11,6 +11,8 @@ need to handle sudden apperance of add button when adding task, should we even h
 post edit display is multiline but edit is a single line field, heeds fixing
 
 ---
+clear airia- stuff...
+---
 
 stuff is too dark, some of stuff shouldnt be so dark or bold. we need font improvements too.
 
