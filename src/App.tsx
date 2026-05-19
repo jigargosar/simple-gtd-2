@@ -216,7 +216,7 @@ function ViewEditBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            className="focus-visible:ring-accent shrink-0 cursor-pointer rounded-md p-1 text-stone-600 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-200 focus-visible:bg-stone-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
+            className="focus-visible:ring-accent shrink-0 cursor-pointer rounded-md p-1 text-stone-600 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-200 focus-visible:bg-stone-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
             <Pencil className="size-4" />
         </button>
@@ -227,7 +227,7 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            className="shrink-0 cursor-pointer rounded-md p-1 text-red-700 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none"
+            className="shrink-0 cursor-pointer rounded-md p-1 text-red-700 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-600 focus-visible:outline-none"
         >
             <Trash2 className="size-4" />
         </button>
@@ -254,12 +254,12 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                     if (e.key === 'Enter') submit()
                 }}
                 placeholder="Add a task…"
-                className="caret-accent min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 outline-none placeholder:text-stone-600"
+                className="caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-base text-stone-900 transition outline-none placeholder:text-stone-600 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none"
             />
             {value.trim() && (
                 <button
                     onClick={submit}
-                    className="bg-accent shrink-0 cursor-pointer rounded-full px-3 py-1 text-xs font-medium text-white transition hover:opacity-85"
+                    className="bg-accent shrink-0 cursor-pointer rounded-full px-3 py-1 text-xs font-medium text-white transition hover:opacity-85 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none"
                 >
                     Add
                 </button>
