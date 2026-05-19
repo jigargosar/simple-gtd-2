@@ -14,7 +14,7 @@ need to handle sudden apperance of add button when adding task
 
 post edit display is multiline but edit is a single line field, need to quickfix it
 
-anim strike through:
+anim strike through: I think this works for single line, research for multiline.
 ```css
 .strike-text {
   position: relative;
