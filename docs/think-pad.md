@@ -3,3 +3,5 @@ I am assuming that we are using outline for focus, simple way to avoid layout sh
 use double click to edit
 
 review/refactor code of edit task
+
+spacing between checkbox and edit input is too narrow need to fix it
