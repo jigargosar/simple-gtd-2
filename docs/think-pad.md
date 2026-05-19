@@ -6,9 +6,9 @@ placeholder for inputs
 
 plus icon is too small, we should use standard icons. also I am not sure plus decorative icon is what should be add. use judgement.
 
-need to handle sudden apperance of add button when adding task, should we even add it?
+need to handle sudden apperance of add button when adding task, should we even have it?
 
-post edit display is multiline but edit is a single line field, need to quickfix it
+post edit display is multiline but edit is a single line field, heeds fixing
 
 ---
 
