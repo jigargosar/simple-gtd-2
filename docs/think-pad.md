@@ -15,27 +15,3 @@ need to handle sudden apperance of add button when adding task
 post edit display is multiline but edit is a single line field, need to quickfix it
 
 anim strike through: I think this works for single line, research for multiline.
-```css
-.strike-text {
-  position: relative;
-  display: inline-block;
-}
-
-.strike-text::after {
-  content: '';
-  position: absolute;
-  top: 50%; /* Centers the line vertically on the text */
-  left: 0;
-  width: 100%;
-  height: 2px; /* Line thickness */
-  background-color: red;
-  transform: scaleX(0); /* Hidden at start */
-  transform-origin: left center;
-  transition: transform 0.5s ease-in-out; /* Controls animation speed */
-}
-
-.strike-text:hover::after {
-  transform: scaleX(1); /* Animates the line to full width */
-}
-
-```

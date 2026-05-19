@@ -61,7 +61,7 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
             <h2 className="mb-4 flex items-baseline gap-2 border-b border-stone-200 pb-2 text-lg font-bold text-stone-500">
                 {section.title}
                 {pending > 0 && (
-                    <span className="text-sm font-medium tabular-nums text-stone-600">
+                    <span className="text-sm font-medium text-stone-600 tabular-nums">
                         · {pending}
                     </span>
                 )}
@@ -122,7 +122,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
             onClick={onClick}
             aria-label={done ? 'Mark not done' : 'Mark done'}
             className={clsx(
-                'flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 p-0 transition focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:outline-none',
+                'focus-visible:ring-accent flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 p-0 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                 done
                     ? 'border-stone-600 bg-stone-600'
                     : 'border-stone-500 bg-transparent hover:border-stone-700',
@@ -157,25 +157,17 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
 // text-base's default line-height, so row height is identical in both states.
 const titleBox = 'block min-w-0 flex-1 -mx-2 rounded-md px-2 text-base leading-6'
 
-function ViewTitle({
-    done,
-    title,
-    onEdit,
-}: {
-    done: boolean
-    title: string
-    onEdit: () => void
-}) {
+function ViewTitle({ done, title, onEdit }: { done: boolean; title: string; onEdit: () => void }) {
     return (
         <span
             onClick={onEdit}
             className={clsx(
                 titleBox,
-                'cursor-text transition select-none',
-                done ? 'text-stone-600 line-through' : 'text-stone-900',
+                'cursor-text transition',
+                done ? 'text-stone-600' : 'text-stone-900',
             )}
         >
-            {title}
+            <span className={clsx('strike', done && 'is-done')}>{title}</span>
         </span>
     )
 }
@@ -214,7 +206,7 @@ function ViewTitleEditor({
             }}
             className={clsx(
                 titleBox,
-                'bg-white text-stone-900 caret-accent ring-2 ring-accent outline-none',
+                'caret-accent ring-accent bg-white text-stone-900 ring-2 outline-none',
             )}
         />
     )
@@ -224,7 +216,7 @@ function ViewEditBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            className="shrink-0 cursor-pointer rounded-md p-1 text-stone-600 opacity-0 transition group-hover:opacity-100 hover:bg-stone-200 focus-visible:bg-stone-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none group-focus-within:opacity-100"
+            className="focus-visible:ring-accent shrink-0 cursor-pointer rounded-md p-1 text-stone-600 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-200 focus-visible:bg-stone-200 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:outline-none"
         >
             <Pencil className="size-4" />
         </button>
@@ -235,7 +227,7 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
     return (
         <button
             onClick={onClick}
-            className="shrink-0 cursor-pointer rounded-md p-1 text-red-700 opacity-0 transition group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none group-focus-within:opacity-100"
+            className="shrink-0 cursor-pointer rounded-md p-1 text-red-700 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:outline-none"
         >
             <Trash2 className="size-4" />
         </button>
@@ -252,7 +244,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
     return (
         <li className="group flex items-center gap-3 py-2 transition focus-within:bg-stone-100/40">
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-stone-600 transition select-none group-focus-within:text-accent">
+            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-stone-600 transition select-none">
                 +
             </span>
             <input
@@ -262,12 +254,12 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                     if (e.key === 'Enter') submit()
                 }}
                 placeholder="Add a task…"
-                className="min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 caret-accent outline-none placeholder:text-stone-600"
+                className="caret-accent min-w-0 flex-1 border-none bg-transparent text-base text-stone-900 outline-none placeholder:text-stone-600"
             />
             {value.trim() && (
                 <button
                     onClick={submit}
-                    className="shrink-0 cursor-pointer rounded-full bg-accent px-3 py-1 text-xs font-medium text-white transition hover:opacity-85"
+                    className="bg-accent shrink-0 cursor-pointer rounded-full px-3 py-1 text-xs font-medium text-white transition hover:opacity-85"
                 >
                     Add
                 </button>

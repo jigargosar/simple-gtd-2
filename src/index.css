@@ -31,3 +31,20 @@
 .anim-task { animation: task-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .anim-out { animation: task-out 0.18s ease-in forwards; }
 .dot-pop { animation: dot-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Strikethrough that draws SEQUENTIALLY across wrapped lines (line 1, then 2,
+   …) as one continuous stroke. Mechanism: inline wrapper with the DEFAULT
+   box-decoration-break (slice) — one continuous no-repeat background whose
+   width animates 0→100% is sliced across the line boxes, so growing it fills
+   line 1, then spills onto line 2, etc. (clone would make lines animate in
+   parallel instead). The gradient tile is full line-height with a colored band
+   at 45–55%, so the bar self-centers vertically in every line slice without an
+   `em` tweak. currentColor follows the done text color. */
+.strike {
+    background-image: linear-gradient(to bottom, transparent 45%, currentColor 45%, currentColor 55%, transparent 55%);
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 0% 100%;
+    transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.strike.is-done { background-size: 100% 100%; }
