@@ -11,3 +11,5 @@ add task has no outline, inconsistant
 plus icon is too small
 
 need to handle sudden apperance of add button when adding task
+
+post edit display is multiline but edit is a single line field, need to quickfix it
