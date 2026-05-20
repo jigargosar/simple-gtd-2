@@ -31,3 +31,5 @@ pnpm preview           # serve the production build locally
 6. **Prettier**: single quotes, no semicolons, tab width 4, print width 100; Tailwind class sorting via `prettier-plugin-tailwindcss`. Match these when generating code to avoid reformatter churn.
 7. **ARIA and semantic HTML are OUT OF SCOPE.** Do NOT add, analyze, or account for them — deferred to a dedicated future pass.
 8. Keyboard-focusable elements should have these classes: `transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none` (use judgement for variants — e.g. destructive actions use `focus-visible:ring-red-600` instead of `focus-visible:ring-accent`).
+9. Icons are from lucide-react.
+10. Appearance, disappearance, and value changes should not be jarring. See `.anim-*` in `src/index.css` for the existing vocabulary.
