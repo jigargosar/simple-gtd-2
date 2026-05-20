@@ -255,17 +255,9 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                 onKeyDown={(e) => {
                     if (e.key === 'Enter') submit()
                 }}
-                placeholder="Add a task…"
+                placeholder="Add to list…"
                 className="caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-base text-stone-900 transition outline-none placeholder:text-stone-600 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none"
             />
-            {value.trim() && (
-                <button
-                    onClick={submit}
-                    className="bg-accent shrink-0 cursor-pointer rounded-full px-3 py-1 text-xs font-medium text-white transition hover:opacity-85 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none"
-                >
-                    Add
-                </button>
-            )}
         </li>
     )
 }
