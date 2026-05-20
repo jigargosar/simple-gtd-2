@@ -1,5 +1,3 @@
-I am assuming that we are using outline for focus, simple way to avoid layout shift. we need to ensure that all elements have it and also add to claude.md this needs to be applied to every appeariense/dissapreance no jarring. another candidate, count of tasks next to section. add task, doesn't have outline
-
 spacing between checkbox and edit input is too narrow, for inline edit when turned need to fix it
 
 placeholder for inputs
