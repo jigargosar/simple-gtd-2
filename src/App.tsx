@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import {
     appendTask,
@@ -60,11 +60,12 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
         <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>
             <h2 className="mb-4 flex items-baseline gap-2 border-b border-stone-200 pb-2 text-lg font-bold text-stone-500">
                 {section.title}
-                {pending > 0 && (
-                    <span className="text-sm font-medium text-stone-600 tabular-nums">
-                        · {pending}
+                <span className="text-sm font-medium text-stone-600 tabular-nums">
+                    ·{' '}
+                    <span key={pending} className="anim-count-pulse">
+                        {pending}
                     </span>
-                )}
+                </span>
             </h2>
             <ul>
                 {tasks.map((task, i) => (
@@ -244,8 +245,8 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
     return (
         <li className="group flex items-center gap-3 py-2 transition focus-within:bg-stone-100/40">
-            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-base leading-none text-stone-600 transition select-none">
-                +
+            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-stone-600 transition select-none">
+                <Plus className="size-5" />
             </span>
             <input
                 value={value}
