@@ -191,6 +191,7 @@ function ViewTitleEditor({
         <input
             autoFocus
             value={value}
+            placeholder="Type or Esc to cancel"
             onChange={(e) => setValue(e.target.value)}
             onBlur={() => {
                 if (!finished.current) onSave(value)
