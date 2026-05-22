@@ -1,6 +1,7 @@
 import { clsx } from 'clsx'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
+import { useEditInput } from './hooks'
 import {
     appendTask,
     deleteTask,
@@ -182,30 +183,12 @@ function ViewTitleEditor({
     onSave: (next: string) => void
     onCancel: () => void
 }) {
-    const [value, setValue] = useState(title)
-    // Escape sets editing=false, which unmounts this input and fires onBlur.
-    // This flag makes blur a no-op once Enter/Escape has already resolved the edit.
-    const finished = useRef(false)
-
+    const editProps = useEditInput({ initialValue: title, onSave, onCancel })
     return (
         <input
             autoFocus
-            value={value}
+            {...editProps}
             placeholder="Type or Esc to cancel"
-            onChange={(e) => setValue(e.target.value)}
-            onBlur={() => {
-                if (!finished.current) onSave(value)
-            }}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                    finished.current = true
-                    onSave(value)
-                }
-                if (e.key === 'Escape') {
-                    finished.current = true
-                    onCancel()
-                }
-            }}
             className={clsx(
                 titleBox,
                 'caret-accent bg-white text-stone-900 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none',
@@ -237,12 +220,7 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
 }
 
 function ViewAddTask({ sectionId }: { sectionId: string }) {
-    const [value, setValue] = useState('')
-
-    function submit() {
-        appendTask(sectionId, value)
-        setValue('')
-    }
+    const editProps = useEditInput({ initialValue: '', onSave: (title) => appendTask(sectionId, title) })
 
     return (
         <li className="group flex items-center gap-3 py-2 transition focus-within:bg-stone-100/40">
@@ -250,11 +228,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                 <Plus className="size-5" />
             </span>
             <input
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') submit()
-                }}
+                {...editProps}
                 placeholder="Add to list…"
                 className="caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-base text-stone-900 transition outline-none placeholder:text-stone-600 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none"
             />
