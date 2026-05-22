@@ -220,7 +220,11 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
 }
 
 function ViewAddTask({ sectionId }: { sectionId: string }) {
-    const editProps = useEditInput({ initialValue: '', onSave: (title) => appendTask(sectionId, title) })
+    const editProps = useEditInput({
+        initialValue: '',
+        onSave: (title) => appendTask(sectionId, title),
+        clearOnSave: true,
+    })
 
     return (
         <li className="group flex items-center gap-3 py-2 transition focus-within:bg-stone-100/40">
