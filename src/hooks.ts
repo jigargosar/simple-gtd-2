@@ -4,10 +4,12 @@ export function useEditInput({
     initialValue,
     onSave,
     onCancel = () => {},
+    onBlur = () => {},
 }: {
     initialValue: string
     onSave: (v: string) => void
     onCancel?: () => void
+    onBlur?: () => void
 }) {
     const [value, setValue] = useState(initialValue)
     // Escape unmounts this input and fires onBlur — this flag makes blur a no-op
@@ -19,7 +21,7 @@ export function useEditInput({
         onBlur: () => {
             if (!finished.current) {
                 onSave(value)
-                setValue(initialValue)
+                onBlur()
             }
             finished.current = false
         },
@@ -27,12 +29,10 @@ export function useEditInput({
             if (e.key === 'Enter') {
                 finished.current = true
                 onSave(value)
-                setValue(initialValue)
             }
             if (e.key === 'Escape') {
                 finished.current = true
                 onCancel()
-                setValue(initialValue)
             }
         },
     }
