@@ -2,6 +2,18 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Conversation goals
+
+Apply every rule in this section on every turn.
+
+1. ALL Resonses MUST be concise.
+2. Use short lines; avoid dense paragraphs.
+3. Lists MUST have globally unique serial numbering — nested items continue the sequence, never restart.
+4. When presenting alternatives, mark your recommendation with ★.
+5. Every speculation MUST be explicitly marked.
+6. Show steps, get approval.
+7. Restate work goals when they change. Current work goals: @docs/current-goals.md.
+
 Single-page GTD app. All state lives in one Zustand store (`src/store.ts`); the entire UI is one file of `View*` components (`src/App.tsx`). No router, no backend, no test runner.
 
 ## Commands
