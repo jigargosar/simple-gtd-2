@@ -89,6 +89,7 @@ function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
                 removing && 'anim-out',
             )}
             style={{ animationDelay: `${Math.min(taskIndex, 8) * 30}ms` }}
+            // Known issue, won't fix: delete depends on the animation firing.
             onAnimationEnd={(e) => {
                 if (e.animationName === 'task-out') deleteTask(task.id)
             }}
