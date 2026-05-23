@@ -152,11 +152,8 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
     )
 }
 
-// Static title and the editor input MUST share this exact box so swapping
-// between them produces zero layout shift. -mx-2/px-2 net to zero horizontal
-// text offset (keeps title aligned with the "+ Add a task" row) while giving
-// the editor's background/ring side breathing room. leading-6 equals
-// text-base's default line-height, so row height is identical in both states.
+// titleBox should keep the title span and editor input visually
+// interchangeable so toggling between them doesn't shift layout.
 const titleBox = 'block min-w-0 flex-1 -mx-2 rounded-md px-2 text-base leading-6'
 
 function ViewTitle({ done, title, onEdit }: { done: boolean; title: string; onEdit: () => void }) {

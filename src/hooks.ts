@@ -11,10 +11,13 @@ export function useEditInput({
     onCancel?: () => void
     clearOnSave?: boolean
 }) {
+    // Known issue, won't fix: initialValue should not change after mount.
     const [value, setValue] = useState(initialValue)
     // Escape unmounts this input and fires onBlur — this flag makes blur a no-op
     // once Enter/Escape has already resolved the edit.
     const finished = useRef(false)
+    // Known issue, won't fix: pressing Enter with an empty value closes the
+    // editor and reverts to the old text.
     const save = () => {
         onSave(value)
         if (clearOnSave) setValue('')
