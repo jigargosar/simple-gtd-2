@@ -123,7 +123,6 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
     return (
         <button
             onClick={onClick}
-            aria-label={done ? 'Mark not done' : 'Mark done'}
             className={clsx(
                 'focus-visible:ring-accent flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 p-0 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                 done
@@ -138,7 +137,6 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
                     height="7"
                     viewBox="0 0 9 7"
                     fill="none"
-                    aria-hidden
                 >
                     <path
                         d="M1 3.5L3.5 6L8 1"
