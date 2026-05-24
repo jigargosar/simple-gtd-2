@@ -16,7 +16,7 @@ Priority = urgency + impact on quickly using easy-flow.md.
    11. Relax rule 1 wording to permit nested restart, OR
    12. Renumber sub-items 7–12
 
-## Medium — /n migration decisions
+## Medium — easy-flow rule candidates
 
 16. Stop-and-fix mid-response rule — earlier draft was: "If you notice a rule violation mid-response, stop and fix it before continuing — do not wait for correction". Add, drop, or defer?
 
