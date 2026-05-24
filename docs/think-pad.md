@@ -19,14 +19,8 @@ Priority = urgency + impact on quickly using easy-flow.md.
 
 ## Medium — /n migration decisions (file works without them, but /n cannot be deleted)
 
-13. AskUserQuestion-for-yes/no (from /n rule 5) — add to easy-flow.md, drop, or defer
 14. /n "repeat verbatim with fixes" instruction — keep, drop, or adapt
-15. Confirm /n rule 2 (a/b/c sub-items) dropped — already conflicts with new rule 1
 16. Stop-and-fix mid-response rule — earlier draft was: "If you notice a rule violation mid-response, stop and fix it before continuing — do not wait for correction". Add, drop, or defer?
-
-## Blocked
-
-17. Delete `C:\Users\jigar\.claude\commands\n.md` — gated on items 13–16
 
 ## Deferred
 
