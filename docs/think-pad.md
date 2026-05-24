@@ -1,4 +1,4 @@
-# Think Pad — easy-flow.md cleanup & /n migration
+# Think Pad — easy-flow.md cleanup
 
 Priority = urgency + impact on quickly using easy-flow.md.
 
@@ -7,7 +7,6 @@ Priority = urgency + impact on quickly using easy-flow.md.
 1. **Resolve [TK] placeholders** in easy-flow.md:
    2. Sub-item 6.2: "[TK] padding and infation, to make answer feel complete, and well rounded"
    3. Sub-item 6.6: "[TK] (spelucative asicii character) Unmarked speculation and assumption"
-4. **Clarify sub-item 6.6 parenthetical** "(spelucative asicii character)" — what was intended?
 5. **Fix typos**:
    6. "recommendaton" → "recommendation" (rule 3)
    7. "infation" → "inflation" (6.2)
@@ -17,9 +16,8 @@ Priority = urgency + impact on quickly using easy-flow.md.
    11. Relax rule 1 wording to permit nested restart, OR
    12. Renumber sub-items 7–12
 
-## Medium — /n migration decisions (file works without them, but /n cannot be deleted)
+## Medium — /n migration decisions
 
-14. /n "repeat verbatim with fixes" instruction — keep, drop, or adapt
 16. Stop-and-fix mid-response rule — earlier draft was: "If you notice a rule violation mid-response, stop and fix it before continuing — do not wait for correction". Add, drop, or defer?
 
 ## Deferred
