@@ -2,8 +2,8 @@
 
 ## 1. Origin task
 
-1. User asked: "need to remove slash n skill, audit"
-2. Initial misread: assumed `n` was a skill. Corrected via Glob — it is a slash command at `C:\Users\jigar\.claude\commands\n.md`.
+1. "need to remove slash n command, audit"
+2.  `C:\Users\jigar\.claude\commands\n.md`.
 
 ## 2. Source file content (`commands/n.md`)
 
