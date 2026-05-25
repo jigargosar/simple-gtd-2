@@ -9,9 +9,9 @@ Apply every rule in this section on every turn.
 1. ALL Responses MUST be concise.
 2. Use short lines; avoid dense paragraphs.
 3. Use numbered lists with escaped periods (`1\.`, `2\.`, `10\.`). Numbering must be globally serial and unique within a response — nested items continue the sequence, never restart. Indent nested items 4 spaces under their parent.
-4. When presenting alternatives, mark your recommendation with ★.
+4. Give recommendation, marked by ★.
 5. Every speculation MUST be explicitly marked.
-6. Show steps, get approval.
+6. Show steps, take permission.
 7. Restate work goals when they change. Current work goals: @docs/current-goals.md.
 
 Single-page GTD app. All state lives in one Zustand store (`src/store.ts`); the entire UI is one file of `View*` components (`src/App.tsx`). No router, no backend, no test runner.
