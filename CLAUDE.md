@@ -8,7 +8,7 @@ Apply every rule in this section on every turn.
 
 1. ALL Resonses MUST be concise.
 2. Use short lines; avoid dense paragraphs.
-3. Lists MUST have globally unique serial numbering — nested items continue the sequence, never restart.
+3. Use numbered lists with escaped periods (`1\.`, `2\.`, `10\.`). Numbering must be globally serial and unique within a response — nested items continue the sequence, never restart. Indent nested items 4 spaces under their parent.
 4. When presenting alternatives, mark your recommendation with ★.
 5. Every speculation MUST be explicitly marked.
 6. Show steps, get approval.
