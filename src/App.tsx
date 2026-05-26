@@ -153,7 +153,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
 
 // titleBox should keep the title span and editor input visually
 // interchangeable so toggling between them doesn't shift layout.
-const titleBox = 'block min-w-0 flex-1 -mx-2 rounded-md px-2 text-base leading-6'
+const titleBox = 'block min-w-0 flex-1 rounded-md px-2 text-base leading-6'
 
 function ViewTitle({ done, title, onEdit }: { done: boolean; title: string; onEdit: () => void }) {
     return (
@@ -187,7 +187,7 @@ function ViewTitleEditor({
             placeholder="Type or Esc to cancel"
             className={clsx(
                 titleBox,
-                'caret-accent bg-white text-stone-900 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none',
+                'caret-accent border-none bg-transparent text-stone-900 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none',
             )}
         />
     )
@@ -230,7 +230,10 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
             <input
                 {...editProps}
                 placeholder="Add to list…"
-                className="caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-base text-stone-900 transition outline-none placeholder:text-stone-600 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none"
+                className={clsx(
+                    titleBox,
+                    'caret-accent border-none bg-transparent text-stone-900 transition outline-none placeholder:text-stone-600 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none',
+                )}
             />
         </li>
     )
