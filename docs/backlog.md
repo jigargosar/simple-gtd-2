@@ -5,3 +5,5 @@ post edit display is multiline but edit is a single line field, needs fixing tru
 clickable areas should not artificially restrict UX by making user hunt!
 
 stuff is too dark, some of the stuff shouldn't be so dark or bold. we need font improvements too.
+
+update tailwind classes

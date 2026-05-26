@@ -60,7 +60,7 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
     return (
         <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>
             <h2 className="mb-4 flex items-baseline gap-2 border-b border-stone-200 pb-2 text-lg font-bold text-stone-500">
-                {section.title}
+                <span className="min-w-0 break-words">{section.title}</span>
                 <span className="text-sm font-medium text-stone-600 tabular-nums">
                     ·{' '}
                     <span key={pending} className="anim-count-pulse">
@@ -153,7 +153,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
 
 // titleBox should keep the title span and editor input visually
 // interchangeable so toggling between them doesn't shift layout.
-const titleBox = 'block min-w-0 flex-1 rounded-md px-2 text-base leading-6'
+const titleBox = 'block min-w-0 flex-1 rounded-md px-2 text-base leading-6 break-words'
 
 function ViewTitle({ done, title, onEdit }: { done: boolean; title: string; onEdit: () => void }) {
     return (
