@@ -93,6 +93,34 @@ export const updateTaskTitle = (id: string, title: string) => {
     }))
 }
 
+export const appendSection = (title: string) => {
+    const trimmed = title.trim()
+    if (!trimmed) return
+    useApp.setState((s) => {
+        const lastOrder = sortBy(s.sections, prop('order')).at(-1)?.order ?? null
+        return {
+            sections: [
+                ...s.sections,
+                { id: uuidv4(), order: orderBetween(lastOrder, null), title: trimmed },
+            ],
+        }
+    })
+}
+
+export const updateSectionTitle = (id: string, title: string) => {
+    const trimmed = title.trim()
+    if (!trimmed) return
+    useApp.setState((s) => ({
+        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, title: trimmed } : sec)),
+    }))
+}
+
+export const deleteSection = (id: string) =>
+    useApp.setState((s) => ({
+        sections: s.sections.filter((sec) => sec.id !== id),
+        tasks: s.tasks.filter((t) => t.sectionId !== id),
+    }))
+
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
 }

@@ -3,11 +3,14 @@ import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useEditInput } from './hooks'
 import {
+    appendSection,
     appendTask,
+    deleteSection,
     deleteTask,
     type Section,
     type Task,
     toggleTask,
+    updateSectionTitle,
     updateTaskTitle,
     useSections,
     useSectionPendingCount,
@@ -48,6 +51,7 @@ function ViewSections() {
                         animDelay={Math.min(i, 6) * 60}
                     />
                 ))}
+                <ViewAddSection />
             </div>
         </main>
     )
@@ -56,17 +60,45 @@ function ViewSections() {
 function ViewSection({ section, animDelay }: { section: Section; animDelay: number }) {
     const tasks = useSectionTasks(section.id)
     const pending = useSectionPendingCount(section.id)
+    const [removing, setRemoving] = useState(false)
+    const [editingTitle, setEditingTitle] = useState(false)
 
     return (
-        <section className="anim-section" style={{ animationDelay: `${animDelay}ms` }}>
-            <h2 className="mb-4 flex items-baseline gap-2 border-b border-stone-200 pb-2 text-lg font-bold text-stone-500">
-                <span className="wrap-anywhere">{section.title}</span>
-                <span className="text-sm font-medium text-stone-600 tabular-nums">
-                    ·{' '}
-                    <span key={pending} className="anim-count-pulse">
-                        {pending}
-                    </span>
-                </span>
+        <section
+            className={clsx('anim-section', removing && 'anim-out')}
+            style={{ animationDelay: `${animDelay}ms` }}
+            onAnimationEnd={(e) => {
+                if (e.animationName === 'task-out') deleteSection(section.id)
+            }}
+        >
+            <h2 className="group mb-4 flex items-center gap-2 border-b border-stone-200 pb-2">
+                {editingTitle ? (
+                    <ViewSectionTitleEditor
+                        title={section.title}
+                        onSave={(next) => {
+                            updateSectionTitle(section.id, next)
+                            setEditingTitle(false)
+                        }}
+                        onCancel={() => setEditingTitle(false)}
+                    />
+                ) : (
+                    <>
+                        <span
+                            onClick={() => setEditingTitle(true)}
+                            className="wrap-anywhere flex-1 cursor-text text-lg font-bold text-stone-500 transition"
+                        >
+                            {section.title}
+                        </span>
+                        <span className="text-sm font-medium text-stone-600 tabular-nums">
+                            ·{' '}
+                            <span key={pending} className="anim-count-pulse">
+                                {pending}
+                            </span>
+                        </span>
+                        <ViewEditBtn onClick={() => setEditingTitle(true)} />
+                        <ViewDeleteBtn onClick={() => setRemoving(true)} />
+                    </>
+                )}
             </h2>
             <ul>
                 {tasks.map((task, i) => (
@@ -75,6 +107,46 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
                 <ViewAddTask sectionId={section.id} />
             </ul>
         </section>
+    )
+}
+
+function ViewSectionTitleEditor({
+    title,
+    onSave,
+    onCancel,
+}: {
+    title: string
+    onSave: (next: string) => void
+    onCancel: () => void
+}) {
+    const editProps = useEditInput({ initialValue: title, onSave, onCancel })
+    return (
+        <input
+            autoFocus
+            {...editProps}
+            placeholder="Section name…"
+            className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent px-2 text-lg font-bold text-stone-500 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        />
+    )
+}
+
+function ViewAddSection() {
+    const editProps = useEditInput({
+        initialValue: '',
+        onSave: (title) => appendSection(title),
+        clearOnSave: true,
+    })
+    return (
+        <div className="group flex items-center gap-3 border-b border-stone-200 pb-2 transition focus-within:bg-stone-100/40">
+            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-stone-400 transition select-none">
+                <Plus className="size-5" />
+            </span>
+            <input
+                {...editProps}
+                placeholder="New section…"
+                className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-lg font-bold text-stone-400 transition outline-none placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            />
+        </div>
     )
 }
 

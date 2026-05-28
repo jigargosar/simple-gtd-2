@@ -1,4 +1,5 @@
 * Task and Session crud
+  * Completely botched UI symmetry
 * Anim boilerplate, audit
 
 
