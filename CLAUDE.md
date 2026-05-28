@@ -7,7 +7,7 @@ Single-page GTD app. All state lives in one Zustand store (`src/store.ts`); the 
 ## Commands
 
 ```sh
-pnpm dev --port 5173       # always pass the port explicitly
+pnpm dev                   # Is mostly running 5137 lifecycle managed by user
 pnpm build                 # tsc -b (project-refs type-check) + Vite production build
 pnpm lint                  # ESLint
 pnpm build && pnpm lint    # full self-check after edits (no test runner exists)
