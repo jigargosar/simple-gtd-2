@@ -64,14 +64,14 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
     const [editingTitle, setEditingTitle] = useState(false)
 
     return (
-        <section
-            className={clsx('anim-section', removing && 'anim-out')}
+        <div
+            className={clsx('anim-section flex flex-col gap-4', removing && 'anim-out')}
             style={{ animationDelay: `${animDelay}ms` }}
             onAnimationEnd={(e) => {
                 if (e.animationName === 'task-out') deleteSection(section.id)
             }}
         >
-            <h2 className="group mb-4 flex items-center gap-2 border-b border-stone-200 pb-2">
+            <div className="group flex items-center gap-2 border-b border-stone-200 pb-2">
                 {editingTitle ? (
                     <ViewSectionTitleEditor
                         title={section.title}
@@ -83,30 +83,32 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
                     />
                 ) : (
                     <>
-                        <span
-                            onClick={() => setEditingTitle(true)}
-                            className="wrap-anywhere flex-1 cursor-text text-lg font-bold text-stone-500 transition"
-                        >
-                            {section.title}
-                        </span>
-                        <span className="text-sm font-medium text-stone-600 tabular-nums">
-                            ·{' '}
-                            <span key={pending} className="anim-count-pulse">
-                                {pending}
+                        <div className="flex flex-1 items-baseline gap-2">
+                            <span
+                                onClick={() => setEditingTitle(true)}
+                                className="wrap-anywhere cursor-text px-2 text-lg font-bold text-stone-500 transition"
+                            >
+                                {section.title}
                             </span>
-                        </span>
+                            <span className="text-sm font-medium text-stone-600 tabular-nums">
+                                ·{' '}
+                                <span key={pending} className="anim-count-pulse">
+                                    {pending}
+                                </span>
+                            </span>
+                        </div>
                         <ViewEditBtn onClick={() => setEditingTitle(true)} />
                         <ViewDeleteBtn onClick={() => setRemoving(true)} />
                     </>
                 )}
-            </h2>
+            </div>
             <ul>
                 {tasks.map((task, i) => (
                     <ViewTask key={task.id} task={task} taskIndex={i} />
                 ))}
                 <ViewAddTask sectionId={section.id} />
             </ul>
-        </section>
+        </div>
     )
 }
 
@@ -138,13 +140,13 @@ function ViewAddSection() {
     })
     return (
         <div className="group flex items-center gap-3 border-b border-stone-200 pb-2 transition focus-within:bg-stone-100/40">
-            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-stone-400 transition select-none">
+            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-stone-500 transition select-none">
                 <Plus className="size-5" />
             </span>
             <input
                 {...editProps}
                 placeholder="New section…"
-                className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-lg font-bold text-stone-400 transition outline-none placeholder:text-stone-400 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-lg font-bold text-stone-500 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             />
         </div>
     )
