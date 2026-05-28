@@ -40,3 +40,6 @@ update tailwind classes
 
 * Test `openspec-*` skills (explore → propose → apply → archive) on a real feature in this project.
 
+---
+
+for long lines editor input causes layout shift
