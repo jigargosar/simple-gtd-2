@@ -58,10 +58,6 @@ export function useSections() {
     return useAppShallow((s) => sortBy(s.sections, prop('order')))
 }
 
-export function useSectionTasks(sectionId: string) {
-    return useAppShallow((s) => getSectionTasks(s.tasks, sectionId))
-}
-
 export function useSectionPendingCount(sectionId: string) {
     return useApp((s) => getSectionTasks(s.tasks, sectionId).filter((t) => !t.done).length)
 }
