@@ -86,7 +86,7 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
                         <div className="flex flex-1 items-baseline gap-2">
                             <span
                                 onClick={() => setEditingTitle(true)}
-                                className="wrap-anywhere cursor-text px-2 text-lg font-bold text-stone-500 transition"
+                                className="wrap-anywhere cursor-text pl-2 text-lg font-bold text-stone-500 transition"
                             >
                                 {section.title}
                             </span>
@@ -135,7 +135,7 @@ function ViewSectionTitleEditor({
 function ViewAddSection() {
     const editProps = useEditInput({
         initialValue: '',
-        onSave: (title) => appendSection(title),
+        onSave: appendSection,
         clearOnSave: true,
     })
     return (
@@ -146,7 +146,7 @@ function ViewAddSection() {
             <input
                 {...editProps}
                 placeholder="New section…"
-                className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent text-lg font-bold text-stone-500 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent pl-2 text-lg font-bold text-stone-500 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             />
         </div>
     )
