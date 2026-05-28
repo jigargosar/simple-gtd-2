@@ -1,3 +1,11 @@
+* Task and Session crud
+
+
+
+
+
+# SOME DAY / MAYBE
+
 - Run `chezmoi forget` as a separate step before add/commit/push (step 5 in Workflow: Sync)
 - Add rule to Notes: use multi-line `\` formatting for commands with multiple args/files
 
