@@ -46,3 +46,7 @@ for long lines editor input causes layout shift
 on add section, anim causes layout shift
 delete also has jumpy anim
 full anim need to be reviewed.
+
+---
+
+per section collapse/show
