@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { Pencil, Plus, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useEditInput } from './hooks'
 import {
@@ -9,12 +9,14 @@ import {
     deleteTask,
     type Section,
     type Task,
+    toggleShowDone,
     toggleTask,
     updateSectionTitle,
     updateTaskTitle,
     useSections,
     useSectionPendingCount,
-    useSectionTasks,
+    useShowDone,
+    useVisibleSectionTasks,
 } from './store'
 
 function ViewApp() {
@@ -29,12 +31,28 @@ function ViewApp() {
 function ViewHeader() {
     return (
         <header className="anim-header px-6 pt-12 pb-8">
-            <div className="mx-auto max-w-2xl">
+            <div className="mx-auto flex max-w-2xl items-center justify-between">
                 <span className="text-sm font-semibold tracking-tight text-stone-900">
                     SimpleGTD
                 </span>
+                <ViewDoneToggle />
             </div>
         </header>
+    )
+}
+
+function ViewDoneToggle() {
+    const showDone = useShowDone()
+    const Icon = showDone ? EyeOff : Eye
+    const label = showDone ? 'Hide completed' : 'Show completed'
+    return (
+        <button
+            onClick={toggleShowDone}
+            title={label}
+            className="focus-visible:ring-accent cursor-pointer rounded-md p-1 text-stone-500 transition hover:bg-stone-100 hover:text-stone-700 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        >
+            <Icon className="size-4" />
+        </button>
     )
 }
 
@@ -58,7 +76,7 @@ function ViewSections() {
 }
 
 function ViewSection({ section, animDelay }: { section: Section; animDelay: number }) {
-    const tasks = useSectionTasks(section.id)
+    const tasks = useVisibleSectionTasks(section.id)
     const pending = useSectionPendingCount(section.id)
     const [removing, setRemoving] = useState(false)
     const [editingTitle, setEditingTitle] = useState(false)

@@ -27,13 +27,14 @@ type AppState = {
     sections: Section[]
     tasks: Task[]
     sortable: Sortable
+    showDone: boolean
 }
 
 const useApp = create<AppState>()(
     persist(mockState, {
         name: 'simple-gtd',
         version: 1,
-        partialize: ({ sections, tasks }) => ({ sections, tasks }),
+        partialize: ({ sections, tasks, showDone }) => ({ sections, tasks, showDone }),
         // migrate: (persisted, fromVersion) => {
         //     if (fromVersion === 0) return mockState()
         //     return persisted as AppState
@@ -64,6 +65,21 @@ export function useSectionTasks(sectionId: string) {
 export function useSectionPendingCount(sectionId: string) {
     return useApp((s) => getSectionTasks(s.tasks, sectionId).filter((t) => !t.done).length)
 }
+
+export function useShowDone() {
+    return useApp((s) => s.showDone)
+}
+
+export function useVisibleSectionTasks(sectionId: string) {
+    return useAppShallow((s) => {
+        const all = getSectionTasks(s.tasks, sectionId)
+        if (s.showDone) return all
+        return all.filter((t) => !t.done)
+    })
+}
+
+export const toggleShowDone = () =>
+    useApp.setState((s) => ({ showDone: !s.showDone }))
 
 export const appendTask = (sectionId: string, title: string) => {
     const trimmed = title.trim()
@@ -136,7 +152,7 @@ type MockSectionData = { title: string; tasks: { title: string; done: boolean }[
 function mockState(): AppState {
     const data = mockSectionData()
     const sections = mockSections(data)
-    return { sections, tasks: mockTasks(sections, data), sortable: 'NotSorting' }
+    return { sections, tasks: mockTasks(sections, data), sortable: 'NotSorting', showDone: true }
 }
 
 function mockSections(data: MockSectionData): Section[] {
