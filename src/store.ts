@@ -49,12 +49,16 @@ function getSectionTasks(tasks: Task[], sectionId: string) {
     )
 }
 
+function useAppShallow<T>(selector: (s: AppState) => T) {
+    return useApp(useShallow(selector))
+}
+
 export function useSections() {
-    return useApp(useShallow((s) => sortBy(s.sections, prop('order'))))
+    return useAppShallow((s) => sortBy(s.sections, prop('order')))
 }
 
 export function useSectionTasks(sectionId: string) {
-    return useApp(useShallow((s) => getSectionTasks(s.tasks, sectionId)))
+    return useAppShallow((s) => getSectionTasks(s.tasks, sectionId))
 }
 
 export function useSectionPendingCount(sectionId: string) {
