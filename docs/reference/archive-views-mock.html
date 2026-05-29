@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>SimpleGTD — view enum mock</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            :root {
+                --color-accent: #0d9488;
+            }
+            .strike {
+                position: relative;
+            }
+            .strike.is-done::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                width: 100%;
+                height: 1.5px;
+                background: currentColor;
+            }
+        </style>
+    </head>
+    <body class="bg-stone-50 text-stone-900">
+        <header class="px-6 pt-12 pb-8">
+            <div class="mx-auto flex max-w-2xl items-center justify-between">
+                <span class="text-sm font-semibold tracking-tight text-stone-900">SimpleGTD</span>
+                <!-- view switcher: each button writes setView(tag); active when view.tag === its tag.
+                     Header holds only the switcher, so it never shifts between views. -->
+                <nav id="nav" class="flex items-center gap-1"></nav>
+            </div>
+        </header>
+        <main id="main" class="mx-auto max-w-2xl px-6 pb-24"></main>
+
+        <script>
+            // ----- mock data -----
+            const sections = [
+                { id: 's1', title: 'Inbox', archived: false },
+                { id: 's2', title: 'Next Actions', archived: false },
+                { id: 's3', title: 'Old Project X', archived: true },
+            ]
+            const tasks = [
+                { id: 't1', sectionId: 's1', title: 'Read article on deep work', done: false, archived: false },
+                { id: 't2', sectionId: 's1', title: 'Reply to contractor email', done: false, archived: false },
+                { id: 't3', sectionId: 's1', title: 'Buy new keyboard', done: true, archived: false },
+                { id: 't4', sectionId: 's2', title: 'Review project proposal', done: false, archived: false },
+                { id: 't5', sectionId: 's2', title: 'Schedule team sync', done: true, archived: false },
+                { id: 't6', sectionId: 's1', title: 'Old idea, parked', done: false, archived: true },
+                { id: 't7', sectionId: 's2', title: 'Cancelled task', done: true, archived: true },
+            ]
+
+            // ----- the enum: done lives inside the board variant -----
+            // View = { tag:'board', showDone } | { tag:'archivedTasks' } | { tag:'archivedSections' }
+            let view = { tag: 'board', showDone: false }
+
+            function setView(tag) {
+                view = tag === 'board' ? { tag: 'board', showDone: false } : { tag }
+                render()
+            }
+            function toggleDone() {
+                if (view.tag !== 'board') return
+                view = { tag: 'board', showDone: !view.showDone }
+                render()
+            }
+
+            // ----- icons -----
+            const I = {
+                check: '<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                eye: '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
+                eyeOff: '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>',
+                restore: '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>',
+                trash: '<svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+            }
+
+            // ----- derivations (would live in the store) -----
+            const liveSections = () => sections.filter((s) => !s.archived)
+            const archivedSections = () => sections.filter((s) => s.archived)
+            const liveTasksFor = (id) => tasks.filter((t) => t.sectionId === id && !t.archived)
+            const archivedTasks = () => tasks.filter((t) => t.archived)
+            const pendingCount = (id) =>
+                tasks.filter((t) => t.sectionId === id && !t.done && !t.archived).length
+
+            // ----- render -----
+            const navBtn = (tag, label) => {
+                const active = view.tag === tag
+                const cls = active
+                    ? 'bg-stone-900 text-white'
+                    : 'text-stone-500 hover:bg-stone-100 hover:text-stone-700'
+                return `<button onclick="setView('${tag}')" class="cursor-pointer rounded-md px-2.5 py-1 text-sm font-medium transition ${cls}">${label}</button>`
+            }
+
+            function renderHeaderControls() {
+                document.getElementById('nav').innerHTML =
+                    navBtn('board', 'Board') +
+                    navBtn('archivedTasks', 'Archived tasks') +
+                    navBtn('archivedSections', 'Archived sections')
+            }
+
+            // The done toggle lives inside the board view (top-right), not the header,
+            // so switching views causes no header layout shift. A checkbox with a constant
+            // label "Show completed" encodes state by checked, so there's no state-vs-action
+            // ambiguity and the label width never changes.
+            function doneToggleBar() {
+                const on = view.showDone
+                return `<div class="mb-6 flex justify-end"><label class="flex cursor-pointer items-center gap-2 text-sm font-medium text-stone-600 select-none"><input type="checkbox" onchange="toggleDone()" ${on ? 'checked' : ''} class="h-4 w-4 cursor-pointer accent-stone-900" />Show completed</label></div>`
+            }
+
+            const checkbox = (done) =>
+                `<span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${done ? 'border-stone-600 bg-stone-600' : 'border-stone-500'}">${done ? I.check : ''}</span>`
+
+            const rowBtns = () =>
+                `<button title="Restore" class="cursor-pointer rounded-md p-1 text-stone-600 hover:bg-stone-200">${I.restore}</button>` +
+                `<button title="Delete forever" class="cursor-pointer rounded-md p-1 text-red-700 hover:bg-red-50">${I.trash}</button>`
+
+            function renderBoard() {
+                const body = liveSections()
+                    .map((s) => {
+                        const items = liveTasksFor(s.id)
+                            .filter((t) => view.showDone || !t.done)
+                            .map(
+                                (t) =>
+                                    `<li class="flex items-center gap-3 py-2">${checkbox(t.done)}<span class="flex-1 px-2 text-base ${t.done ? 'text-stone-600' : 'text-stone-900'}"><span class="strike ${t.done ? 'is-done' : ''}">${t.title}</span></span></li>`,
+                            )
+                            .join('')
+                        return `<div class="flex flex-col gap-4">
+                            <div class="flex items-center gap-2 border-b border-stone-200 pb-2">
+                                <span class="pl-2 text-lg font-bold text-stone-500">${s.title}</span>
+                                <span class="text-sm font-medium text-stone-600">· ${pendingCount(s.id)}</span>
+                            </div>
+                            <ul>${items}</ul>
+                        </div>`
+                    })
+                    .join('<div class="h-10"></div>')
+                return doneToggleBar() + body
+            }
+
+            function renderArchivedTasks() {
+                const rows = archivedTasks()
+                    .map(
+                        (t) =>
+                            `<li class="flex items-center gap-3 border-b border-stone-200 py-2 opacity-70">${checkbox(t.done)}<span class="flex-1 px-2 text-base"><span class="strike ${t.done ? 'is-done' : ''}">${t.title}</span></span>${rowBtns()}</li>`,
+                    )
+                    .join('')
+                return `<div class="mb-4 text-lg font-bold text-stone-500">Archived tasks</div><ul>${rows || '<li class="py-2 text-stone-500">Nothing archived.</li>'}</ul>`
+            }
+
+            function renderArchivedSections() {
+                const rows = archivedSections()
+                    .map(
+                        (s) =>
+                            `<li class="flex items-center gap-3 border-b border-stone-200 py-2 opacity-70"><span class="flex-1 px-2 text-lg font-bold text-stone-500">${s.title}</span>${rowBtns()}</li>`,
+                    )
+                    .join('')
+                return `<div class="mb-4 text-lg font-bold text-stone-500">Archived sections</div><ul>${rows || '<li class="py-2 text-stone-500">Nothing archived.</li>'}</ul>`
+            }
+
+            function render() {
+                renderHeaderControls()
+                const main = document.getElementById('main')
+                switch (view.tag) {
+                    case 'board':
+                        main.innerHTML = renderBoard()
+                        break
+                    case 'archivedTasks':
+                        main.innerHTML = renderArchivedTasks()
+                        break
+                    case 'archivedSections':
+                        main.innerHTML = renderArchivedSections()
+                        break
+                }
+            }
+
+            render()
+        </script>
+    </body>
+</html>

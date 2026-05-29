@@ -8,6 +8,8 @@ stuff is too dark, some of the stuff shouldn't be so dark or bold. we need font 
 
 update tailwind classes
 
+page scrollbar shifting: should add to baseline skill.
+
 ---
 
 * Add a new rule to `~/.claude/output-styles/easy-flow.md`:
