@@ -50,3 +50,14 @@ full anim need to be reviewed.
 ---
 
 per section collapse/show
+
+---
+
+1. Drag-and-drop reordering — wire the existing Sortable state machine to UI; reorder via orderBetween between drop neighbors.
+2. Move task between sections — Inbox → Next Actions → Waiting For; reuses drag-and-drop + order recompute.
+3. Task notes / details — add notes?: string field on Task.
+5. Contexts / tags — tags: string[] field plus a filter hook (@home, @calls).
+6. Quick capture / global Inbox add — single keyboard-focused input that always appends to Inbox.
+7. Search / filter across all sections — one input, a useMatchingTasks(query) selector.
+8. Per-section collapse — pairs with the existing showDone pattern.
+9. Empty-state polish — designed empty state for sections/lists that go empty.
