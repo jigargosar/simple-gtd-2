@@ -15,6 +15,7 @@ the Techniques section is provisional.
    > when show response let first section be my verbatim prompt that lead you to generate this response.
    - The active ingredient is the selection clause **"that lead you to generate this response"** — it makes Claude run an *attribution* step (which prompt caused this response?), not a copy step. It correctly skips meta-commands like "try again" and quotes the prompt that actually generated the content.
    - Observed to work in two separate sessions from the instruction alone — no file print, no correction loop needed.
+   - The quote above is verbatim but truncated. Full original, verbatim: `when show response let first section be my verbatim prompt that lead you to generate this response. try again` — the trailing "try again" is captured separately as technique 2.
 
 2. **`try again` (terse correction, no explanation).**
    - Forces Claude to self-audit its last response against the rules and find the violation itself, instead of being handed the fix. Used ~4 times here on a single named artifact.
