@@ -1,6 +1,6 @@
-remove: archive instead of delete.
-remove edit pencil and expand the length of edit clickable area.
-also remove the count feature, from section header. specially we have to guess what the number even means. Better to let it go.
+remove: archive keep delete, gated behind a confirmation point of browser api.
+remove: edit pencil and expand the length of edit clickable area of section.
+remove: the count feature, from section header. (no value added, how to infer its meaning)
 
 
 ---
