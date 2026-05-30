@@ -68,3 +68,6 @@ per section collapse/show
 ---
 
 auto scrolling to input view doesnt happen, at least for section addition for long page.
+task view should not have delete button, on board view.
+no delete button only archive.
+task done status should be visible in archive view.
