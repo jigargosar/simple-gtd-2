@@ -32,13 +32,6 @@
 .anim-out { animation: task-out 0.18s ease-in forwards; }
 .dot-pop { animation: dot-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
-@keyframes count-pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.18); }
-    100% { transform: scale(1); }
-}
-.anim-count-pulse { animation: count-pulse 0.25s ease-out; display: inline-block; }
-
 /* Strikethrough that draws SEQUENTIALLY across wrapped lines (line 1, then 2,
    …) as one continuous stroke. Mechanism: inline wrapper with the DEFAULT
    box-decoration-break (slice) — one continuous no-repeat background whose

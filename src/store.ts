@@ -11,40 +11,30 @@ export type Task = {
     order: string
     title: string
     done: boolean
-    archived: boolean
 }
 
 export type Section = {
     id: string
     order: string
     title: string
-    archived: boolean
 }
 
 type Point = { x: number; y: number }
 
 type Sortable = 'NotSorting' | { tag: 'PointerDown'; pt: Point } | { tag: 'Dragging' }
 
-// View-model for the single page: what it is currently showing. `showDone` lives
-// inside the board variant because it only narrows the live board; it is meaningless
-// in the archive views.
-export type ViewModel =
-    | { tag: 'board'; showDone: boolean }
-    | { tag: 'archivedTasks' }
-    | { tag: 'archivedSections' }
-
 type AppState = {
     sections: Section[]
     tasks: Task[]
     sortable: Sortable
-    vm: ViewModel
+    showDone: boolean
 }
 
 const useApp = create<AppState>()(
     persist(mockState, {
         name: 'simple-gtd',
-        version: 3,
-        // `vm` is transient UI state — only the data is persisted.
+        version: 4,
+        // Only the data is persisted; `showDone` is transient and starts false.
         partialize: ({ sections, tasks }) => ({ sections, tasks }),
         migrate,
     }),
@@ -67,7 +57,6 @@ function normalizeSection(r: Record<string, unknown>): Section {
         id: asString(r.id, uuidv4()),
         order: asString(r.order, orderBetween(null, null)),
         title: asString(r.title, ''),
-        archived: asBool(r.archived, false),
     }
 }
 
@@ -78,12 +67,11 @@ function normalizeTask(r: Record<string, unknown>): Task {
         order: asString(r.order, orderBetween(null, null)),
         title: asString(r.title, ''),
         done: asBool(r.done, false),
-        archived: asBool(r.archived, false),
     }
 }
 
-// Normalizes persisted data to the current shape. `vm` is never persisted, so it
-// always comes fresh from mockState's default (the board).
+// Normalizes persisted data to the current shape, dropping removed fields (e.g. the
+// old `archived` flag from the deleted archive feature). `showDone` is never persisted.
 function migrate(persisted: unknown): AppState {
     const base = mockState()
     if (!isRecord(persisted)) return base
@@ -110,45 +98,21 @@ function useAppShallow<T>(selector: (s: AppState) => T) {
     return useApp(useShallow(selector))
 }
 
-export function useVm() {
-    return useAppShallow((s) => s.vm)
+export const toggleShowDone = () => useApp.setState((s) => ({ showDone: !s.showDone }))
+
+export function useShowDone() {
+    return useApp((s) => s.showDone)
 }
 
-export const setVm = (vm: ViewModel) => useApp.setState({ vm })
-
-// Only meaningful on the board — the board is the one variant carrying showDone.
-export const toggleShowDone = () =>
-    useApp.setState((s) =>
-        s.vm.tag === 'board' ? { vm: { tag: 'board', showDone: !s.vm.showDone } } : {},
-    )
-
-// Board: live sections, and each section's live tasks (optionally hiding done).
 export function useSections() {
-    return useAppShallow((s) => sortBy(s.sections, prop('order')).filter((sec) => !sec.archived))
-}
-
-export function useSectionPendingCount(sectionId: string) {
-    return useApp(
-        (s) => getSectionTasks(s.tasks, sectionId).filter((t) => !t.done && !t.archived).length,
-    )
+    return useAppShallow((s) => sortBy(s.sections, prop('order')))
 }
 
 export function useVisibleSectionTasks(sectionId: string) {
     return useAppShallow((s) => {
-        const showDone = s.vm.tag === 'board' && s.vm.showDone
-        let list = getSectionTasks(s.tasks, sectionId).filter((t) => !t.archived)
-        if (!showDone) list = list.filter((t) => !t.done)
-        return list
+        const list = getSectionTasks(s.tasks, sectionId)
+        return s.showDone ? list : list.filter((t) => !t.done)
     })
-}
-
-// Archive views: flat lists of archived items.
-export function useArchivedTasks() {
-    return useAppShallow((s) => sortBy(s.tasks.filter((t) => t.archived), prop('order')))
-}
-
-export function useArchivedSections() {
-    return useAppShallow((s) => sortBy(s.sections.filter((sec) => sec.archived), prop('order')))
 }
 
 export const appendTask = (sectionId: string, title: string) => {
@@ -162,23 +126,12 @@ export const appendTask = (sectionId: string, title: string) => {
             order: orderBetween(lastOrder, null),
             title: trimmed,
             done: false,
-            archived: false,
         }
         return { tasks: [...s.tasks, newTask] }
     })
 }
 
-export const archiveTask = (id: string) =>
-    useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: true } : t)),
-    }))
-
-export const restoreTask = (id: string) =>
-    useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: false } : t)),
-    }))
-
-export const deleteTaskForever = (id: string) =>
+export const deleteTask = (id: string) =>
     useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
 
 export const toggleTask = (id: string) =>
@@ -206,7 +159,6 @@ export const appendSection = (title: string) => {
                     id: uuidv4(),
                     order: orderBetween(lastOrder, null),
                     title: trimmed,
-                    archived: false,
                 },
             ],
         }
@@ -221,17 +173,7 @@ export const updateSectionTitle = (id: string, title: string) => {
     }))
 }
 
-export const archiveSection = (id: string) =>
-    useApp.setState((s) => ({
-        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: true } : sec)),
-    }))
-
-export const restoreSection = (id: string) =>
-    useApp.setState((s) => ({
-        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: false } : sec)),
-    }))
-
-export const deleteSectionForever = (id: string) =>
+export const deleteSection = (id: string) =>
     useApp.setState((s) => ({
         sections: s.sections.filter((sec) => sec.id !== id),
         tasks: s.tasks.filter((t) => t.sectionId !== id),
@@ -252,7 +194,7 @@ function mockState(): AppState {
         sections,
         tasks: mockTasks(sections, data),
         sortable: 'NotSorting',
-        vm: { tag: 'board', showDone: false },
+        showDone: false,
     }
 }
 
@@ -261,7 +203,6 @@ function mockSections(data: MockSectionData): Section[] {
         id: uuidv4(),
         order,
         title: data[i].title,
-        archived: false,
     }))
 }
 
@@ -272,7 +213,6 @@ function mockTasks(sections: Section[], data: MockSectionData): Task[] {
             id: uuidv4(),
             sectionId: section.id,
             order,
-            archived: false,
             ...tasks[j],
         }))
     })
