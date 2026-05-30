@@ -71,3 +71,11 @@ auto scrolling to input view doesnt happen, at least for section addition for lo
 task view should not have delete button, on board view.
 no delete button only archive.
 task done status should be visible in archive view.
+
+---
+
+click to edit in entire line, wont need edit button.
+
+---
+
+archive delete feature.
