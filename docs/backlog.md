@@ -63,3 +63,8 @@ per section collapse/show
 7. Search / filter across all sections — one input, a useMatchingTasks(query) selector.
 8. Per-section collapse — pairs with the existing showDone pattern.
 9. Empty-state polish — designed empty state for sections/lists that go empty.
+
+
+---
+
+auto scrolling to input view doesnt happen, at least for section addition for long page.
