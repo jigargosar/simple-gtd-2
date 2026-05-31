@@ -48,7 +48,9 @@ Controls around the keyword trigger (added v2.1.157):
 
 1. **`/config` → "Workflow keyword trigger"** — a setting to turn the
    keyword-triggering behavior **off**, so that the word "workflow" in a prompt
-   no longer auto-launches a dynamic workflow.
+   no longer auto-launches a dynamic workflow. (`/config` shows a second
+   workflow-related parameter whose exact label still needs to be figured out —
+   easy enough: read it off the `/config` screen.)
 2. **Dismiss in-flight** — pressing **backspace immediately after** the trigger
    keyword, or pressing **alt+w**, dismisses the workflow request.
 
