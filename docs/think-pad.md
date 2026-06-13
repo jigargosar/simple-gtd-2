@@ -1,4 +1,6 @@
-Think Pad — App Scope
+Think Pad 
+
+App Scope
 
 > Working scope for Simple GTD. Target: ship a **fully usable v1** for real
 > users by **end of June 2026 (30 Jun)**.
@@ -22,11 +24,11 @@ deferred (see Later).
 
 ## v1 scope
 
-**1. Data safety**
+1. Data safety:
 - localStorage + manual JSON export / import (backup & restore). The one trust
   feature.
 
-**2. Interaction correctness**
+2. Interaction correctness:
 - Whole-line click-to-edit — no edit-button hunting; the whole task row is the
   click target.
 - Edit ↔ display parity — display is multi-line, edit is single-line; reconcile
@@ -37,14 +39,14 @@ deferred (see Later).
 - Done status visible in archive view.
 - Auto-scroll to a newly-added input (e.g. add-section on a long page).
 
-**3. Readability / visual baseline**
+3. Readability / visual baseline:
 - Reduce over-dark / over-bold text; font pass.
 - Tailwind class cleanup.
 - Page-scrollbar shift fix (add to baseline skill).
 - Hover consistency: section-header hover bg; reconcile add-row (focus-within)
   vs task-row hover trigger + opacity.
 
-**4. Animation hardening (zero jank)**
+4. Animation hardening (zero jank):
 - No layout shift on: long-line edit, add-section, delete.
 - Shorten exit stagger (slide-out currently waits up to 360ms section / 240ms
   task).
@@ -53,10 +55,10 @@ deferred (see Later).
 - Checkbox: animates in (dot-pop) but not out — make symmetric.
 - Keyframe naming: task-out drives section exits via `.anim-out`.
 
-**5. Empty states**
+5. Empty states:
 - Designed empty state for sections / lists that go empty (and first run).
 
-**6. Per-section collapse / show**
+6. Per-section collapse / show:
 - Collapse/expand each section; pairs with the existing show-done pattern.
 
 # Later (post-"fully usable")
