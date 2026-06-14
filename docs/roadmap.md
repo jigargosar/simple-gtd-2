@@ -1,0 +1,103 @@
+# SimpleGTD v1 Roadmap
+
+Goal: ship a **fully usable v1** for real users by **end of June 2026 (30 Jun)**.
+
+- Scope / narrative: [think-pad](think-pad.md)
+- Archive model spec: [archive-visibility](reference/archive-visibility.md)
+
+Status: `[x]` done · `[~]` partial · `[ ]` todo. Done-markers reflect a read of
+`src/store.ts`, `src/App.tsx`, `src/hooks.ts`, `src/index.css` on 13 Jun 2026.
+
+## Foundation (already done)
+
+- [x] Task CRUD — add / inline-edit / delete / toggle done
+- [x] Section create + inline rename
+- [x] Show-completed toggle (global `showDone`)
+- [x] Fractional ordering on append (sections + tasks)
+- [x] localStorage persistence (`simple-gtd`, v4 + `migrate`)
+- [x] Entrance animations (header / section / task / checkbox)
+
+## 1. Archive model — REBUILD (was built, then removed)
+
+Spec: [reference/archive-visibility.md](reference/archive-visibility.md).
+Foundational — items in §2, §3, §4 depend on it.
+
+- [ ] Add independent `archived` flag to `Section` and `Task` (no cascade, pure
+      derivation)
+- [ ] Board visibility = derive (task shows iff task **and** its section are
+      both un-archived)
+- [ ] Replace hard delete with archive on the board (sections + tasks)
+- [ ] Archive view — tabbed: Sections | Tasks (never one combined list)
+- [ ] Restore (un-archive) — preserves original `order` (archiving never touches it)
+- [ ] Keep `done` orthogonal to archive
+- [ ] Decide: permanent delete only inside the archive (the lone hard delete)
+
+## 2. Data safety
+
+- [x] localStorage persistence
+- [ ] JSON export (download backup)
+- [ ] JSON import (restore from backup)
+
+## 3. Section CRUD
+
+- [x] Create
+- [x] Rename
+- [~] Delete — exists but hard-deletes section + tasks; convert to archive (§1)
+- [ ] Reorder sections (no reorder action; `sortable` state unwired)
+
+## 4. Interaction correctness
+
+- [x] Click title to edit — pencil removed, title span is the trigger
+- [ ] Edit ↔ display parity — display wraps multi-line, editor is single-line
+      `<input>` (`wrap-anywhere` is a no-op on inputs); reconcile (textarea or
+      truncate), never overflow horizontally
+- [~] Checkbox ↔ edit-input spacing — display + editor share `titleBox`; verify
+      whether it still reads too narrow
+- [ ] Board view: archive-only, no delete button (today shows `Trash2`) — §1
+- [ ] Done status visible in archive view — §1
+- [ ] Auto-scroll to a newly-added input (add-section on a long page)
+
+## 5. Readability / visual baseline
+
+- [~] Reduce over-dark / over-bold text; font pass (Inter set; tone pass pending)
+- [ ] Tailwind class cleanup
+- [ ] Page-scrollbar shift fix (`scrollbar-gutter`)
+- [ ] Hover consistency — section header has no hover bg; add-rows use
+      `focus-within:bg-stone-100/40` vs task hover `bg-stone-100/60`
+
+## 6. Animation hardening (zero jank)
+
+- [ ] No layout shift on long-line edit / add-section / delete
+- [ ] Shorten exit stagger — exit reuses the entrance `animationDelay` (up to
+      360ms section / 240ms task before sliding out)
+- [ ] Resolve delete-on-`animationend` fragility (`App.tsx:185`, flagged
+      "won't fix") — delete-on-click vs animation-gated
+- [ ] Checkbox out-animation — `dot-pop` animates in only (asymmetric)
+- [ ] Keyframe naming — `task-out` drives section exits via `.anim-out`
+
+## 7. Empty states
+
+- [ ] Designed empty state for empty sections / lists / first run
+
+## 8. Per-section collapse / show
+
+- [ ] Collapse/expand each section (pairs with the show-done pattern)
+
+## Known code issues to revisit (currently "won't fix")
+
+- [ ] `hooks.ts:14` — `initialValue` shouldn't change after mount
+- [ ] `hooks.ts:19` — Enter on an empty value closes the editor and reverts
+- [ ] `App.tsx:185` — exit removal depends on the animation firing (see §6)
+
+## Later (post-v1)
+
+- [ ] Drag-and-drop — reorder within + move between sections (wire `sortable`;
+      see `docs/reference/dnd-kit-notes.md`)
+- [ ] Quick capture — global keyboard-first Inbox add
+- [ ] Search / filter — one input + `useMatchingTasks(query)`
+- [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
+
+## Out of scope
+
+- Backend / accounts / multi-device sync
+- ARIA / semantic HTML / `prefers-reduced-motion` (per CLAUDE.md)
