@@ -181,7 +181,7 @@ function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
                 exiting && 'anim-out',
             )}
             style={{ animationDelay: `${Math.min(taskIndex, 8) * 30}ms` }}
-            // Known issue, won't fix: the exit removal depends on the animation firing.
+            // Won't fix now: the exit removal depends on the animation firing.
             onAnimationEnd={(e) => {
                 if (e.animationName === 'task-out' && exiting) deleteTask(task.id)
             }}

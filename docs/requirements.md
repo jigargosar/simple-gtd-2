@@ -83,7 +83,7 @@ Foundational — items in §2, §3, §4 depend on it.
 
 - [ ] Collapse/expand each section (pairs with the show-done pattern)
 
-## Known code issues to revisit (currently "won't fix")
+## Known issues, might not fix
 
 - [ ] `hooks.ts:14` — `initialValue` shouldn't change after mount
 - [ ] `hooks.ts:19` — Enter on an empty value closes the editor and reverts
