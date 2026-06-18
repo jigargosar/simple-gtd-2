@@ -30,6 +30,7 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 2. Ordering is fractional-indexing, not array index. `Section` and `Task` each carry `order: string`; lists are always `sortBy(prop('order'))`. New positions come from `orderBetween` / `generateNKeysBetween` (`fractional-indexing` package). Append computes the key after the current last task in the section.
 3. Persistence. Zustand `persist`, localStorage key `simple-gtd`, version 4. `partialize` persists only `sections` and `tasks` (not `sortable` or `showDone` — both transient). On first load, store seeds from `mockState()` — 5 GTD sections with sample tasks. Clear `simple-gtd` localStorage to reset. `migrate` is active: it normalizes each persisted section/task to the current shape via `normalizeSection`/`normalizeTask`, dropping removed fields (e.g. the old `archived` flag) and backfilling missing ones. Bump `version` and extend the normalizers for breaking state-shape changes.
 4. TS project references. `tsconfig.json` references `tsconfig.app.json` (the `src` app) and `tsconfig.node.json` (the Vite config); `pnpm build` runs `tsc -b` across both. The `strict` umbrella is intentionally off — only explicit flags are on (`noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `erasableSyntaxOnly`).
+5. Drag-and-drop is unimplemented. The `sortable` state field exists in `store.ts` but is wired to no UI — don't assume reordering works.
 
 ## Conventions
 
