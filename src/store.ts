@@ -108,6 +108,12 @@ export function useSections() {
     return useAppShallow((s) => sortBy(s.sections, prop('order')))
 }
 
+export function useMoveTargets(sectionId: string) {
+    return useAppShallow((s) =>
+        sortBy(s.sections, prop('order')).filter((sec) => sec.id !== sectionId),
+    )
+}
+
 export function useVisibleSectionTasks(sectionId: string) {
     return useAppShallow((s) => {
         const list = getSectionTasks(s.tasks, sectionId)

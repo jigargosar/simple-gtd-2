@@ -14,6 +14,7 @@ import {
     toggleTask,
     updateSectionTitle,
     updateTaskTitle,
+    useMoveTargets,
     useSections,
     useShowDone,
     useVisibleSectionTasks,
@@ -304,9 +305,8 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
 // Move a task to another section. Hover/focus-revealed like the delete button; opens a
 // small menu of the other sections. This menu migrates into the task detail box (step 2).
 function ViewMoveMenu({ task }: { task: Task }) {
-    const sections = useSections()
+    const targets = useMoveTargets(task.sectionId)
     const [open, setOpen] = useState(false)
-    const targets = sections.filter((s) => s.id !== task.sectionId)
     if (targets.length === 0) return null
     return (
         <div className="relative shrink-0">
@@ -328,7 +328,7 @@ function ViewMoveMenu({ task }: { task: Task }) {
                                     setTaskSection(task.id, s.id)
                                     setOpen(false)
                                 }}
-                                className="block w-full cursor-pointer truncate rounded-md px-3 py-1.5 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:outline-none"
+                                className="focus-visible:ring-accent block w-full cursor-pointer truncate rounded-md px-3 py-1.5 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                             >
                                 {s.title}
                             </button>
