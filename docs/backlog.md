@@ -44,9 +44,11 @@ page scrollbar shifting: should add to baseline skill.
 
 ---
 
+## Animation
 for long lines editor input causes layout shift
 on add section, anim causes layout shift
 delete also has jumpy anim
+move menu: dropdown open/close and the moved item are abrupt and jarring
 full anim need to be reviewed.
 
 ---
@@ -79,3 +81,9 @@ click to edit in entire line, wont need edit button.
 ---
 
 archive delete feature.
+
+---
+
+## UX
+menu always opens downward below the button (absolute, no flip) — clips and can't reach all items for low tasks
+long section names in the menu: verify text behavior (currently min-w-44 + truncate)
