@@ -8,7 +8,7 @@ No router, no backend, no test runner.
 ## Files
 
 - `src/main.tsx`   — React entry; mounts `<App>` into `#root`.
-- `src/App.tsx`    — entire UI; all `View*` components (`ViewApp`, `ViewBoard`, `ViewSection`, `ViewTask`, …).
+- `src/App.tsx`    — entire UI; every component is named `View*` (grep `^(function|const) View` for the current set).
 - `src/store.ts`   — Zustand store: state, selector hooks, action functions, persistence/migration, mock seed.
 - `src/hooks.ts`   — `useEditInput`: shared Enter/Escape/blur save semantics for edit fields.
 - `src/index.css`  — Tailwind import, `@theme` tokens (`--color-accent`), keyframe animation classes.
@@ -42,3 +42,4 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 6. Keyboard-focusable elements use: `transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent focus-visible:outline-none` (destructive actions use `focus-visible:ring-red-600` instead of `focus-visible:ring-accent`).
 7. Icons are from `lucide-react`.
 8. Appearance, disappearance, and value changes should not be jarring. See `.anim-*` in `src/index.css` for the existing vocabulary.
+9. This file documents stable contracts, not volatile specifics. Don't enumerate things that drift (full component lists, exact counts, every hook/action name) — they go stale silently. Name the pattern and a grep to find the current set instead.
