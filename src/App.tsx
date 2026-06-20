@@ -1,5 +1,5 @@
 import { clsx } from 'clsx'
-import { Plus, Trash2 } from 'lucide-react'
+import { FolderInput, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useEditInput } from './hooks'
 import {
@@ -9,6 +9,7 @@ import {
     deleteTask,
     type Section,
     type Task,
+    setTaskSection,
     toggleShowDone,
     toggleTask,
     updateSectionTitle,
@@ -203,6 +204,7 @@ function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
                         title={task.title}
                         onEdit={() => setEditing(true)}
                     />
+                    <ViewMoveMenu task={task} />
                     <ViewDeleteBtn
                         onClick={() => {
                             if (window.confirm(`Delete “${task.title}”?`)) setExiting(true)
@@ -296,6 +298,45 @@ function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
         >
             <Trash2 className="size-4" />
         </button>
+    )
+}
+
+// Move a task to another section. Hover/focus-revealed like the delete button; opens a
+// small menu of the other sections. This menu migrates into the task detail box (step 2).
+function ViewMoveMenu({ task }: { task: Task }) {
+    const sections = useSections()
+    const [open, setOpen] = useState(false)
+    const targets = sections.filter((s) => s.id !== task.sectionId)
+    if (targets.length === 0) return null
+    return (
+        <div className="relative shrink-0">
+            <button
+                onClick={() => setOpen((v) => !v)}
+                className="focus-visible:ring-accent block cursor-pointer rounded-md p-1 text-stone-500 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
+                <FolderInput className="size-4" />
+            </button>
+            {open && (
+                <>
+                    <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+                    <div className="absolute right-0 z-20 mt-1 min-w-44 rounded-lg border border-stone-200 bg-white py-1 shadow-lg">
+                        <p className="px-3 py-1 text-xs font-medium text-stone-400">Move to…</p>
+                        {targets.map((s) => (
+                            <button
+                                key={s.id}
+                                onClick={() => {
+                                    setTaskSection(task.id, s.id)
+                                    setOpen(false)
+                                }}
+                                className="block w-full cursor-pointer truncate rounded-md px-3 py-1.5 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:outline-none"
+                            >
+                                {s.title}
+                            </button>
+                        ))}
+                    </div>
+                </>
+            )}
+        </div>
     )
 }
 

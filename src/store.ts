@@ -147,6 +147,18 @@ export const updateTaskTitle = (id: string, title: string) => {
     }))
 }
 
+export const setTaskSection = (id: string, sectionId: string) =>
+    useApp.setState((s) => {
+        const task = s.tasks.find((t) => t.id === id)
+        if (!task || task.sectionId === sectionId) return {}
+        const lastOrder = getSectionTasks(s.tasks, sectionId).at(-1)?.order ?? null
+        return {
+            tasks: s.tasks.map((t) =>
+                t.id === id ? { ...t, sectionId, order: orderBetween(lastOrder, null) } : t,
+            ),
+        }
+    })
+
 export const appendSection = (title: string) => {
     const trimmed = title.trim()
     if (!trimmed) return
