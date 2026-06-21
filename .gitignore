@@ -27,3 +27,5 @@ dist-ssr
 # Vendored research clones (not project code)
 docs/dnd-list-6.0.1/
 !docs/reference/multi-line-strike-throught-example/dist/
+
+*aider*
