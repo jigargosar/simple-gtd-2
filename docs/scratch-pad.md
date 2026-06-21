@@ -1,7 +1,6 @@
 # Scratch pad
 
 ## Move-task-to-section audit
-
 Bug:
 1. [x] move menu items dont follow focus-ring consistantly.
 2. [x] ViewMoveMenu: violates fundamental leaky abstraction. (`useMoveTargets` selector)
