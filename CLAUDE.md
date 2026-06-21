@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 Single-page GTD (Getting Things Done) app: sections of tasks you can add, edit,
-complete, and delete, persisted to localStorage.
+complete, and delete, persisted to localStorage. Before moving to supabase
 
 No router, no backend, no test runner.
 
