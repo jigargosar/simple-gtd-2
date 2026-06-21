@@ -1,0 +1,6 @@
+Inbasket (IB)
+Triage (TT)
+Ready (RR)
+In Progress (IP)
+Done (DN)
+Backlog (BL)
