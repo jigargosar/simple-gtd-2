@@ -9,3 +9,6 @@ https://github.com/Aider-AI/aider.git
 - aider is a lmstudio plugin that can expose our subased to api based.
 - we have multiple pages that maket is happen
 - Now we have to figure what the final consolidated plain.                   
+
+
+==== To be filled by AI====
