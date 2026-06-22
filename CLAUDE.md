@@ -1,7 +1,17 @@
 # CLAUDE.md
 
-Single-page GTD (Getting Things Done) app: sections of tasks you can add, edit,
-complete, and delete, persisted to localStorage. Before moving to supabase
+SimpleGTD is a single-page Getting-Things-Done app: a vertical board of sections,
+each holding tasks you add, edit inline, complete, move between sections, and
+delete. State lives in the browser (localStorage now, Supabase later). The v1 aim
+is a clean, fast, calm task board — minimal chrome, instant interactions, no jank,
+usable by real people. Distinctive, intentional UI over templated defaults.
+Out of scope for now: backend / accounts / multi-device sync.
+
+---
+
+> ⚠️ Everything from here down to the `Workflow` divider is a best-effort snapshot —
+> take it with a pinch of salt and verify against the code. Everything **below the
+> divider** (Workflow) is the trusted, governing process.
 
 No router, no backend, no test runner.
 
@@ -43,3 +53,32 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 7. Icons are from `lucide-react`.
 8. Appearance, disappearance, and value changes should not be jarring. See `.anim-*` in `src/index.css` for the existing vocabulary.
 9. This file documents stable contracts, not volatile specifics. Don't enumerate things that drift (full component lists, exact counts, every hook/action name) — they go stale silently. Name the pattern and a grep to find the current set instead.
+
+---
+
+## Workflow
+
+Docs by lifetime — never mix:
+
+1. CLAUDE.md — timeless rules + grep-pointers. No dated state, no code inventory.
+2. `docs/scratch-pad.md` — BEFORE work: design/spec/decisions. Temporary, overwritten per task.
+3. Journal — AFTER work: append-only, dated. One line per event (decision or completion).
+4. Lists (Kanban, requirements, backlog) — OPEN work only. Never mark `[x]`.
+
+Cycle per task:
+
+1. Pick — re-scan all lists; choose next. No doc-to-doc migration.
+2. Spec/design — write to scratch (skip for trivial mechanical edits).
+3. Plan — file-level plan; get explicit go.
+4. Implement.
+5. Verify — `pnpm build && pnpm lint` (no test runner; user eyeballs the browser).
+6. Review — show final diff; user reviews.
+7. Cleanup — small doc cleanup right after the feature.
+
+Done lifecycle:
+
+1. Code-complete, merged, awaiting deploy → Kanban Done (DN) column.
+2. On deploy/release → clear from Done, append a dated journal line.
+3. Done is never `[x]` in a list — done = left the list + journal entry.
+
+Tentative — change it when it stops fitting, but keep one.
