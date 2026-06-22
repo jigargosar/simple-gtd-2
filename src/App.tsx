@@ -31,7 +31,7 @@ function ViewApp() {
 
 function ViewHeader() {
     return (
-        <header className="anim-header px-6 pt-12 pb-8">
+        <header className="px-6 pt-12 pb-8">
             <div className="mx-auto flex max-w-2xl items-center justify-between">
                 <span className="text-sm font-semibold tracking-tight text-stone-900">
                     SimpleGTD
@@ -47,12 +47,8 @@ function ViewBoard() {
         <main className="mx-auto max-w-2xl px-6 pb-24">
             <ViewDoneToggle />
             <div className="flex flex-col gap-10">
-                {sections.map((section, i) => (
-                    <ViewSection
-                        key={section.id}
-                        section={section}
-                        animDelay={Math.min(i, 6) * 60}
-                    />
+                {sections.map((section) => (
+                    <ViewSection key={section.id} section={section} />
                 ))}
                 <ViewAddSection />
             </div>
@@ -79,21 +75,13 @@ function ViewDoneToggle() {
     )
 }
 
-function ViewSection({ section, animDelay }: { section: Section; animDelay: number }) {
+function ViewSection({ section }: { section: Section }) {
     const tasks = useVisibleSectionTasks(section.id)
-    const [exiting, setExiting] = useState(false)
     const [editingTitle, setEditingTitle] = useState(false)
 
-    // Deleting slides the section out, then removes it (and its tasks) once the
-    // animation ends. The confirm() gates the destructive action up front.
+    // The confirm() gates the destructive delete up front.
     return (
-        <div
-            className={clsx('anim-section flex flex-col gap-4 transition', exiting && 'anim-out')}
-            style={{ animationDelay: `${animDelay}ms` }}
-            onAnimationEnd={(e) => {
-                if (e.animationName === 'task-out' && exiting) deleteSection(section.id)
-            }}
-        >
+        <div className="flex flex-col gap-4 transition">
             <div className="group flex items-center gap-2 border-b border-stone-200 pb-2">
                 {editingTitle ? (
                     <ViewSectionTitleEditor
@@ -115,15 +103,15 @@ function ViewSection({ section, animDelay }: { section: Section; animDelay: numb
                         <ViewDeleteBtn
                             onClick={() => {
                                 if (window.confirm(`Delete section “${section.title}” and its tasks?`))
-                                    setExiting(true)
+                                    deleteSection(section.id)
                             }}
                         />
                     </>
                 )}
             </div>
             <ul>
-                {tasks.map((task, i) => (
-                    <ViewTask key={task.id} task={task} taskIndex={i} />
+                {tasks.map((task) => (
+                    <ViewTask key={task.id} task={task} />
                 ))}
                 <ViewAddTask sectionId={section.id} />
             </ul>
@@ -171,23 +159,11 @@ function ViewAddSection() {
     )
 }
 
-function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
-    const [exiting, setExiting] = useState(false)
+function ViewTask({ task }: { task: Task }) {
     const [editing, setEditing] = useState(false)
 
-    // Deleting slides the task out, then removes it once the animation ends.
     return (
-        <li
-            className={clsx(
-                'anim-task group flex items-center gap-3 py-2 transition hover:bg-stone-100/60',
-                exiting && 'anim-out',
-            )}
-            style={{ animationDelay: `${Math.min(taskIndex, 8) * 30}ms` }}
-            // Won't fix now: the exit removal depends on the animation firing.
-            onAnimationEnd={(e) => {
-                if (e.animationName === 'task-out' && exiting) deleteTask(task.id)
-            }}
-        >
+        <li className="group flex items-center gap-3 py-2 transition hover:bg-stone-100/60">
             <ViewCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
             {editing ? (
                 <ViewTitleEditor
@@ -208,7 +184,7 @@ function ViewTask({ task, taskIndex }: { task: Task; taskIndex: number }) {
                     <ViewMoveMenu task={task} />
                     <ViewDeleteBtn
                         onClick={() => {
-                            if (window.confirm(`Delete “${task.title}”?`)) setExiting(true)
+                            if (window.confirm(`Delete “${task.title}”?`)) deleteTask(task.id)
                         }}
                     />
                 </>
@@ -230,7 +206,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
         >
             {done && (
                 <svg
-                    className="dot-pop block shrink-0"
+                    className="block shrink-0"
                     width="9"
                     height="7"
                     viewBox="0 0 9 7"
