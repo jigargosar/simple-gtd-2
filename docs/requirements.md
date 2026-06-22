@@ -2,7 +2,10 @@
 
 Goal: ship a **fully usable v1** for real users by **end of June 2026 (30 Jun)**.
 
-- Scope / narrative: [think-pad](think-pad.md)
+**Priority (2026-06-22):** functional scope first (§1 → §4). Animation (§6) and
+visual niceties are **post-functional** — near the deadline, cherry-pick the
+highest-impact items by impact; the rest may be cut. See `journal.md`.
+
 - Archive model spec: [archive-visibility](reference/archive-visibility.md)
 
 Status: `[x]` done · `[~]` partial · `[ ]` todo. Done-markers reflect a read of
@@ -65,7 +68,7 @@ Foundational — items in §2, §3, §4 depend on it.
 - [ ] Hover consistency — section header has no hover bg; add-rows use
       `focus-within:bg-stone-100/40` vs task hover `bg-stone-100/60`
 
-## 6. Animation hardening (zero jank)
+## 6. Animation hardening (zero jank) — POST-FUNCTIONAL: cherry-pick by impact, rest may be cut
 
 - [ ] No layout shift on long-line edit / add-section / delete
 - [ ] Shorten exit stagger — exit reuses the entrance `animationDelay` (up to
