@@ -22,5 +22,3 @@
 
 - [ ] Add a broken-windows note to CLAUDE.md Conventions: fix minor convention drift promptly; treat it as a defect, not cosmetic.
 
-vim.pack.add { { src = "https://github.com/catppuccin/nvim", name = "catppuccin" } }
-vim.pack.add { { src = "https://github.com/folke/tokyonight.nvim", name = "tokyonight" } }
