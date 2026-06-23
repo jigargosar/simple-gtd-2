@@ -11,12 +11,14 @@ export type Task = {
     order: string
     title: string
     done: boolean
+    archived: boolean
 }
 
 export type Section = {
     id: string
     order: string
     title: string
+    archived: boolean
 }
 
 type Point = { x: number; y: number }
@@ -33,7 +35,7 @@ type AppState = {
 const useApp = create<AppState>()(
     persist(mockState, {
         name: 'simple-gtd',
-        version: 4,
+        version: 5,
         // Only the data is persisted; `showDone` is transient and starts false.
         partialize: ({ sections, tasks }) => ({ sections, tasks }),
         migrate,
@@ -57,6 +59,7 @@ function normalizeSection(r: Record<string, unknown>): Section {
         id: asString(r.id, uuidv4()),
         order: asString(r.order, orderBetween(null, null)),
         title: asString(r.title, ''),
+        archived: asBool(r.archived, false),
     }
 }
 
@@ -67,11 +70,13 @@ function normalizeTask(r: Record<string, unknown>): Task {
         order: asString(r.order, orderBetween(null, null)),
         title: asString(r.title, ''),
         done: asBool(r.done, false),
+        archived: asBool(r.archived, false),
     }
 }
 
-// Normalizes persisted data to the current shape, dropping removed fields (e.g. the
-// old `archived` flag from the deleted archive feature). `showDone` is never persisted.
+// Normalizes persisted data to the current shape. Missing fields get safe defaults
+// (e.g. `archived` defaults to false for data saved before the flag existed).
+// `showDone` is never persisted.
 function migrate(persisted: unknown): AppState {
     const base = mockState()
     if (!isRecord(persisted)) return base
@@ -105,20 +110,35 @@ export function useShowDone() {
 }
 
 export function useSections() {
-    return useAppShallow((s) => sortBy(s.sections, prop('order')))
+    return useAppShallow((s) => sortBy(s.sections, prop('order')).filter((sec) => !sec.archived))
 }
 
 export function useMoveTargets(sectionId: string) {
     return useAppShallow((s) =>
-        sortBy(s.sections, prop('order')).filter((sec) => sec.id !== sectionId),
+        sortBy(s.sections, prop('order')).filter(
+            (sec) => sec.id !== sectionId && !sec.archived,
+        ),
     )
 }
 
+// Active tasks: exclude archived, then apply the show-completed rule.
+// (A task whose section is archived is excluded here because the whole
+// section is filtered out of the active view upstream.)
 export function useVisibleSectionTasks(sectionId: string) {
     return useAppShallow((s) => {
-        const list = getSectionTasks(s.tasks, sectionId)
+        const list = getSectionTasks(s.tasks, sectionId).filter((t) => !t.archived)
         return s.showDone ? list : list.filter((t) => !t.done)
     })
+}
+
+// Archive panes. An archived task always appears in the items pane, regardless
+// of its section's state. Archived sections show as bare rows (no tasks).
+export function useArchivedTasks() {
+    return useAppShallow((s) => sortBy(s.tasks.filter((t) => t.archived), prop('order')))
+}
+
+export function useArchivedSections() {
+    return useAppShallow((s) => sortBy(s.sections.filter((sec) => sec.archived), prop('order')))
 }
 
 export const appendTask = (sectionId: string, title: string) => {
@@ -132,10 +152,23 @@ export const appendTask = (sectionId: string, title: string) => {
             order: orderBetween(lastOrder, null),
             title: trimmed,
             done: false,
+            archived: false,
         }
         return { tasks: [...s.tasks, newTask] }
     })
 }
+
+// Active-view removal is now archiving (reversible). Permanent removal
+// (deleteTask) is reachable only from the archive dialog.
+export const archiveTask = (id: string) =>
+    useApp.setState((s) => ({
+        tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: true } : t)),
+    }))
+
+export const restoreTask = (id: string) =>
+    useApp.setState((s) => ({
+        tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: false } : t)),
+    }))
 
 export const deleteTask = (id: string) =>
     useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
@@ -177,6 +210,7 @@ export const appendSection = (title: string) => {
                     id: uuidv4(),
                     order: orderBetween(lastOrder, null),
                     title: trimmed,
+                    archived: false,
                 },
             ],
         }
@@ -191,6 +225,19 @@ export const updateSectionTitle = (id: string, title: string) => {
     }))
 }
 
+// Archiving a section does NOT touch its tasks' archived flags (independent flags).
+// The section simply drops out of the active view.
+export const archiveSection = (id: string) =>                  
+    useApp.setState((s) => ({
+        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: true } : sec)),
+    }))
+
+export const restoreSection = (id: string) =>
+    useApp.setState((s) => ({
+        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: false } : sec)),
+    }))
+
+// Permanent purge from the archive dialog: removes the section and all its tasks.
 export const deleteSection = (id: string) =>
     useApp.setState((s) => ({
         sections: s.sections.filter((sec) => sec.id !== id),
@@ -221,6 +268,7 @@ function mockSections(data: MockSectionData): Section[] {
         id: uuidv4(),
         order,
         title: data[i].title,
+        archived: false,
     }))
 }
 
@@ -231,6 +279,7 @@ function mockTasks(sections: Section[], data: MockSectionData): Task[] {
             id: uuidv4(),
             sectionId: section.id,
             order,
+            archived: false,
             ...tasks[j],
         }))
     })

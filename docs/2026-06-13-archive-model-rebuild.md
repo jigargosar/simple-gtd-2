@@ -71,7 +71,7 @@ Replace the comment block directly above `function migrate(` with:
 
 ```ts
 // Normalizes persisted data to the current shape. Missing fields get safe
-// defaults (e.g. `archived` defaults to false for data saved before the flag
+// defaults (e.g. `archived` defaults to false for d mata saved before the flag
 // was reintroduced). `showDone` is never persisted.
 ```
 

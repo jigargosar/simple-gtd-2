@@ -1,12 +1,16 @@
 import { clsx } from 'clsx'
-import { FolderInput, Plus, Trash2 } from 'lucide-react'
+import { Archive, ArchiveRestore, FolderInput, MoreHorizontal, Plus, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { useEditInput } from './hooks'
 import {
     appendSection,
     appendTask,
+    archiveSection,
+    archiveTask,
     deleteSection,
     deleteTask,
+    restoreSection,
+    restoreTask,
     type Section,
     type Task,
     setTaskSection,
@@ -14,6 +18,8 @@ import {
     toggleTask,
     updateSectionTitle,
     updateTaskTitle,
+    useArchivedSections,
+    useArchivedTasks,
     useMoveTargets,
     useSections,
     useShowDone,
@@ -45,7 +51,7 @@ function ViewBoard() {
     const sections = useSections()
     return (
         <main className="mx-auto max-w-2xl px-6 pb-24">
-            <ViewDoneToggle />
+            <ViewMenu />
             <div className="flex flex-col gap-10">
                 {sections.map((section) => (
                     <ViewSection key={section.id} section={section} />
@@ -56,21 +62,71 @@ function ViewBoard() {
     )
 }
 
-// Constant label, state encoded by the checkbox — no state-vs-action ambiguity, and
-// the width never changes (so no layout shift).
-function ViewDoneToggle() {
+// Top-right menu: holds the show-completed toggle and the Archive entry.
+// Keeps the active view's top area to a single control and gives archive a home.
+function ViewMenu() {
     const showDone = useShowDone()
+    const [open, setOpen] = useState(false)
+    const [archiveOpen, setArchiveOpen] = useState(false)
+
     return (
         <div className="mb-6 flex justify-end">
-            <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-stone-600 select-none">
-                <input
-                    type="checkbox"
-                    checked={showDone}
-                    onChange={toggleShowDone}
-                    className="accent-accent h-4 w-4 cursor-pointer"
-                />
-                Show completed
-            </label>
+            <div className="relative">
+                <button
+                    onClick={() => setOpen((v) => !v)}
+                    aria-label="Menu"
+                    className="focus-visible:ring-accent grid h-8 w-8 cursor-pointer place-items-center rounded-md text-stone-500 transition hover:bg-stone-100 hover:text-stone-700 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                    <MoreHorizontal className="size-5" />
+                </button>
+
+                {open && (
+                    <>
+                        <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+                        <div className="absolute right-0 z-20 mt-1 min-w-52 rounded-lg border border-stone-200 bg-white py-1 shadow-lg">
+                            <button
+                                onClick={toggleShowDone}
+                                className="focus-visible:ring-accent flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                <span
+                                    className={clsx(
+                                        'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
+                                        showDone
+                                            ? 'border-accent bg-accent text-white'
+                                            : 'border-stone-400',
+                                    )}
+                                >
+                                    {showDone && (
+                                        <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                                            <path
+                                                d="M1 3.5L3.5 6L8 1"
+                                                stroke="currentColor"
+                                                strokeWidth="1.75"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
+                                        </svg>
+                                    )}
+                                </span>
+                                Show completed
+                            </button>
+                            <div className="my-1 h-px bg-stone-100" />
+                            <button
+                                onClick={() => {
+                                    setOpen(false)
+                                    setArchiveOpen(true)
+                                }}
+                                className="focus-visible:ring-accent flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                <Archive className="size-4 text-stone-500" />
+                                Archive…
+                            </button>
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {archiveOpen && <ViewArchiveDialog onClose={() => setArchiveOpen(false)} />}
         </div>
     )
 }
@@ -79,7 +135,6 @@ function ViewSection({ section }: { section: Section }) {
     const tasks = useVisibleSectionTasks(section.id)
     const [editingTitle, setEditingTitle] = useState(false)
 
-    // The confirm() gates the destructive delete up front.
     return (
         <div className="flex flex-col gap-4 transition">
             <div className="group flex items-center gap-2 border-b border-stone-200 pb-2">
@@ -100,11 +155,9 @@ function ViewSection({ section }: { section: Section }) {
                         >
                             {section.title}
                         </span>
-                        <ViewDeleteBtn
-                            onClick={() => {
-                                if (window.confirm(`Delete section “${section.title}” and its tasks?`))
-                                    deleteSection(section.id)
-                            }}
+                        <ViewArchiveBtn
+                            label="Archive section"
+                            onClick={() => archiveSection(section.id)}
                         />
                     </>
                 )}
@@ -182,10 +235,9 @@ function ViewTask({ task }: { task: Task }) {
                         onEdit={() => setEditing(true)}
                     />
                     <ViewMoveMenu task={task} />
-                    <ViewDeleteBtn
-                        onClick={() => {
-                            if (window.confirm(`Delete “${task.title}”?`)) deleteTask(task.id)
-                        }}
+                    <ViewArchiveBtn
+                        label="Archive task"
+                        onClick={() => archiveTask(task.id)}
                     />
                 </>
             )}
@@ -267,13 +319,18 @@ function ViewTitleEditor({
     )
 }
 
-function ViewDeleteBtn({ onClick }: { onClick: () => void }) {
+// Active-view per-row control. Archiving is reversible, so it's styled
+// neutral (not red) and fires immediately without a confirm. Revealed on
+// hover/focus, same as the old delete button.
+function ViewArchiveBtn({ onClick, label }: { onClick: () => void; label: string }) {
     return (
         <button
             onClick={onClick}
-            className="shrink-0 cursor-pointer rounded-md p-1 text-red-700 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-red-50 focus-visible:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-600 focus-visible:outline-none"
+            aria-label={label}
+            title={label}
+            className="focus-visible:ring-accent shrink-0 cursor-pointer rounded-md p-1 text-stone-500 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-700 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
-            <Trash2 className="size-4" />
+            <Archive className="size-4" />
         </button>
     )
 }
@@ -337,6 +394,167 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
                 )}
             />
         </li>
+    )
+}
+
+// Archive dialog: two mutually-exclusive panes (items / lists), top-anchored,
+// scrolls internally. Restore is always visible; permanent delete is revealed on
+// hover/focus and gated by an inline two-step confirm (per the approved mock).
+function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
+    const [tab, setTab] = useState<'items' | 'lists'>('items')
+    const tasks = useArchivedTasks()
+    const sections = useArchivedSections()
+
+    return (
+        <div
+            className="fixed inset-0 z-50 flex justify-center bg-black/30 pt-[8vh]"
+            onClick={(e) => {
+                if (e.target === e.currentTarget) onClose()
+            }}
+        >
+            <div className="flex max-h-[80vh] w-[min(560px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
+                <div className="flex items-center border-b border-stone-200 px-5 py-4">
+                    <span className="text-base font-semibold text-stone-900">Archive</span>
+                    <button
+                        onClick={onClose}
+                        aria-label="Close"
+                        className="ml-auto grid h-7 w-7 place-items-center rounded-md text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
+                    >
+                        <X className="size-4" />
+                    </button>
+                </div>
+
+                {/* compact left-aligned segmented tabs */}
+                <div className="mx-5 mt-4 mb-1 inline-flex self-start overflow-hidden rounded-lg border border-stone-200">
+                    {(['items', 'lists'] as const).map((t, i) => (
+                        <button
+                            key={t}
+                            onClick={() => setTab(t)}
+                            className={clsx(
+                                'px-4 py-1.5 text-xs transition',
+                                i > 0 && 'border-l border-stone-200',
+                                tab === t
+                                    ? 'bg-stone-100 text-stone-900'
+                                    : 'text-stone-500 hover:text-stone-700',
+                            )}
+                        >
+                            {t === 'items' ? 'Archived items' : 'Archived lists'}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="overflow-y-auto px-5 pb-5 pt-2">
+                    {tab === 'items' ? (
+                        tasks.length ? (
+                            tasks.map((t) => (
+                                <ViewArchiveRow
+                                    key={t.id}
+                                    text={t.title}
+                                    kind="item"
+                                    onRestore={() => restoreTask(t.id)}
+                                    onDelete={() => deleteTask(t.id)}
+                                />
+                            ))
+                        ) : (
+                            <p className="py-4 text-sm italic text-stone-400">No archived items.</p>
+                        )
+                    ) : sections.length ? (
+                        sections.map((s) => (
+                            <ViewArchiveRow
+                                key={s.id}
+                                text={s.title}
+                                kind="list"
+                                onRestore={() => restoreSection(s.id)}
+                                onDelete={() => deleteSection(s.id)}
+                            />
+                        ))
+                    ) : (
+                        <p className="py-4 text-sm italic text-stone-400">No archived lists.</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// One archived row. `confirming` swaps the trailing controls for an inline
+// "Delete permanently? Yes / Cancel" prompt.
+function ViewArchiveRow({
+    text,
+    kind,
+    onRestore,
+    onDelete,
+}: {
+    text: string
+    kind: 'item' | 'list'
+    onRestore: () => void
+    onDelete: () => void
+}) {
+    const [confirming, setConfirming] = useState(false)
+    const isList = kind === 'list'
+    const wrap = isList
+        ? 'group mb-2 flex items-center rounded-lg border border-stone-200 px-3.5 py-3'
+        : 'group flex items-center border-b border-stone-100 py-2.5'
+
+    if (confirming) {
+        return (
+            <div className={wrap}>
+                {!isList && (
+                    <span className="mr-3 h-4 w-4 shrink-0 rounded-full border-2 border-stone-300" />
+                )}
+                <span
+                    className={clsx(
+                        'flex-1 text-base text-stone-400 line-through',
+                        isList && 'font-medium',
+                    )}
+                >
+                    {text}
+                </span>
+                <span className="text-sm text-stone-500">Delete permanently?</span>
+                <button
+                    onClick={onDelete}
+                    className="ml-3 cursor-pointer rounded-md px-2 py-1 text-sm font-medium text-red-700 hover:bg-red-50"
+                >
+                    Yes
+                </button>
+                <button
+                    onClick={() => setConfirming(false)}
+                    className="ml-1 cursor-pointer rounded-md px-2 py-1 text-sm text-stone-500 hover:bg-stone-100"
+                >
+                    Cancel
+                </button>
+            </div>
+        )
+    }
+
+    return (
+        <div className={wrap}>
+            {!isList && (
+                <span className="mr-3 h-4 w-4 shrink-0 rounded-full border-2 border-stone-400" />
+            )}
+            <span
+                className={clsx(
+                    'flex-1 text-base',
+                    isList ? 'font-medium text-stone-700' : 'text-stone-900',
+                )}
+            >
+                {text}
+            </span>
+            <button
+                onClick={onRestore}
+                className="ml-2 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-sm text-indigo-600 transition hover:bg-indigo-50"
+            >
+                <ArchiveRestore className="size-3.5" />
+                restore
+            </button>
+            <button
+                onClick={() => setConfirming(true)}
+                aria-label="Delete permanently"
+                className="ml-1 shrink-0 cursor-pointer rounded-md p-1.5 text-red-700 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-red-50 focus-visible:opacity-100"
+            >
+                <Trash2 className="size-4" />
+            </button>
+        </div>
     )
 }
 
