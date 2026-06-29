@@ -151,7 +151,7 @@ export function useArchivedSections() {
     )
 }
 
-export const appendTask = (sectionId: string, title: string) => {
+export function appendTask(sectionId: string, title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
     useApp.setState((s) => {
@@ -170,25 +170,29 @@ export const appendTask = (sectionId: string, title: string) => {
 
 // Active-view removal is now archiving (reversible). Permanent removal
 // (deleteTask) is reachable only from the archive dialog.
-export const archiveTask = (id: string) =>
-    useApp.setState((s) => ({
+export function archiveTask(id: string) {
+    return useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: true } : t)),
     }))
+}
 
-export const restoreTask = (id: string) =>
-    useApp.setState((s) => ({
+export function restoreTask(id: string) {
+    return useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: false } : t)),
     }))
+}
 
-export const deleteTask = (id: string) =>
-    useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
+export function deleteTask(id: string) {
+    return useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
+}
 
-export const toggleTask = (id: string) =>
-    useApp.setState((s) => ({
+export function toggleTask(id: string) {
+    return useApp.setState((s) => ({
         tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
     }))
+}
 
-export const updateTaskTitle = (id: string, title: string) => {
+export function updateTaskTitle(id: string, title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
     useApp.setState((s) => ({
@@ -196,8 +200,8 @@ export const updateTaskTitle = (id: string, title: string) => {
     }))
 }
 
-export const setTaskSection = (id: string, sectionId: string) =>
-    useApp.setState((s) => {
+export function setTaskSection(id: string, sectionId: string) {
+    return useApp.setState((s) => {
         const task = s.tasks.find((t) => t.id === id)
         if (!task || task.sectionId === sectionId) return {}
         const lastOrder = getSectionTasks(s.tasks, sectionId).at(-1)?.order ?? null
@@ -207,8 +211,9 @@ export const setTaskSection = (id: string, sectionId: string) =>
             ),
         }
     })
+}
 
-export const appendSection = (title: string) => {
+export function appendSection(title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
     useApp.setState((s) => {
@@ -227,7 +232,7 @@ export const appendSection = (title: string) => {
     })
 }
 
-export const updateSectionTitle = (id: string, title: string) => {
+export function updateSectionTitle(id: string, title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
     useApp.setState((s) => ({
@@ -237,22 +242,25 @@ export const updateSectionTitle = (id: string, title: string) => {
 
 // Archiving a section does NOT touch its tasks' archived flags (independent flags).
 // The section simply drops out of the active view.
-export const archiveSection = (id: string) =>
-    useApp.setState((s) => ({
+export function archiveSection(id: string) {
+    return useApp.setState((s) => ({
         sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: true } : sec)),
     }))
+}
 
-export const restoreSection = (id: string) =>
-    useApp.setState((s) => ({
+export function restoreSection(id: string) {
+    return useApp.setState((s) => ({
         sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: false } : sec)),
     }))
+}
 
 // Permanent purge from the archive dialog: removes the section and all its tasks.
-export const deleteSection = (id: string) =>
-    useApp.setState((s) => ({
+export function deleteSection(id: string) {
+    return useApp.setState((s) => ({
         sections: s.sections.filter((sec) => sec.id !== id),
         tasks: s.tasks.filter((t) => t.sectionId !== id),
     }))
+}
 
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
