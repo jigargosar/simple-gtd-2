@@ -103,8 +103,20 @@ function useAppShallow<T>(selector: (s: AppState) => T) {
     return useApp(useShallow(selector))
 }
 
+function mapState(fn: (s: AppState) => Partial<AppState>) {
+    return useApp.setState(fn)
+}
+
+function mapTasks(fn: (t: Task) => Task) {
+    return mapState((s) => ({ tasks: s.tasks.map(fn) }))
+}
+
+function mapSections(fn: (sec: Section) => Section) {
+    return mapState((s) => ({ sections: s.sections.map(fn) }))
+}
+
 export function toggleShowDone() {
-    return useApp.setState((s) => ({ showDone: !s.showDone }))
+    return mapState((s) => ({ showDone: !s.showDone }))
 }
 
 export function useShowDone() {
@@ -154,7 +166,7 @@ export function useArchivedSections() {
 export function appendTask(sectionId: string, title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
-    useApp.setState((s) => {
+    mapState((s) => {
         const lastOrder = getSectionTasks(s.tasks, sectionId).at(-1)?.order ?? null
         const newTask = {
             id: uuidv4(),
@@ -171,37 +183,29 @@ export function appendTask(sectionId: string, title: string) {
 // Active-view removal is now archiving (reversible). Permanent removal
 // (deleteTask) is reachable only from the archive dialog.
 export function archiveTask(id: string) {
-    return useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: true } : t)),
-    }))
+    return mapTasks((t) => (t.id === id ? { ...t, archived: true } : t))
 }
 
 export function restoreTask(id: string) {
-    return useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, archived: false } : t)),
-    }))
+    return mapTasks((t) => (t.id === id ? { ...t, archived: false } : t))
 }
 
 export function deleteTask(id: string) {
-    return useApp.setState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
+    return mapState((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) }))
 }
 
 export function toggleTask(id: string) {
-    return useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
-    }))
+    return mapTasks((t) => (t.id === id ? { ...t, done: !t.done } : t))
 }
 
 export function updateTaskTitle(id: string, title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
-    useApp.setState((s) => ({
-        tasks: s.tasks.map((t) => (t.id === id ? { ...t, title: trimmed } : t)),
-    }))
+    mapTasks((t) => (t.id === id ? { ...t, title: trimmed } : t))
 }
 
 export function setTaskSection(id: string, sectionId: string) {
-    return useApp.setState((s) => {
+    return mapState((s) => {
         const task = s.tasks.find((t) => t.id === id)
         if (!task || task.sectionId === sectionId) return {}
         const lastOrder = getSectionTasks(s.tasks, sectionId).at(-1)?.order ?? null
@@ -216,7 +220,7 @@ export function setTaskSection(id: string, sectionId: string) {
 export function appendSection(title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
-    useApp.setState((s) => {
+    mapState((s) => {
         const lastOrder = sortBy(s.sections, prop('order')).at(-1)?.order ?? null
         return {
             sections: [
@@ -235,28 +239,22 @@ export function appendSection(title: string) {
 export function updateSectionTitle(id: string, title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
-    useApp.setState((s) => ({
-        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, title: trimmed } : sec)),
-    }))
+    mapSections((sec) => (sec.id === id ? { ...sec, title: trimmed } : sec))
 }
 
 // Archiving a section does NOT touch its tasks' archived flags (independent flags).
 // The section simply drops out of the active view.
 export function archiveSection(id: string) {
-    return useApp.setState((s) => ({
-        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: true } : sec)),
-    }))
+    return mapSections((sec) => (sec.id === id ? { ...sec, archived: true } : sec))
 }
 
 export function restoreSection(id: string) {
-    return useApp.setState((s) => ({
-        sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: false } : sec)),
-    }))
+    return mapSections((sec) => (sec.id === id ? { ...sec, archived: false } : sec))
 }
 
 // Permanent purge from the archive dialog: removes the section and all its tasks.
 export function deleteSection(id: string) {
-    return useApp.setState((s) => ({
+    return mapState((s) => ({
         sections: s.sections.filter((sec) => sec.id !== id),
         tasks: s.tasks.filter((t) => t.sectionId !== id),
     }))
