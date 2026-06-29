@@ -103,7 +103,9 @@ function useAppShallow<T>(selector: (s: AppState) => T) {
     return useApp(useShallow(selector))
 }
 
-export const toggleShowDone = () => useApp.setState((s) => ({ showDone: !s.showDone }))
+export function toggleShowDone() {
+    return useApp.setState((s) => ({ showDone: !s.showDone }))
+}
 
 export function useShowDone() {
     return useApp((s) => s.showDone)
@@ -115,9 +117,7 @@ export function useSections() {
 
 export function useMoveTargets(sectionId: string) {
     return useAppShallow((s) =>
-        sortBy(s.sections, prop('order')).filter(
-            (sec) => sec.id !== sectionId && !sec.archived,
-        ),
+        sortBy(s.sections, prop('order')).filter((sec) => sec.id !== sectionId && !sec.archived),
     )
 }
 
@@ -134,11 +134,21 @@ export function useVisibleSectionTasks(sectionId: string) {
 // Archive panes. An archived task always appears in the items pane, regardless
 // of its section's state. Archived sections show as bare rows (no tasks).
 export function useArchivedTasks() {
-    return useAppShallow((s) => sortBy(s.tasks.filter((t) => t.archived), prop('order')))
+    return useAppShallow((s) =>
+        sortBy(
+            s.tasks.filter((t) => t.archived),
+            prop('order'),
+        ),
+    )
 }
 
 export function useArchivedSections() {
-    return useAppShallow((s) => sortBy(s.sections.filter((sec) => sec.archived), prop('order')))
+    return useAppShallow((s) =>
+        sortBy(
+            s.sections.filter((sec) => sec.archived),
+            prop('order'),
+        ),
+    )
 }
 
 export const appendTask = (sectionId: string, title: string) => {
@@ -227,7 +237,7 @@ export const updateSectionTitle = (id: string, title: string) => {
 
 // Archiving a section does NOT touch its tasks' archived flags (independent flags).
 // The section simply drops out of the active view.
-export const archiveSection = (id: string) =>                  
+export const archiveSection = (id: string) =>
     useApp.setState((s) => ({
         sections: s.sections.map((sec) => (sec.id === id ? { ...sec, archived: true } : sec)),
     }))

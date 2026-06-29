@@ -151,7 +151,7 @@ function ViewSection({ section }: { section: Section }) {
                     <>
                         <span
                             onClick={() => setEditingTitle(true)}
-                            className="wrap-anywhere flex-1 cursor-text pl-2 text-lg font-bold text-stone-500 transition"
+                            className="flex-1 cursor-text pl-2 text-lg font-bold wrap-anywhere text-stone-500 transition"
                         >
                             {section.title}
                         </span>
@@ -235,10 +235,7 @@ function ViewTask({ task }: { task: Task }) {
                         onEdit={() => setEditing(true)}
                     />
                     <ViewMoveMenu task={task} />
-                    <ViewArchiveBtn
-                        label="Archive task"
-                        onClick={() => archiveTask(task.id)}
-                    />
+                    <ViewArchiveBtn label="Archive task" onClick={() => archiveTask(task.id)} />
                 </>
             )}
         </li>
@@ -257,13 +254,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
             )}
         >
             {done && (
-                <svg
-                    className="block shrink-0"
-                    width="9"
-                    height="7"
-                    viewBox="0 0 9 7"
-                    fill="none"
-                >
+                <svg className="block shrink-0" width="9" height="7" viewBox="0 0 9 7" fill="none">
                     <path
                         d="M1 3.5L3.5 6L8 1"
                         stroke="white"
@@ -443,7 +434,7 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
                     ))}
                 </div>
 
-                <div className="overflow-y-auto px-5 pb-5 pt-2">
+                <div className="overflow-y-auto px-5 pt-2 pb-5">
                     {tab === 'items' ? (
                         tasks.length ? (
                             tasks.map((t) => (
@@ -456,7 +447,7 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
                                 />
                             ))
                         ) : (
-                            <p className="py-4 text-sm italic text-stone-400">No archived items.</p>
+                            <p className="py-4 text-sm text-stone-400 italic">No archived items.</p>
                         )
                     ) : sections.length ? (
                         sections.map((s) => (
@@ -469,7 +460,7 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
                             />
                         ))
                     ) : (
-                        <p className="py-4 text-sm italic text-stone-400">No archived lists.</p>
+                        <p className="py-4 text-sm text-stone-400 italic">No archived lists.</p>
                     )}
                 </div>
             </div>
