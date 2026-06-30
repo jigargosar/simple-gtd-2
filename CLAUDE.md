@@ -58,27 +58,17 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 
 ## Workflow
 
-Docs by lifetime — never mix:
+Files (new items on top; except docs/journal.md excepted):
 
-1. CLAUDE.md — timeless rules + grep-pointers. No dated state, no code inventory.
-2. `docs/scratch-pad.md` — BEFORE work: design/spec/decisions. Temporary, overwritten per task.
-3. Journal — AFTER work: append-only, dated. One line per event (decision or completion).
-4. Lists (Kanban, requirements, backlog) — OPEN work only. Never mark `[x]`.
+- docs/requirements.md — committed v1 scope.
+- Kanban-Board.md — Inbox, Planning, Ready, InProgress, Done.
+- backlog.md — May implement
+- journal.md — ADR
 
-Cycle per task:
+Board sections (what each holds):
 
-1. Pick — re-scan all lists; choose next. No doc-to-doc migration.
-2. Spec/design — write to scratch (skip for trivial mechanical edits).
-3. Plan — file-level plan; get explicit go.
-4. Implement.
-5. Verify — `pnpm build && pnpm lint` (no test runner; user eyeballs the browser).
-6. Review — show final diff; user reviews.
-7. Cleanup — small doc cleanup right after the feature.
-
-Done lifecycle:
-
-1. Code-complete, merged, awaiting deploy → Kanban Done (DN) column.
-2. On deploy/release → clear from Done, append a dated journal line.
-3. Done is never `[x]` in a list — done = left the list + journal entry.
-
-Tentative — change it when it stops fitting, but keep one.
+- Inbox — raw, unprocessed captures.
+- Planning — Needs planning for implementation
+- Ready — Ready to implement, with plan.
+- In Progress — actively being worked.
+- Done — complete + verified.
