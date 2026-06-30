@@ -17,7 +17,7 @@ Status: `[x]` done · `[~]` partial · `[ ]` todo. Done-markers reflect a read o
 - [x] Section create + inline rename
 - [x] Show-completed toggle (global `showDone`)
 - [x] Fractional ordering on append (sections + tasks)
-- [x] localStorage persistence (`simple-gtd`, v4 + `migrate`)
+- [x] localStorage persistence (Zustand `persist` + `migrate`)
 - [x] Entrance animations (header / section / task / checkbox)
 
 ## 1. Archive model — REBUILD (was built, then removed)
@@ -25,15 +25,15 @@ Status: `[x]` done · `[~]` partial · `[ ]` todo. Done-markers reflect a read o
 Spec: [reference/archive-visibility.md](reference/archive-visibility.md).
 Foundational — items in §2, §3, §4 depend on it.
 
-- [ ] Add independent `archived` flag to `Section` and `Task` (no cascade, pure
+- [x] Add independent `archived` flag to `Section` and `Task` (no cascade, pure
       derivation)
-- [ ] Board visibility = derive (task shows iff task **and** its section are
+- [x] Board visibility = derive (task shows iff task **and** its section are
       both un-archived)
-- [ ] Replace hard delete with archive on the board (sections + tasks)
-- [ ] Archive view — tabbed: Sections | Tasks (never one combined list)
-- [ ] Restore (un-archive) — preserves original `order` (archiving never touches it)
-- [ ] Keep `done` orthogonal to archive
-- [ ] Decide: permanent delete only inside the archive (the lone hard delete)
+- [x] Replace hard delete with archive on the board (sections + tasks)
+- [x] Archive view — tabbed: Sections | Tasks (never one combined list)
+- [x] Restore (un-archive) — preserves original `order` (archiving never touches it)
+- [x] Keep `done` orthogonal to archive
+- [x] Decide: permanent delete only inside the archive (the lone hard delete)
 
 ## 2. Data safety
 
@@ -45,7 +45,7 @@ Foundational — items in §2, §3, §4 depend on it.
 
 - [x] Create
 - [x] Rename
-- [~] Delete — exists but hard-deletes section + tasks; convert to archive (§1)
+- [x] Delete — board action is now archive; hard delete lives only in the archive dialog (§1)
 - [ ] Reorder sections (no reorder action; `sortable` state unwired)
 
 ## 4. Interaction correctness
@@ -56,7 +56,7 @@ Foundational — items in §2, §3, §4 depend on it.
       truncate), never overflow horizontally
 - [~] Checkbox ↔ edit-input spacing — display + editor share `titleBox`; verify
       whether it still reads too narrow
-- [ ] Board view: archive-only, no delete button (today shows `Trash2`) — §1
+- [x] Board view: archive-only, no delete button (`Trash2` lives only in the archive) — §1
 - [ ] Done status visible in archive view — §1
 - [ ] Auto-scroll to a newly-added input (add-section on a long page)
 
