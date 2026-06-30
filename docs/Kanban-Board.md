@@ -2,6 +2,7 @@
 
 ## Inbasket (IB)
 
+- [ ] Collapse / expand all sections at once.
 - [ ] Audit CLAUDE.md: cut/convert descriptive lines that snapshot current code
       state (they rot into lies). Keep only timeless rules + grep-pointers per
       Convention 9. Known offenders: Convention 2 enumerates `.anim-*`/`.dot-pop`
@@ -27,6 +28,7 @@
 
 ## Done (DN)
 
+- [x] Collapsible sections — persisted `collapsed` flag per section + chevron toggle; folded sections hide their task list.
 - [x] fixed: Now, move menu items are follow  follow focus-ring consistantly.
 - [x] ViewMoveMenu: violates fundamental leaky abstraction. (`useMoveTargets` selector)
 

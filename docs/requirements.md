@@ -84,7 +84,7 @@ Foundational — items in §2, §3, §4 depend on it.
 
 ## 8. Per-section collapse / show
 
-- [ ] Collapse/expand each section (pairs with the show-done pattern)
+- [x] Collapse/expand each section
 
 ## Known issues, might not fix
 

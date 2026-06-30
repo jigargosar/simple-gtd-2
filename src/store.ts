@@ -19,6 +19,7 @@ export type Section = {
     order: string
     title: string
     archived: boolean
+    collapsed: boolean
 }
 
 type Point = { x: number; y: number }
@@ -35,7 +36,7 @@ type AppState = {
 const useApp = create<AppState>()(
     persist(mockState, {
         name: 'simple-gtd',
-        version: 5,
+        version: 6,
         // Only the data is persisted; `showDone` is transient and starts false.
         partialize: ({ sections, tasks }) => ({ sections, tasks }),
         migrate,
@@ -60,6 +61,7 @@ function normalizeSection(r: Record<string, unknown>): Section {
         order: asString(r.order, orderBetween(null, null)),
         title: asString(r.title, ''),
         archived: asBool(r.archived, false),
+        collapsed: asBool(r.collapsed, false),
     }
 }
 
@@ -230,10 +232,15 @@ export function appendSection(title: string) {
                     order: orderBetween(lastOrder, null),
                     title: trimmed,
                     archived: false,
+                    collapsed: false,
                 },
             ],
         }
     })
+}
+
+export function toggleSectionCollapsed(id: string) {
+    return mapSections((sec) => (sec.id === id ? { ...sec, collapsed: !sec.collapsed } : sec))
 }
 
 export function updateSectionTitle(id: string, title: string) {
@@ -285,6 +292,7 @@ function mockSections(data: MockSectionData): Section[] {
         order,
         title: data[i].title,
         archived: false,
+        collapsed: false,
     }))
 }
 

@@ -1,5 +1,15 @@
 import { clsx } from 'clsx'
-import { Archive, ArchiveRestore, FolderInput, MoreHorizontal, Plus, Trash2, X } from 'lucide-react'
+import {
+    Archive,
+    ArchiveRestore,
+    ChevronDown,
+    ChevronRight,
+    FolderInput,
+    MoreHorizontal,
+    Plus,
+    Trash2,
+    X,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useEditInput } from './hooks'
 import {
@@ -14,6 +24,7 @@ import {
     type Section,
     type Task,
     setTaskSection,
+    toggleSectionCollapsed,
     toggleShowDone,
     toggleTask,
     updateSectionTitle,
@@ -149,9 +160,13 @@ function ViewSection({ section }: { section: Section }) {
                     />
                 ) : (
                     <>
+                        <ViewCollapseBtn
+                            collapsed={section.collapsed}
+                            onClick={() => toggleSectionCollapsed(section.id)}
+                        />
                         <span
                             onClick={() => setEditingTitle(true)}
-                            className="flex-1 cursor-text pl-2 text-lg font-bold wrap-anywhere text-stone-500 transition"
+                            className="flex-1 cursor-text text-lg font-bold wrap-anywhere text-stone-500 transition"
                         >
                             {section.title}
                         </span>
@@ -162,12 +177,14 @@ function ViewSection({ section }: { section: Section }) {
                     </>
                 )}
             </div>
-            <ul>
-                {tasks.map((task) => (
-                    <ViewTask key={task.id} task={task} />
-                ))}
-                <ViewAddTask sectionId={section.id} />
-            </ul>
+            {!section.collapsed && (
+                <ul>
+                    {tasks.map((task) => (
+                        <ViewTask key={task.id} task={task} />
+                    ))}
+                    <ViewAddTask sectionId={section.id} />
+                </ul>
+            )}
         </div>
     )
 }
@@ -307,6 +324,21 @@ function ViewTitleEditor({
                 'caret-accent focus-visible:ring-accent border-none bg-transparent text-stone-900 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
             )}
         />
+    )
+}
+
+// Section disclosure toggle. Sits left of the title; folding persists on the
+// section (survives reload). Its own button so the title-span click still edits.
+function ViewCollapseBtn({ collapsed, onClick }: { collapsed: boolean; onClick: () => void }) {
+    const Icon = collapsed ? ChevronRight : ChevronDown
+    return (
+        <button
+            onClick={onClick}
+            aria-label={collapsed ? 'Expand section' : 'Collapse section'}
+            className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-md text-stone-500 transition hover:bg-stone-100 hover:text-stone-700 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        >
+            <Icon className="size-5" />
+        </button>
     )
 }
 
