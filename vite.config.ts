@@ -4,6 +4,7 @@ import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
+  base: '/simple-gtd-2/',
   plugins: [
     tailwindcss(),
     react(),
