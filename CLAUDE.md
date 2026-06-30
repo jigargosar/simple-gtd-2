@@ -1,19 +1,10 @@
 # CLAUDE.md
 
-SimpleGTD is a single-page Getting-Things-Done app: a vertical board of sections,
-each holding tasks you add, edit inline, complete, move between sections, and
-delete. State lives in the browser (localStorage now, Supabase later). The v1 aim
-is a clean, fast, calm task board — minimal chrome, instant interactions, no jank,
-usable by real people. Distinctive, intentional UI over templated defaults.
-Out of scope for now: backend / accounts / multi-device sync.
+SimpleGTD is a calm task board that holds everything you mean to do, so your mind
+doesn't have to. It stays quiet and out of the way — the doing happens out in the
+world, not here.
 
 ---
-
-> ⚠️ Everything from here down to the `Workflow` divider is a best-effort snapshot —
-> take it with a pinch of salt and verify against the code. Everything **below the
-> divider** (Workflow) is the trusted, governing process.
-
-No router, no backend, no test runner.
 
 ## Files
 
@@ -27,9 +18,9 @@ No router, no backend, no test runner.
 
 ```sh
 pnpm dev                   # usually already running, lifecycle managed by user
-pnpm build                 # tsc -b (project-refs type-check) + Vite production build
+pnpm build                 # type-check + production build
 pnpm lint                  # ESLint
-pnpm build && pnpm lint    # full self-check after edits (no test runner exists)
+pnpm build && pnpm lint    # full self-check after edits
 ```
 
 Prettier runs on save in the IDE — no format-on-edit hook needed.
