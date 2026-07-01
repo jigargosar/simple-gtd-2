@@ -87,3 +87,7 @@ click to edit in entire line, wont need edit button.
 ## UX
 menu always opens downward below the button (absolute, no flip) — clips and can't reach all items for low tasks
 long section names in the menu: verify text behavior (currently min-w-44 + truncate)
+unify task row's Move-to and Archive buttons into a single menu (Move to: A, B, X | Archive) — reduces mis-click risk from two adjacent small icon buttons; relates to the "clickable areas ... hunt" complaint above
+item/section alignment — general pass, all alignment UI
+add-row (task/section) should visually read as an edit box — subtle focus treatment (e.g. dotted left circle) so it starts looking like an actual editable item, not just a plus-icon placeholder
+click-to-edit on the entire row (not just the title text) — possibly the same idea as "click to edit in entire line" above, possibly distinct (whole row incl. checkbox/icons vs. just title); needs a decision
