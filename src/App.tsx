@@ -1,3 +1,5 @@
+import { DragDropProvider } from '@dnd-kit/react'
+import { isSortable, useSortable } from '@dnd-kit/react/sortable'
 import { clsx } from 'clsx'
 import {
     Archive,
@@ -5,12 +7,14 @@ import {
     ChevronDown,
     ChevronRight,
     FolderInput,
+    GripVertical,
     MoreHorizontal,
     Plus,
     Trash2,
     X,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useEditInput } from './hooks'
 import {
     appendSection,
@@ -19,6 +23,8 @@ import {
     archiveTask,
     deleteSection,
     deleteTask,
+    reorderSection,
+    reorderTask,
     restoreSection,
     restoreTask,
     type Section,
@@ -60,16 +66,49 @@ function ViewHeader() {
 
 function ViewBoard() {
     const sections = useSections()
+    // @dnd-kit/react's optimistic-sort plugin mutates the DOM directly while dragging
+    // across droppable groups (moving a task into another section's <ul>). Left alone,
+    // React loses track of that node on the next reconciliation and throws on
+    // removeChild. We let the plugin drive the full drag visually, then on drop put the
+    // dragged element back under its pre-drag parent (undoing the plugin's raw DOM move)
+    // before applying our own state update — handing reconciliation back to React
+    // cleanly. flushSync forces that swap to be synchronous so there's no flash.
+    // (github.com/clauderic/dnd-kit#1747)
+    const dragSourceParent = useRef<Element | null>(null)
     return (
-        <main className="mx-auto max-w-2xl px-6 pb-24">
-            <ViewMenu />
-            <div className="flex flex-col gap-10">
-                {sections.map((section) => (
-                    <ViewSection key={section.id} section={section} />
-                ))}
-                <ViewAddSection />
-            </div>
-        </main>
+        <DragDropProvider
+            onDragStart={(event) => {
+                dragSourceParent.current = event.operation.source?.element?.parentElement ?? null
+            }}
+            onDragEnd={(event) => {
+                const sourceElement = event.operation.source?.element
+                const prevParent = dragSourceParent.current
+                dragSourceParent.current = null
+                if (sourceElement && prevParent && sourceElement.parentElement !== prevParent) {
+                    prevParent.appendChild(sourceElement)
+                }
+                if (event.canceled) return
+                const { source } = event.operation
+                if (!isSortable(source)) return
+                flushSync(() => {
+                    if (source.type === 'section') {
+                        reorderSection(String(source.id), source.index)
+                    } else {
+                        reorderTask(String(source.id), String(source.group), source.index)
+                    }
+                })
+            }}
+        >
+            <main className="mx-auto max-w-2xl px-6 pb-24">
+                <ViewMenu />
+                <div className="flex flex-col gap-10">
+                    {sections.map((section, index) => (
+                        <ViewSection key={section.id} section={section} index={index} />
+                    ))}
+                    <ViewAddSection />
+                </div>
+            </main>
+        </DragDropProvider>
     )
 }
 
@@ -142,12 +181,19 @@ function ViewMenu() {
     )
 }
 
-function ViewSection({ section }: { section: Section }) {
+function ViewSection({ section, index }: { section: Section; index: number }) {
     const tasks = useVisibleSectionTasks(section.id)
     const [editingTitle, setEditingTitle] = useState(false)
+    const { ref, handleRef, isDragging } = useSortable({
+        id: section.id,
+        index,
+        group: 'sections',
+        type: 'section',
+        accept: 'section',
+    })
 
     return (
-        <div className="flex flex-col gap-4 transition">
+        <div ref={ref} className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}>
             <div className="group flex items-center gap-2 border-b border-stone-200 pb-2">
                 {editingTitle ? (
                     <ViewSectionTitleEditor
@@ -160,6 +206,13 @@ function ViewSection({ section }: { section: Section }) {
                     />
                 ) : (
                     <>
+                        <button
+                            ref={handleRef}
+                            aria-label="Drag to reorder"
+                            className="focus-visible:ring-accent shrink-0 cursor-grab touch-none rounded-md p-1 text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-600 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                        >
+                            <GripVertical className="size-4" />
+                        </button>
                         <ViewCollapseBtn
                             collapsed={section.collapsed}
                             onClick={() => toggleSectionCollapsed(section.id)}
@@ -179,8 +232,8 @@ function ViewSection({ section }: { section: Section }) {
             </div>
             {!section.collapsed && (
                 <ul>
-                    {tasks.map((task) => (
-                        <ViewTask key={task.id} task={task} />
+                    {tasks.map((task, index) => (
+                        <ViewTask key={task.id} task={task} index={index} />
                     ))}
                     <ViewAddTask sectionId={section.id} />
                 </ul>
@@ -229,11 +282,31 @@ function ViewAddSection() {
     )
 }
 
-function ViewTask({ task }: { task: Task }) {
+function ViewTask({ task, index }: { task: Task; index: number }) {
     const [editing, setEditing] = useState(false)
+    const { ref, handleRef, isDragging } = useSortable({
+        id: task.id,
+        index,
+        group: task.sectionId,
+        type: 'task',
+        accept: 'task',
+    })
 
     return (
-        <li className="group flex items-center gap-3 py-2 transition hover:bg-stone-100/60">
+        <li
+            ref={ref}
+            className={clsx(
+                'group flex items-center gap-3 py-2 transition hover:bg-stone-100/60',
+                isDragging && 'opacity-50',
+            )}
+        >
+            <button
+                ref={handleRef}
+                aria-label="Drag to reorder"
+                className="focus-visible:ring-accent shrink-0 cursor-grab touch-none rounded-md p-1 text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-600 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
+                <GripVertical className="size-4" />
+            </button>
             <ViewCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
             {editing ? (
                 <ViewTitleEditor

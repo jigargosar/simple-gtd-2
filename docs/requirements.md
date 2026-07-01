@@ -87,10 +87,10 @@ Foundational — items in §2, §3, §4 depend on it.
 
 ## 9. Drag-and-drop reordering
 
-- [ ] Reorder tasks within a section (wire `sortable` state via
-      `@dnd-kit/react`; reorder via `orderBetween` between drop neighbors)
-- [ ] Move task between sections
-- [ ] Reorder sections (`sortable` state currently unwired)
+- [x] Reorder tasks within a section (`@dnd-kit/react` `useSortable`; order
+      recomputed via `orderBetween` between drop neighbors)
+- [x] Move task between sections (same mechanism, cross-section drop)
+- [x] Reorder sections (same mechanism, flat `sections` group)
 
 ## Known issues, might not fix
 

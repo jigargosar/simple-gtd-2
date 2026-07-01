@@ -22,14 +22,9 @@ export type Section = {
     collapsed: boolean
 }
 
-type Point = { x: number; y: number }
-
-type Sortable = 'NotSorting' | { tag: 'PointerDown'; pt: Point } | { tag: 'Dragging' }
-
 type AppState = {
     sections: Section[]
     tasks: Task[]
-    sortable: Sortable
     showDone: boolean
 }
 
@@ -138,11 +133,13 @@ export function useMoveTargets(sectionId: string) {
 // Active tasks: exclude archived, then apply the show-completed rule.
 // (A task whose section is archived is excluded here because the whole
 // section is filtered out of the active view upstream.)
+function visibleSectionTasks(s: AppState, sectionId: string) {
+    const list = getSectionTasks(s.tasks, sectionId).filter((t) => !t.archived)
+    return s.showDone ? list : list.filter((t) => !t.done)
+}
+
 export function useVisibleSectionTasks(sectionId: string) {
-    return useAppShallow((s) => {
-        const list = getSectionTasks(s.tasks, sectionId).filter((t) => !t.archived)
-        return s.showDone ? list : list.filter((t) => !t.done)
-    })
+    return useAppShallow((s) => visibleSectionTasks(s, sectionId))
 }
 
 // Archive panes. An archived task always appears in the items pane, regardless
@@ -204,6 +201,29 @@ export function updateTaskTitle(id: string, title: string) {
     const trimmed = title.trim()
     if (!trimmed) return
     mapTasks((t) => (t.id === id ? { ...t, title: trimmed } : t))
+}
+
+// Drag-and-drop drop target: moves a task to `index` within `sectionId`'s visible
+// list (which may be a different section than the task's current one), recomputing
+// its fractional `order` between the new neighbors.
+export function reorderTask(id: string, sectionId: string, index: number) {
+    return mapState((s) => {
+        const list = visibleSectionTasks(s, sectionId).filter((t) => t.id !== id)
+        const order = orderBetween(list[index - 1]?.order, list[index]?.order)
+        return { tasks: s.tasks.map((t) => (t.id === id ? { ...t, sectionId, order } : t)) }
+    })
+}
+
+// Drag-and-drop drop target: moves a section to `index` among all (unarchived)
+// sections, recomputing its fractional `order` between the new neighbors.
+export function reorderSection(id: string, index: number) {
+    return mapState((s) => {
+        const list = sortBy(s.sections, prop('order')).filter(
+            (sec) => sec.id !== id && !sec.archived,
+        )
+        const order = orderBetween(list[index - 1]?.order, list[index]?.order)
+        return { sections: s.sections.map((sec) => (sec.id === id ? { ...sec, order } : sec)) }
+    })
 }
 
 export function setTaskSection(id: string, sectionId: string) {
@@ -281,7 +301,6 @@ function mockState(): AppState {
     return {
         sections,
         tasks: mockTasks(sections, data),
-        sortable: 'NotSorting',
         showDone: false,
     }
 }

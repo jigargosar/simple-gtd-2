@@ -17,11 +17,6 @@
       re-scan all lists each time we pick.
 ## Planning (PN)
 
-- [ ] Reorder tasks within a section (wire `sortable` state via
-      `@dnd-kit/react`; reorder via `orderBetween` between drop neighbors)
-- [ ] Move task between sections
-- [ ] Reorder sections (`sortable` state currently unwired)
-
 ## Ready (RY)
 
 
@@ -30,6 +25,9 @@
 
 ## Done (DN)
 
+- [x] Reorder tasks within a section (`@dnd-kit/react` `useSortable`; order recomputed via `orderBetween` between drop neighbors)
+- [x] Move task between sections (same mechanism, cross-section drop)
+- [x] Reorder sections (same mechanism, flat `sections` group)
 - [x] Collapsible sections — persisted `collapsed` flag per section + chevron toggle; folded sections hide their task list.
 - [x] fixed: Now, move menu items are follow focus-ring consistently.
 - [x] ViewMoveMenu: violates fundamental leaky abstraction. (`useMoveTargets` selector)

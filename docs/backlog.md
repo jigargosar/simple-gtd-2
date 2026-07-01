@@ -1,3 +1,9 @@
+DnD: fix section flickerint issues
+DnD: decide whether to collapse size of dragged list, long lists will leave huge gaps.
+DnD: Should we style, with tilt and gradient opacity.
+
+---
+
 spacing between checkbox and edit input is too narrow, for inline edit when turned need to fix it
 
 post edit display is multiline but edit is a single line field, needs fixing truncate or text area then max lines chars truncate. Should we touch the view length? makes moving across tasks and scrolling heavy. should never overflow.
