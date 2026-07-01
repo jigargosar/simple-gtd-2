@@ -15,11 +15,14 @@
       → verify (build+lint) → review diff → small doc cleanup → log decision.
       Cadence: one feature, then a bit of doc cleanup. No doc-to-doc migration;
       re-scan all lists each time we pick.
+## Planning (PN)
 
-## Ready (RR)
+
+## Ready (RY)
 
 
 ## In Progress (IP)
+
 
 ## Done (DN)
 
