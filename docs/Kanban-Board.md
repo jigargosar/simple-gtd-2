@@ -17,6 +17,10 @@
       re-scan all lists each time we pick.
 ## Planning (PN)
 
+- [ ] Reorder tasks within a section (wire `sortable` state via
+      `@dnd-kit/react`; reorder via `orderBetween` between drop neighbors)
+- [ ] Move task between sections
+- [ ] Reorder sections (`sortable` state currently unwired)
 
 ## Ready (RY)
 
