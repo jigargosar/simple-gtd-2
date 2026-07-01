@@ -234,12 +234,12 @@ function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () =
 
     return (
         <div
-            className="fixed inset-0 z-50 flex justify-center bg-black/30 pt-[8vh]"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose()
             }}
         >
-            <div className="flex max-h-[80vh] w-[min(480px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
+            <div className="flex max-h-[80vh] min-h-[30vh] w-[min(480px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
                 <div className="flex items-center border-b border-stone-200 px-5 py-4">
                     <span className="text-base font-semibold text-stone-900">Import data</span>
                     <button
@@ -622,12 +622,12 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
 
     return (
         <div
-            className="fixed inset-0 z-50 flex justify-center bg-black/30 pt-[8vh]"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose()
             }}
         >
-            <div className="flex max-h-[80vh] w-[min(560px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
+            <div className="flex max-h-[80vh] min-h-[30vh] w-[min(560px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
                 <div className="flex items-center border-b border-stone-200 px-5 py-4">
                     <span className="text-base font-semibold text-stone-900">Archive</span>
                     <button

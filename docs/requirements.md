@@ -38,8 +38,8 @@ Foundational — items in §2, §3, §4 depend on it.
 ## 2. Data safety
 
 - [x] localStorage persistence
-- [~] JSON export (download backup)
-- [~] JSON import (restore from backup)
+- [x] JSON export (download backup)
+- [x] JSON import (restore from backup)
 
 ## 3. Section CRUD
 

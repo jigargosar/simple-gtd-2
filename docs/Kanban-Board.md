@@ -22,13 +22,13 @@
 
 ## In Progress (IP)
 
-- [ ] JSON export / import (data safety) — export fn done (revoke-timing bug
-      open, no menu button yet); import: menu button + file picker +
-      filename-only confirm dialog done, parse/commit (parseBackup/
-      parseData/loadRaw) not yet wired.
-
 ## Done (DN)
 
+- [x] JSON export / import (data safety) — export via file-saver; import:
+      parse/validate/preview (summary + scrollable, wrap-anywhere tree,
+      archived excluded) → confirm/error dialog → commit via loadRaw,
+      persisted. Both dialogs centered (items-center, min/max-h) instead of
+      top-anchored stretch.
 - [x] Reorder tasks within a section (`@dnd-kit/react` `useSortable`; order recomputed via `orderBetween` between drop neighbors)
 - [x] Move task between sections (same mechanism, cross-section drop)
 - [x] Reorder sections (same mechanism, flat `sections` group)
