@@ -55,6 +55,8 @@ Files (new items on top; except docs/journal.md excepted):
 - Kanban-Board.md — Inbox, Planning, Ready, InProgress, Done.
 - backlog.md — May implement
 - journal.md — ADR
+- docs/handoff.md — notes passed from the previous session; resolve early in
+  the current session, keep it updated before ending one.
 
 Board sections (what each holds):
 

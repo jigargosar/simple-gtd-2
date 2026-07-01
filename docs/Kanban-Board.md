@@ -1,6 +1,7 @@
 # Kanban Board
+- AI should never use short names, of following sections, only infer them when user uses them.
 
-## Inbasket (IB)
+## InBasket, Inbox (IB)
 
 - [ ] Collapse / expand all sections at once.
 - [ ] Audit CLAUDE.md: cut/convert descriptive lines that snapshot current code
@@ -15,24 +16,20 @@
       Cadence: one feature, then a bit of doc cleanup. No doc-to-doc migration;
       re-scan all lists each time we pick.
 
-## Triage (TT)
-
-- [ ] Where to record direction / next task: CLAUDE.md, docs/backlog.md, or here?
-
 ## Ready (RR)
 
-- [ ] naming outright blunders
-- [ ] Next task: review the animation code (`.anim-*` in `src/index.css` and its usages).
 
 ## In Progress (IP)
 
 ## Done (DN)
 
 - [x] Collapsible sections — persisted `collapsed` flag per section + chevron toggle; folded sections hide their task list.
-- [x] fixed: Now, move menu items are follow  follow focus-ring consistantly.
+- [x] fixed: Now, move menu items are follow focus-ring consistently.
 - [x] ViewMoveMenu: violates fundamental leaky abstraction. (`useMoveTargets` selector)
 
 ## Backlog (BL)
 
+- [ ] naming outright blunders
+- [ ] Next task: review the animation code (`.anim-*` in `src/index.css` and its usages).
 - [ ] Add a broken-windows note to CLAUDE.md Conventions: fix minor convention drift promptly; treat it as a defect, not cosmetic.
 

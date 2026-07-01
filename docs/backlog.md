@@ -53,10 +53,6 @@ full anim need to be reviewed.
 
 ---
 
-per section collapse/show
-
----
-
 1. Drag-and-drop reordering — wire the existing Sortable state machine to UI; reorder via orderBetween between drop neighbors.
 2. Move task between sections — Inbox → Next Actions → Waiting For; reuses drag-and-drop + order recompute.
 3. Task notes / details — add notes?: string field on Task.
@@ -71,16 +67,11 @@ per section collapse/show
 
 auto scrolling to input view doesnt happen, at least for section addition for long page.
 task view should not have delete button, on board view.
-no delete button only archive.
 task done status should be visible in archive view.
 
 ---
 
 click to edit in entire line, wont need edit button.
-
----
-
-archive delete feature.
 
 ---
 
