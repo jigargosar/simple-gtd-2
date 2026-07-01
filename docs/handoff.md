@@ -23,4 +23,4 @@ The work planned but NOT yet executed — next session does it, in order.
 5. Empty states — section / list / first-run.
 
 Then, polish if time (post-functional): readability/tone pass, scrollbar-gutter,
-hover consistency. Later (post-v1): drag-and-drop, quick capture, search, tags/notes.
+hover consistency. Later (post-v1): quick capture, search, tags/notes.

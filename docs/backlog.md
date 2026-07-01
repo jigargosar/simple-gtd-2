@@ -53,8 +53,6 @@ full anim need to be reviewed.
 
 ---
 
-1. Drag-and-drop reordering — wire the existing Sortable state machine to UI; reorder via orderBetween between drop neighbors.
-2. Move task between sections — Inbox → Next Actions → Waiting For; reuses drag-and-drop + order recompute.
 3. Task notes / details — add notes?: string field on Task.
 5. Contexts / tags — tags: string[] field plus a filter hook (@home, @calls).
 6. Quick capture / global Inbox add — single keyboard-focused input that always appends to Inbox.

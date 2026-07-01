@@ -46,7 +46,6 @@ Foundational — items in §2, §3, §4 depend on it.
 - [x] Create
 - [x] Rename
 - [x] Delete — board action is now archive; hard delete lives only in the archive dialog (§1)
-- [ ] Reorder sections (no reorder action; `sortable` state unwired)
 
 ## 4. Interaction correctness
 
@@ -86,6 +85,13 @@ Foundational — items in §2, §3, §4 depend on it.
 
 - [x] Collapse/expand each section
 
+## 9. Drag-and-drop reordering
+
+- [ ] Reorder tasks within a section (wire `sortable` state via
+      `@dnd-kit/react`; reorder via `orderBetween` between drop neighbors)
+- [ ] Move task between sections
+- [ ] Reorder sections (`sortable` state currently unwired)
+
 ## Known issues, might not fix
 
 - [ ] `hooks.ts:14` — `initialValue` shouldn't change after mount
@@ -94,8 +100,6 @@ Foundational — items in §2, §3, §4 depend on it.
 
 ## Later (post-v1)
 
-- [ ] Drag-and-drop — reorder within + move between sections (wire `sortable`;
-      see `docs/reference/dnd-kit-notes.md`)
 - [ ] Quick capture — global keyboard-first Inbox add
 - [ ] Search / filter — one input + `useMatchingTasks(query)`
 - [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
