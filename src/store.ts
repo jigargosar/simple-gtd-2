@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing'
 import { filter, pipe, sortBy, prop } from 'remeda'
 import { v4 as uuidv4 } from 'uuid'
+import { saveAs } from 'file-saver'
 
 export type Task = {
     id: string
@@ -296,18 +297,25 @@ export function exportData() {
     const blob = new Blob([JSON.stringify({ sections, tasks }, null, 2)], {
         type: 'application/json',
     })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `simplegtd-${new Date().toISOString().slice(0, 10)}.json`
-    a.click()
-    URL.revokeObjectURL(url)
+    saveAs(blob, `simplegtd-${new Date().toISOString().slice(0, 10)}.json`)
 }
 
-// Reuses the `migrate` normalizers so a partial/malformed backup degrades
-// gracefully instead of throwing; returns null only when the file isn't
-// shaped like a backup at all (no sections/tasks arrays).
-export function normalizeImport(raw: unknown): { sections: Section[]; tasks: Task[] } | null {
+export type ImportPreview = { summary: { sections: number; tasks: number }; tree: string }
+
+export type ParsedData =
+    | { tag: 'valid'; rawString: string; preview: ImportPreview }
+    | { tag: 'error'; message: string }
+
+// Source-agnostic core: JSON.parse + shape-check + the same normalizers `migrate`
+// uses, so a partial/malformed backup degrades gracefully instead of throwing.
+// Returns null when the string isn't valid JSON or isn't shaped like a backup.
+function parseBackup(rawString: string): { sections: Section[]; tasks: Task[] } | null {
+    let raw: unknown
+    try {
+        raw = JSON.parse(rawString)
+    } catch {
+        return null
+    }
     if (!isRecord(raw) || !Array.isArray(raw.sections) || !Array.isArray(raw.tasks)) return null
     return {
         sections: raw.sections.filter(isRecord).map(normalizeSection),
@@ -315,8 +323,38 @@ export function normalizeImport(raw: unknown): { sections: Section[]; tasks: Tas
     }
 }
 
-export function importData(data: { sections: Section[]; tasks: Task[] }) {
+// Active-only (archived excluded) monospace tree, grouped by section, for the
+// import confirm dialog — lets a wrong-file pick be recognized before committing.
+function buildImportPreview(data: { sections: Section[]; tasks: Task[] }): ImportPreview {
+    const sections = data.sections.filter((sec) => !sec.archived)
+    const tasks = data.tasks.filter((t) => !t.archived)
+    const tree = sections
+        .map((section) => {
+            const sectionTasks = getSectionTasks(tasks, section.id)
+            const lines = sectionTasks.map((t, i) => {
+                const branch = i === sectionTasks.length - 1 ? '└─ ' : '├─ '
+                return branch + (t.title || '(untitled)')
+            })
+            return [section.title || '(untitled)', ...lines].join('\n')
+        })
+        .join('\n')
+    return { summary: { sections: sections.length, tasks: tasks.length }, tree }
+}
+
+export function parseData(rawString: string): ParsedData {
+    const data = parseBackup(rawString)
+    if (!data) return { tag: 'error', message: 'Invalid backup file.' }
+    return { tag: 'valid', rawString, preview: buildImportPreview(data) }
+}
+
+// Re-validates from rawString (not a cached preview) so the commit path always
+// re-runs the same check that produced the preview. Returns an error message,
+// or null on success.
+export function loadRaw(rawString: string): string | null {
+    const data = parseBackup(rawString)
+    if (!data) return 'Invalid backup file.'
     useApp.setState(data)
+    return null
 }
 
 // Mock data

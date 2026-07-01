@@ -6,6 +6,7 @@ import {
     ArchiveRestore,
     ChevronDown,
     ChevronRight,
+    Download,
     FolderInput,
     GripVertical,
     MoreHorizontal,
@@ -24,6 +25,10 @@ import {
     archiveTask,
     deleteSection,
     deleteTask,
+    exportData,
+    loadRaw,
+    parseData,
+    type ParsedData,
     reorderSection,
     reorderTask,
     restoreSection,
@@ -120,9 +125,7 @@ function ViewMenu() {
     const [open, setOpen] = useState(false)
     const [archiveOpen, setArchiveOpen] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const [importState, setImportState] = useState<{ tag: 'selected'; fileName: string } | null>(
-        null,
-    )
+    const [importState, setImportState] = useState<ParsedData | null>(null)
 
     return (
         <div className="mb-6 flex justify-end">
@@ -178,6 +181,16 @@ function ViewMenu() {
                             </button>
                             <div className="my-1 h-px bg-stone-100" />
                             <button
+                                onClick={() => {
+                                    exportData()
+                                    setOpen(false)
+                                }}
+                                className="focus-visible:ring-accent flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                <Download className="size-4 text-stone-500" />
+                                Export data
+                            </button>
+                            <button
                                 onClick={() => fileInputRef.current?.click()}
                                 className="focus-visible:ring-accent flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                             >
@@ -193,7 +206,10 @@ function ViewMenu() {
                                     const file = e.target.files?.[0]
                                     e.target.value = ''
                                     if (!file) return
-                                    setImportState({ tag: 'selected', fileName: file.name })
+                                    file.text().then((text) => {
+                                        setImportState(parseData(text))
+                                        setOpen(false)
+                                    })
                                 }}
                             />
                         </div>
@@ -202,16 +218,80 @@ function ViewMenu() {
             </div>
 
             {archiveOpen && <ViewArchiveDialog onClose={() => setArchiveOpen(false)} />}
-            {importState && <ViewImportStatus state={importState} />}
+            {importState && (
+                <ViewImportDialog state={importState} onClose={() => setImportState(null)} />
+            )}
         </div>
     )
 }
 
-function ViewImportStatus({ state }: { state: { tag: 'selected'; fileName: string } }) {
+// Import replaces all current data, so it always confirms first — same bar as the
+// archive dialog's permanent-delete confirm. `result` starts as the parsed state and
+// flips to an error in place if `loadRaw` rejects it on Replace (defense in depth:
+// commit re-validates from `rawString` rather than trusting this preview parse).
+function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () => void }) {
+    const [result, setResult] = useState(state)
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-            <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-2xl">
-                <p className="text-sm text-stone-700">Selected: {state.fileName}</p>
+        <div
+            className="fixed inset-0 z-50 flex justify-center bg-black/30 pt-[8vh]"
+            onClick={(e) => {
+                if (e.target === e.currentTarget) onClose()
+            }}
+        >
+            <div className="flex max-h-[80vh] w-[min(480px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
+                <div className="flex items-center border-b border-stone-200 px-5 py-4">
+                    <span className="text-base font-semibold text-stone-900">Import data</span>
+                    <button
+                        onClick={onClose}
+                        aria-label="Close"
+                        className="ml-auto grid h-7 w-7 place-items-center rounded-md text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
+                    >
+                        <X className="size-4" />
+                    </button>
+                </div>
+
+                {result.tag === 'error' ? (
+                    <div className="px-5 py-5">
+                        <p className="text-sm text-stone-700">{result.message}</p>
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                onClick={onClose}
+                                className="focus-visible:ring-accent cursor-pointer rounded-md px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <p className="px-5 pt-4 pb-1 text-sm text-stone-700">
+                            Replace all current data with {result.preview.summary.sections} lists,{' '}
+                            {result.preview.summary.tasks} tasks?
+                        </p>
+                        <pre className="mx-5 mt-2 overflow-y-auto rounded-lg bg-stone-50 p-3 font-mono text-xs whitespace-pre-wrap text-stone-600">
+                            {result.preview.tree}
+                        </pre>
+                        <div className="flex justify-end gap-2 px-5 py-4">
+                            <button
+                                onClick={onClose}
+                                className="focus-visible:ring-accent cursor-pointer rounded-md px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    const error = loadRaw(result.rawString)
+                                    if (error) setResult({ tag: 'error', message: error })
+                                    else onClose()
+                                }}
+                                className="focus-visible:ring-red-600 cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                Replace
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     )
