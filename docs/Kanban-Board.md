@@ -15,6 +15,13 @@
       → verify (build+lint) → review diff → small doc cleanup → log decision.
       Cadence: one feature, then a bit of doc cleanup. No doc-to-doc migration;
       re-scan all lists each time we pick.
+- [ ] Search: title-only match, mirror the `showDone` pattern
+      (`searchQuery` in store, one more filter in `visibleSectionTasks`,
+      input in `ViewMenu`). Bonus/may-be-cut per requirements.md.
+- [ ] /of skill (personal tooling, not app scope): Critical Step checklist
+      has 4 redundant clusters, documented but unmerged — trim decision
+      pending. See `~/.claude/skills/of/docs/ADR.md`.
+
 ## Planning (PN)
 
 ## Ready (RY)

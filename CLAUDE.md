@@ -51,6 +51,7 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 
 Files (new items on top; except docs/journal.md excepted):
 
+- docs/scratch-pad.md — ad hoc work.
 - docs/requirements.md — committed v1 scope.
 - Kanban-Board.md — Inbox, Planning, Ready, InProgress, Done.
 - backlog.md — May implement
