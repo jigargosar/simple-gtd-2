@@ -252,9 +252,9 @@ function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () =
                 </div>
 
                 {result.tag === 'error' ? (
-                    <div className="px-5 py-5">
-                        <p className="text-sm text-stone-700">{result.message}</p>
-                        <div className="mt-4 flex justify-end">
+                    <>
+                        <p className="flex-1 px-5 pt-4 text-sm text-stone-700">{result.message}</p>
+                        <div className="flex justify-end px-5 py-4">
                             <button
                                 onClick={onClose}
                                 className="focus-visible:ring-accent cursor-pointer rounded-md px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
@@ -262,14 +262,14 @@ function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () =
                                 OK
                             </button>
                         </div>
-                    </div>
+                    </>
                 ) : (
                     <>
                         <p className="px-5 pt-4 pb-1 text-sm text-stone-700">
                             Replace all current data with {result.preview.summary.sections} lists,{' '}
                             {result.preview.summary.tasks} tasks?
                         </p>
-                        <pre className="mx-5 mt-2 overflow-y-auto rounded-lg bg-stone-50 p-3 font-mono text-xs whitespace-pre-wrap text-stone-600">
+                        <pre className="mx-5 mt-2 flex-1 overflow-y-auto rounded-lg bg-stone-50 p-3 font-mono text-xs whitespace-pre-wrap wrap-anywhere text-stone-600">
                             {result.preview.tree}
                         </pre>
                         <div className="flex justify-end gap-2 px-5 py-4">
@@ -285,7 +285,7 @@ function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () =
                                     if (error) setResult({ tag: 'error', message: error })
                                     else onClose()
                                 }}
-                                className="focus-visible:ring-red-600 cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                                className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:outline-none"
                             >
                                 Replace
                             </button>
@@ -309,7 +309,10 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
     })
 
     return (
-        <div ref={ref} className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}>
+        <div
+            ref={ref}
+            className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}
+        >
             <div className="group flex items-center gap-2 border-b border-stone-200 pb-2">
                 {editingTitle ? (
                     <ViewSectionTitleEditor
