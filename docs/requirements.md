@@ -52,14 +52,17 @@ Foundational — items in §2, §3, §4 depend on it.
 - [x] Click title to edit — pencil removed, title span is the trigger
 - [ ] Edit ↔ display parity — display wraps multi-line, editor is single-line
       `<input>` (`wrap-anywhere` is a no-op on inputs); reconcile (textarea or
-      truncate), never overflow horizontally
+      truncate), never overflow horizontally. Grouped into the §5 V1 UX/UI
+      pass, not standalone — prioritize alongside §5 when tackled.
 - [~] Checkbox ↔ edit-input spacing — display + editor share `titleBox`; verify
       whether it still reads too narrow
 - [x] Board view: archive-only, no delete button (`Trash2` lives only in the archive) — §1
 - [ ] Done status visible in archive view — §1
 - [ ] Auto-scroll to a newly-added input (add-section on a long page)
 
-## 5. Readability / visual baseline
+## 5. Readability / visual baseline — V1 UX/UI pass
+
+Includes §4's edit ↔ display parity; prioritize together when tackled.
 
 - [~] Reduce over-dark / over-bold text; font pass (Inter set; tone pass pending)
 - [ ] Tailwind class cleanup
@@ -101,7 +104,7 @@ Foundational — items in §2, §3, §4 depend on it.
 ## Later (post-v1)
 
 - [ ] Quick capture — global keyboard-first Inbox add
-- [ ] Search / filter — one input + `useMatchingTasks(query)`
+- [ ] Search / filter — one input + `useMatchingTasks(query)` (bonus, if time remains)
 - [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
 
 ## Out of scope
