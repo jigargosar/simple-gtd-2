@@ -291,6 +291,34 @@ function orderBetween(a: string | null | undefined, b: string | null | undefined
     return generateKeyBetween(a ?? null, b ?? null)
 }
 
+export function exportData() {
+    const { sections, tasks } = useApp.getState()
+    const blob = new Blob([JSON.stringify({ sections, tasks }, null, 2)], {
+        type: 'application/json',
+    })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `simplegtd-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+}
+
+// Reuses the `migrate` normalizers so a partial/malformed backup degrades
+// gracefully instead of throwing; returns null only when the file isn't
+// shaped like a backup at all (no sections/tasks arrays).
+export function normalizeImport(raw: unknown): { sections: Section[]; tasks: Task[] } | null {
+    if (!isRecord(raw) || !Array.isArray(raw.sections) || !Array.isArray(raw.tasks)) return null
+    return {
+        sections: raw.sections.filter(isRecord).map(normalizeSection),
+        tasks: raw.tasks.filter(isRecord).map(normalizeTask),
+    }
+}
+
+export function importData(data: { sections: Section[]; tasks: Task[] }) {
+    useApp.setState(data)
+}
+
 // Mock data
 
 type MockSectionData = { title: string; tasks: { title: string; done: boolean }[] }[]

@@ -11,6 +11,7 @@ import {
     MoreHorizontal,
     Plus,
     Trash2,
+    Upload,
     X,
 } from 'lucide-react'
 import { useRef, useState } from 'react'
@@ -118,6 +119,10 @@ function ViewMenu() {
     const showDone = useShowDone()
     const [open, setOpen] = useState(false)
     const [archiveOpen, setArchiveOpen] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [importState, setImportState] = useState<{ tag: 'selected'; fileName: string } | null>(
+        null,
+    )
 
     return (
         <div className="mb-6 flex justify-end">
@@ -171,12 +176,43 @@ function ViewMenu() {
                                 <Archive className="size-4 text-stone-500" />
                                 Archive…
                             </button>
+                            <div className="my-1 h-px bg-stone-100" />
+                            <button
+                                onClick={() => fileInputRef.current?.click()}
+                                className="focus-visible:ring-accent flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            >
+                                <Upload className="size-4 text-stone-500" />
+                                Import data…
+                            </button>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="application/json"
+                                className="hidden"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    e.target.value = ''
+                                    if (!file) return
+                                    setImportState({ tag: 'selected', fileName: file.name })
+                                }}
+                            />
                         </div>
                     </>
                 )}
             </div>
 
             {archiveOpen && <ViewArchiveDialog onClose={() => setArchiveOpen(false)} />}
+            {importState && <ViewImportStatus state={importState} />}
+        </div>
+    )
+}
+
+function ViewImportStatus({ state }: { state: { tag: 'selected'; fileName: string } }) {
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-2xl">
+                <p className="text-sm text-stone-700">Selected: {state.fileName}</p>
+            </div>
         </div>
     )
 }

@@ -22,6 +22,10 @@
 
 ## In Progress (IP)
 
+- [ ] JSON export / import (data safety) — export fn done (revoke-timing bug
+      open, no menu button yet); import: menu button + file picker +
+      filename-only confirm dialog done, parse/commit (parseBackup/
+      parseData/loadRaw) not yet wired.
 
 ## Done (DN)
 
