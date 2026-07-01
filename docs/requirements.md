@@ -103,6 +103,8 @@ Includes §4's edit ↔ display parity; prioritize together when tackled.
 
 ## Later (post-v1)
 
+- [ ] 3-state filter — Active / Done / All (replaces the binary `showDone`
+      toggle) (bonus, if time remains)
 - [ ] Quick capture — global keyboard-first Inbox add
 - [ ] Search / filter — one input + `useMatchingTasks(query)` (bonus, if time remains)
 - [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering

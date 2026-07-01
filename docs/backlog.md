@@ -1,3 +1,8 @@
+Single undo notification for the last operation (archive, done toggle, etc.) —
+one toast, undoes whatever just happened.
+
+---
+
 DnD: fix section flickerint issues
 DnD: decide whether to collapse size of dragged list, long lists will leave huge gaps.
 DnD: Should we style, with tilt and gradient opacity.
