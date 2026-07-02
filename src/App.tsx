@@ -626,15 +626,19 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
 
     return (
         <li className="group flex items-center gap-3 rounded-lg py-2 transition focus-within:bg-stone-100">
-            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-stone-600 transition select-none">
-                <Plus className="size-5" />
+            {/* Spacer holds the drag-handle column so the ghost checkbox and input
+                line up with real task rows. */}
+            <span className="h-6 w-6 shrink-0" />
+            {/* Decorative ghost checkbox: previews the row an entry will become.
+                Dotted at rest, solid while the input has focus. */}
+            <span className="grid h-6 w-6 shrink-0 place-items-center">
+                <span className="h-5 w-5 rounded-full border-2 border-dotted border-stone-400 transition group-focus-within:border-solid group-focus-within:border-stone-500" />
             </span>
             <input
                 {...editProps}
-                placeholder="Add to list…"
                 className={clsx(
                     titleBox,
-                    'caret-accent focus-visible:ring-accent border-none bg-transparent text-stone-900 transition outline-none placeholder:text-stone-600 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                    'caret-accent focus-visible:ring-accent border-none bg-transparent text-stone-900 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                 )}
             />
         </li>
