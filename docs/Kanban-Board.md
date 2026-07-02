@@ -3,6 +3,18 @@
 
 ## InBasket, Inbox (IB)
 
+- [ ] V1 UX/UI pass (requirements §5, incl. §4 edit↔display parity) — NEXT UP.
+      Then in order: §4 done-status in archive view, §4 auto-scroll to new input,
+      §7 empty states. After: §6 animation hardening, cherry-pick by impact.
+- [ ] Update requirements.md Priority note (still dated 2026-06-22) to the
+      current order above — requirements is the authoritative source.
+- [ ] Doc cleanup: trash the skill-leftover lines now moved/addressed elsewhere —
+      backlog.md: scrollbar-shift note, easy-flow rule-7 block, Floor 9 quote;
+      this board: the /of-skill Inbox card (all live in skill-builder-workspace
+      src/fmt/dump.md or in the frontend-baseline skill as Floors 10-12).
+- [ ] CLAUDE.md Workflow: reword the docs/handoff.md line — file kept but
+      deprecated; this Inbox replaces handoff (handoff now only for oversized
+      reference material).
 - [ ] Collapse / expand all sections at once.
 - [ ] Audit CLAUDE.md: cut/convert descriptive lines that snapshot current code
       state (they rot into lies). Keep only timeless rules + grep-pointers per
