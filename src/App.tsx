@@ -1,3 +1,4 @@
+import { PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
 import { DragDropProvider } from '@dnd-kit/react'
 import { isSortable, useSortable } from '@dnd-kit/react/sortable'
 import { clsx } from 'clsx'
@@ -50,6 +51,24 @@ import {
     useShowDone,
     useVisibleSectionTasks,
 } from './store'
+
+// Tasks drag anywhere on the row (the grip icon is a visual affordance, not the
+// activation target). Mouse/trackpad: press and move
+// (a hold gesture is awkward on tap-to-click trackpads); a still click stays a
+// click, so click-to-edit survives. Touch: long-press, because press-and-move
+// must keep scrolling; pointer wander past the tolerance aborts the hold.
+// preventActivation exempts presses on real controls so holding a button or
+// selecting text in an editor never starts a drag.
+const taskRowSensors = [
+    PointerSensor.configure({
+        activationConstraints: (event) =>
+            event.pointerType === 'touch'
+                ? [new PointerActivationConstraints.Delay({ value: 250, tolerance: 10 })]
+                : [new PointerActivationConstraints.Distance({ value: 8 })],
+        preventActivation: (event) =>
+            event.target instanceof Element && event.target.closest('button, input') !== null,
+    }),
+]
 
 function ViewApp() {
     return (
@@ -431,12 +450,13 @@ function ViewAddSection() {
 
 function ViewTask({ task, index }: { task: Task; index: number }) {
     const [editing, setEditing] = useState(false)
-    const { ref, handleRef, isDragging } = useSortable({
+    const { ref, isDragging } = useSortable({
         id: task.id,
         index,
         group: task.sectionId,
         type: 'task',
         accept: 'task',
+        sensors: taskRowSensors,
     })
 
     return (
@@ -447,13 +467,13 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
                 isDragging && 'opacity-50',
             )}
         >
-            <button
-                ref={handleRef}
-                aria-label="Drag to reorder"
-                className="focus-visible:ring-accent shrink-0 cursor-grab touch-none rounded-md p-1 text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-600 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
+            {/* Always-visible grab affordance. Decorative span, not a button — the
+                whole row drags (preventActivation would swallow a button press),
+                this just marks where to grab; touch-none makes touch long-press
+                reliable here. */}
+            <span className="grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center text-stone-400">
                 <GripVertical className="size-4" />
-            </button>
+            </span>
             <ViewCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
             {editing ? (
                 <ViewTitleEditor
