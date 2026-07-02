@@ -1,4 +1,17 @@
-import { type ChangeEvent, type KeyboardEvent, useRef, useState } from 'react'
+import { type ChangeEvent, type KeyboardEvent, useEffect, useRef, useState } from 'react'
+
+// Locks page scrolling while a dialog/overlay is mounted. Pairs with the
+// scrollbar-gutter rule on <html> so locking doesn't shift the layout.
+export function useScrollLock() {
+    useEffect(() => {
+        const root = document.documentElement
+        const prev = root.style.overflow
+        root.style.overflow = 'hidden'
+        return () => {
+            root.style.overflow = prev
+        }
+    }, [])
+}
 
 export function useEditInput({
     initialValue,

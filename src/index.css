@@ -5,6 +5,12 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Reserve the scrollbar gutter so the layout doesn't shift when the page
+   scrollbar appears/disappears (e.g. while a dialog locks scrolling). */
+html {
+    scrollbar-gutter: stable;
+}
+
 /* Strikethrough that draws SEQUENTIALLY across wrapped lines (line 1, then 2,
    …) as one continuous stroke. Mechanism: inline wrapper with the DEFAULT
    box-decoration-break (slice) — one continuous no-repeat background whose

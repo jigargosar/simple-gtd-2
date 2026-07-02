@@ -53,11 +53,13 @@ import {
 
 function ViewApp() {
     return (
-        <>
-            <ViewHeader />
-            <ViewBoard />
+        <div className="mx-auto w-full max-w-2xl px-4 pt-6 pb-24 sm:px-6 sm:pt-10">
+            <div className="rounded-2xl border border-stone-200 bg-white px-5 py-8 shadow-sm sm:px-8">
+                <ViewHeader />
+                <ViewBoard />
+            </div>
             {import.meta.env.DEV && <ViewDevOverlay />}
-        </>
+        </div>
     )
 }
 
@@ -81,12 +83,11 @@ function ViewDevOverlay() {
 
 function ViewHeader() {
     return (
-        <header className="px-6 pt-12 pb-8">
-            <div className="mx-auto flex max-w-2xl items-center justify-between">
-                <span className="text-sm font-semibold tracking-tight text-stone-900">
-                    SimpleGTD
-                </span>
-            </div>
+        <header className="flex items-center justify-between pb-8">
+            <span className="text-xl font-bold tracking-tight text-stone-900">
+                SimpleGTD<span className="text-accent">.</span>
+            </span>
+            <ViewMenu />
         </header>
     )
 }
@@ -126,14 +127,11 @@ function ViewBoard() {
                 })
             }}
         >
-            <main className="mx-auto max-w-2xl px-6 pb-24">
-                <ViewMenu />
-                <div className="flex flex-col gap-10">
-                    {sections.map((section, index) => (
-                        <ViewSection key={section.id} section={section} index={index} />
-                    ))}
-                    <ViewAddSection />
-                </div>
+            <main className="flex flex-col gap-10">
+                {sections.map((section, index) => (
+                    <ViewSection key={section.id} section={section} index={index} />
+                ))}
+                <ViewAddSection />
             </main>
         </DragDropProvider>
     )
@@ -149,7 +147,7 @@ function ViewMenu() {
     const [importState, setImportState] = useState<ParsedData | null>(null)
 
     return (
-        <div className="mb-6 flex justify-end">
+        <div>
             <div className="relative">
                 <button
                     onClick={() => setOpen((v) => !v)}
@@ -359,7 +357,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                         />
                         <span
                             onClick={() => setEditingTitle(true)}
-                            className="flex-1 cursor-text text-lg font-bold wrap-anywhere text-stone-500 transition"
+                            className="flex-1 cursor-text text-lg font-bold wrap-anywhere text-stone-800 transition"
                         >
                             {section.title}
                         </span>
@@ -397,7 +395,7 @@ function ViewSectionTitleEditor({
             autoFocus
             {...editProps}
             placeholder="Section name…"
-            className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent px-2 text-lg font-bold text-stone-500 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent px-2 text-lg font-bold text-stone-800 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         />
     )
 }
@@ -416,7 +414,7 @@ function ViewAddSection() {
             <input
                 {...editProps}
                 placeholder="New section…"
-                className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent pl-2 text-lg font-bold text-stone-500 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent pl-2 text-lg font-bold text-stone-800 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             />
         </div>
     )
@@ -436,7 +434,7 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
         <li
             ref={ref}
             className={clsx(
-                'group flex items-center gap-3 py-2 transition hover:bg-stone-100/60',
+                'group flex items-center gap-3 rounded-lg py-2 transition hover:bg-stone-100',
                 isDragging && 'opacity-50',
             )}
         >
@@ -476,24 +474,34 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
     return (
         <button
             onClick={onClick}
-            className={clsx(
-                'focus-visible:ring-accent flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 p-0 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
-                done
-                    ? 'border-stone-600 bg-stone-600'
-                    : 'border-stone-500 bg-transparent hover:border-stone-700',
-            )}
+            className="group/check focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-full transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         >
-            {done && (
-                <svg className="block shrink-0" width="9" height="7" viewBox="0 0 9 7" fill="none">
-                    <path
-                        d="M1 3.5L3.5 6L8 1"
-                        stroke="white"
-                        strokeWidth="1.75"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    />
-                </svg>
-            )}
+            <span
+                className={clsx(
+                    'flex h-5 w-5 items-center justify-center rounded-full border-2 transition',
+                    done
+                        ? 'border-accent bg-accent'
+                        : 'group-hover/check:border-accent border-stone-500 bg-transparent',
+                )}
+            >
+                {done && (
+                    <svg
+                        className="block shrink-0"
+                        width="9"
+                        height="7"
+                        viewBox="0 0 9 7"
+                        fill="none"
+                    >
+                        <path
+                            d="M1 3.5L3.5 6L8 1"
+                            stroke="white"
+                            strokeWidth="1.75"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                )}
+            </span>
         </button>
     )
 }
@@ -617,7 +625,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     })
 
     return (
-        <li className="group flex items-center gap-3 py-2 transition focus-within:bg-stone-100/40">
+        <li className="group flex items-center gap-3 rounded-lg py-2 transition focus-within:bg-stone-100">
             <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-stone-600 transition select-none">
                 <Plus className="size-5" />
             </span>
