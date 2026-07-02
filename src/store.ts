@@ -288,6 +288,12 @@ export function deleteSection(id: string) {
     }))
 }
 
+// Dev-only (invoked from the dev overlay): wipes all data back to the seeded
+// default lists. Persist middleware writes the new state through automatically.
+export function resetToDefaults() {
+    return useApp.setState(mockState())
+}
+
 function orderBetween(a: string | null | undefined, b: string | null | undefined) {
     return generateKeyBetween(a ?? null, b ?? null)
 }

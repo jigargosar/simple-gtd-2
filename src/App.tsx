@@ -11,6 +11,7 @@ import {
     GripVertical,
     MoreHorizontal,
     Plus,
+    RotateCcw,
     Trash2,
     Upload,
     X,
@@ -31,6 +32,7 @@ import {
     type ParsedData,
     reorderSection,
     reorderTask,
+    resetToDefaults,
     restoreSection,
     restoreTask,
     type Section,
@@ -54,7 +56,26 @@ function ViewApp() {
         <>
             <ViewHeader />
             <ViewBoard />
+            {import.meta.env.DEV && <ViewDevOverlay />}
         </>
+    )
+}
+
+// Dev-only floating overlay, guarded by import.meta.env.DEV at the mount site so
+// production builds dead-code-eliminate it. To remove: delete this component and
+// its one-line mount in ViewApp.
+function ViewDevOverlay() {
+    return (
+        <div className="fixed right-4 bottom-4 z-40">
+            <button
+                onClick={resetToDefaults}
+                title="Reset all data to the default lists"
+                className="flex cursor-pointer items-center gap-2 rounded-full border border-red-200 bg-white px-3 py-2 text-sm font-medium text-red-700 shadow-lg transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
+                <RotateCcw className="size-4" />
+                Reset
+            </button>
+        </div>
     )
 }
 
