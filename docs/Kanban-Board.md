@@ -3,6 +3,9 @@
 
 ## InBasket, Inbox (IB)
 
+- [ ] Future of the grip (needs decision): auto smooth hide — e.g. rest hidden,
+      fade in on row hover (~150ms opacity, gutter space stays reserved), the
+      Notion/Todoist pattern; drag/keyboard behavior unchanged.
 - [ ] Edit-card pass (needs decision): title editor expands into an inline card
       holding Move/Archive (+ future notes) → right-side hover buttons die.
       Interaction model already settled: double-click opens, drag/selection
@@ -67,6 +70,9 @@
 
 - [ ] Ghost add-row circle: spin the dotted circle while it fills (dotted → solid
       on input focus) — cool-effect polish, keep subtle per Convention 8.
+- [ ] Future of the right-side row buttons (move-to, archive): hover-revealed today;
+      candidates — absorb into the edit-card (preferred if that lands), fade-in
+      overlay cluster, or metadata-at-rest. Depends on the edit-card decision.
 - [ ] Hover gaps (audit 2026-07-03, checkbox = model): grips lack any hover (add
       hover:text-stone-600); add rows lack the task-row tint (hover:bg-stone-100,
       optionally preview ghost circle at stone-500); move-to button missing
