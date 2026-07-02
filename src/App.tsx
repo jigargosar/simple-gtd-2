@@ -332,16 +332,22 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
             ref={ref}
             className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}
         >
-            <div className="group flex items-center gap-2 border-b border-stone-200 pb-2">
+            <div className="group flex items-center gap-3 border-b border-stone-200 pb-2">
                 {editingTitle ? (
-                    <ViewSectionTitleEditor
-                        title={section.title}
-                        onSave={(next) => {
-                            updateSectionTitle(section.id, next)
-                            setEditingTitle(false)
-                        }}
-                        onCancel={() => setEditingTitle(false)}
-                    />
+                    <>
+                        {/* Spacers stand in for the drag handle and chevron so the
+                            editor input opens exactly where the title text sits. */}
+                        <span className="h-6 w-6 shrink-0" />
+                        <span className="h-6 w-6 shrink-0" />
+                        <ViewSectionTitleEditor
+                            title={section.title}
+                            onSave={(next) => {
+                                updateSectionTitle(section.id, next)
+                                setEditingTitle(false)
+                            }}
+                            onCancel={() => setEditingTitle(false)}
+                        />
+                    </>
                 ) : (
                     <>
                         <button
@@ -357,7 +363,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                         />
                         <span
                             onClick={() => setEditingTitle(true)}
-                            className="flex-1 cursor-text text-lg font-bold wrap-anywhere text-stone-800 transition"
+                            className="flex-1 cursor-text px-2 text-lg font-bold wrap-anywhere text-stone-800 transition"
                         >
                             {section.title}
                         </span>
@@ -408,7 +414,10 @@ function ViewAddSection() {
     })
     return (
         <div className="group flex items-center gap-3 border-b border-stone-200 pb-2 transition focus-within:bg-stone-100/40">
-            <span className="group-focus-within:text-accent flex h-5 w-5 shrink-0 items-center justify-center text-stone-500 transition select-none">
+            {/* Spacer holds the drag-handle column so the + and input line up with
+                section headers. */}
+            <span className="h-6 w-6 shrink-0" />
+            <span className="group-focus-within:text-accent grid h-6 w-6 shrink-0 place-items-center text-stone-500 transition select-none">
                 <Plus className="size-5" />
             </span>
             <input
@@ -434,7 +443,7 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
         <li
             ref={ref}
             className={clsx(
-                'group flex items-center gap-3 rounded-lg py-2 transition hover:bg-stone-100',
+                'group flex items-start gap-3 rounded-lg py-2 transition hover:bg-stone-100',
                 isDragging && 'opacity-50',
             )}
         >
