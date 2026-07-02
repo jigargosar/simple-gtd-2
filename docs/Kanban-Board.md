@@ -3,6 +3,14 @@
 
 ## InBasket, Inbox (IB)
 
+- [ ] Edit-card pass (needs decision): title editor expands into an inline card
+      holding Move/Archive (+ future notes) → right-side hover buttons die.
+      Interaction model already settled: double-click opens, drag/selection
+      unaffected.
+- [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass: archive-dialog
+      focus rings, restore button indigo → accent, empty-state contrast bump,
+      wire useScrollLock (exists in hooks.ts, unused) into both dialogs.
+
 - [ ] V1 UX/UI pass (requirements §5, incl. §4 edit↔display parity) — NEXT UP.
       Then in order: §4 done-status in archive view, §4 auto-scroll to new input,
       §7 empty states. After: §6 animation hardening, cherry-pick by impact.
@@ -57,6 +65,15 @@
 
 ## Backlog (BL)
 
+- [ ] Ghost add-row circle: spin the dotted circle while it fills (dotted → solid
+      on input focus) — cool-effect polish, keep subtle per Convention 8.
+- [ ] Hover gaps (audit 2026-07-03, checkbox = model): grips lack any hover (add
+      hover:text-stone-600); add rows lack the task-row tint (hover:bg-stone-100,
+      optionally preview ghost circle at stone-500); move-to button missing
+      hover:text-stone-700 parity with archive.
+- [ ] Keyboard pass: Enter-to-edit on the focused/selected row, arrow navigation
+      between rows, complete/archive shortcuts. Deferred with the focus/semantics
+      territory CLAUDE.md parks.
 - [ ] naming outright blunders
 - [ ] Next task: review the animation code (`.anim-*` in `src/index.css` and its usages).
 - [ ] Add a broken-windows note to CLAUDE.md Conventions: fix minor convention drift promptly; treat it as a defect, not cosmetic.

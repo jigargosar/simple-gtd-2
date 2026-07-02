@@ -8,3 +8,15 @@ Append-only, dated. One line per event (decision or completion). Newest at botto
   - Implemented via `@dnd-kit/react`: task reorder within a section, move between sections, section reorder.
   - Why: a prior hand-rolled DnD attempt (see git history, removed May 2026) was scrapped for complexity; `@dnd-kit/react` replaces it.
   - Consequence: hit an upstream DOM/React desync bug (github.com/clauderic/dnd-kit#1747) on cross-section drags, worked around in `onDragEnd` (reparent + `flushSync`, documented in docs/reference/dnd-kit-notes.md); section-drag flickering remains open in backlog.md.
+
+- 2026-07-03 — Decision: titles edit on double-click only.
+  - Why: single-click edit caused accidental editor opens and double-click selection flashes; select-on-click (click focuses the grip) was also tried and rejected — it made double-click flaky.
+  - Consequence: plain click does nothing; triple-click gives edit + select-all for free (browser line-select in the input).
+
+- 2026-07-03 — Decision: one drag model for tasks and sections — whole-row pointer drag, grip as the formal handle.
+  - Mechanics: shared `rowDragSensors` (mouse: 8px distance; touch: 250ms long-press; `preventActivation` exempts buttons/inputs); `activatorElements` widens pointer activation to the row while the grip anchors keyboard focus and Space/Enter lift.
+  - Rejected: sticky click-to-drop drag (custom sensor against the semi-documented 0.5 sensor API); hover-revealed handles (inconsistent chrome, invisible on touch).
+
+- 2026-07-03 — Decision: focus rings stay keyboard-only (`focus-visible`) everywhere, grips included.
+  - Always-visible grip ring was tried and reverted: the post-drop reparenting workaround (dnd-kit#1747) force-blurs the grip, so the "armed" ring lied after every mouse drag.
+  - Keyboard drag anchor is either/or (dnd-kit binds keys to handle-or-element); grip won — one clean tab stop per row instead of a full-row ring.

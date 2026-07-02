@@ -44,6 +44,7 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 7. Icons are from `lucide-react`.
 8. Appearance, disappearance, and value changes should not be jarring.
 9. This file documents stable contracts, not volatile specifics. Don't enumerate things that drift (full component lists, exact counts, every hook/action name) — they go stale silently. Name the pattern and a grep to find the current set instead.
+10. Interaction model: double-click edits a title; hold-and-move anywhere on a row drags it (touch: long-press); plain click does nothing; Tab reaches controls, Space/Enter activates the focused one.
 
 ---
 

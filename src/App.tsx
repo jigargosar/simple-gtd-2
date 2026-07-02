@@ -1,4 +1,4 @@
-import { PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
+import { KeyboardSensor, PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
 import { DragDropProvider } from '@dnd-kit/react'
 import { isSortable, useSortable } from '@dnd-kit/react/sortable'
 import { clsx } from 'clsx'
@@ -52,22 +52,31 @@ import {
     useVisibleSectionTasks,
 } from './store'
 
-// Tasks drag anywhere on the row (the grip icon is a visual affordance, not the
-// activation target). Mouse/trackpad: press and move
+// Rows — tasks and section headers alike — drag anywhere on the row (the grip
+// icon is a visual affordance, not the activation target). Mouse/trackpad:
+// press and move
 // (a hold gesture is awkward on tap-to-click trackpads); a still click stays a
 // click, so click-to-edit survives. Touch: long-press, because press-and-move
 // must keep scrolling; pointer wander past the tolerance aborts the hold.
 // preventActivation exempts presses on real controls so holding a button or
 // selecting text in an editor never starts a drag.
-const taskRowSensors = [
+const rowDragSensors = [
     PointerSensor.configure({
         activationConstraints: (event) =>
             event.pointerType === 'touch'
                 ? [new PointerActivationConstraints.Delay({ value: 250, tolerance: 10 })]
                 : [new PointerActivationConstraints.Distance({ value: 8 })],
+        // The grip is the formal handle (it anchors focus and keyboard lift), but
+        // pointer drags should still start from anywhere on the row — this widens
+        // the pointer activator back to the whole row element.
+        activatorElements: (source) => [source.element],
         preventActivation: (event) =>
             event.target instanceof Element && event.target.closest('button, input') !== null,
     }),
+    // Keyboard drag: Tab to a grip (dnd-kit gives the handle a tabindex),
+    // Enter/Space lifts, arrows move, Enter/Space drops, Esc cancels. Its default
+    // guard only activates on the focused handle, so keys inside editors are safe.
+    KeyboardSensor,
 ]
 
 function ViewApp() {
@@ -338,12 +347,15 @@ function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () =
 function ViewSection({ section, index }: { section: Section; index: number }) {
     const tasks = useVisibleSectionTasks(section.id)
     const [editingTitle, setEditingTitle] = useState(false)
-    const { ref, handleRef, isDragging } = useSortable({
+    const gripRef = useRef<HTMLSpanElement>(null)
+    const { ref, isDragging } = useSortable({
         id: section.id,
         index,
         group: 'sections',
         type: 'section',
         accept: 'section',
+        handle: gripRef,
+        sensors: rowDragSensors,
     })
 
     return (
@@ -369,19 +381,25 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                     </>
                 ) : (
                     <>
-                        <button
-                            ref={handleRef}
-                            aria-label="Drag to reorder"
-                            className="focus-visible:ring-accent shrink-0 cursor-grab touch-none rounded-md p-1 text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-600 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                        {/* Same grip as task rows: keyboard anchor via handleRef,
+                            pointer drags start anywhere on the header. */}
+                        <span
+                            ref={gripRef}
+                            className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                         >
                             <GripVertical className="size-4" />
-                        </button>
+                        </span>
                         <ViewCollapseBtn
                             collapsed={section.collapsed}
                             onClick={() => toggleSectionCollapsed(section.id)}
                         />
                         <span
-                            onClick={() => setEditingTitle(true)}
+                            onDoubleClick={() => setEditingTitle(true)}
+                            // Swallow the native word-select of the double-click so
+                            // the editor opens without a selection flash.
+                            onMouseDown={(e) => {
+                                if (e.detail > 1) e.preventDefault()
+                            }}
                             className="flex-1 cursor-text px-2 text-lg font-bold wrap-anywhere text-stone-800 transition"
                         >
                             {section.title}
@@ -450,13 +468,15 @@ function ViewAddSection() {
 
 function ViewTask({ task, index }: { task: Task; index: number }) {
     const [editing, setEditing] = useState(false)
+    const gripRef = useRef<HTMLSpanElement>(null)
     const { ref, isDragging } = useSortable({
         id: task.id,
         index,
         group: task.sectionId,
         type: 'task',
         accept: 'task',
-        sensors: taskRowSensors,
+        handle: gripRef,
+        sensors: rowDragSensors,
     })
 
     return (
@@ -467,11 +487,14 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
                 isDragging && 'opacity-50',
             )}
         >
-            {/* Always-visible grab affordance. Decorative span, not a button — the
-                whole row drags (preventActivation would swallow a button press),
-                this just marks where to grab; touch-none makes touch long-press
-                reliable here. */}
-            <span className="grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center text-stone-400">
+            {/* Grip: visual grab affordance + the keyboard anchor (dnd-kit gives it
+                tabindex; Space/Enter lifts, arrows move). Pointer drags still start
+                anywhere on the row via activatorElements. Span, not button, so the
+                pointer guard doesn't swallow presses on it. */}
+            <span
+                ref={gripRef}
+                className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            >
                 <GripVertical className="size-4" />
             </span>
             <ViewCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
@@ -542,7 +565,12 @@ const titleBox = 'block min-w-0 flex-1 rounded-md px-2 text-base leading-6 wrap-
 function ViewTitle({ done, title, onEdit }: { done: boolean; title: string; onEdit: () => void }) {
     return (
         <span
-            onClick={onEdit}
+            onDoubleClick={onEdit}
+            // Swallow the native word-select of the double-click so the editor
+            // opens without a selection flash.
+            onMouseDown={(e) => {
+                if (e.detail > 1) e.preventDefault()
+            }}
             className={clsx(
                 titleBox,
                 'cursor-text transition',
