@@ -50,17 +50,15 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 
 ## Workflow
 
-Files (new items on top; except docs/journal.md excepted):
+Files (Place new items on top; except docs/journal.md):
 
 - docs/design-system.md — UI-consistency rules and known gaps (checkbox
   shapes, icon weight, animation, focus, outline).
 - docs/scratch-pad.md — ad hoc work.
 - docs/requirements.md — committed v1 scope.
-- Kanban-Board.md — Inbox, Planning, Ready, InProgress, Done.
-- backlog.md — May implement
-- journal.md — ADR
-- docs/handoff.md — notes passed from the previous session; resolve early in
-  the current session, keep it updated before ending one.
+- docs/Kanban-Board.md — Work Tracker, details below
+- docs/backlog.md — May implement
+- docs/journal.md — ADR
 
 Board sections (what each holds):
 
@@ -69,3 +67,4 @@ Board sections (what each holds):
 - Ready — Ready to implement, with plan.
 - In Progress — actively being worked.
 - Done — complete + verified.
+- Backlog (ext of backlog file).
