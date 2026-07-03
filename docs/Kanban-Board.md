@@ -44,6 +44,19 @@
 - [ ] /of skill (personal tooling, not app scope): Critical Step checklist
       has 4 redundant clusters, documented but unmerged — trim decision
       pending. See `~/.claude/skills/of/docs/ADR.md`.
+- [ ] Touch discoverability: archive/move-to are hover/focus-within only —
+      unreachable on touch without tab. Overlaps the right-side-buttons and
+      hover-gaps Backlog items; consider together.
+- [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
+      scanning which list needs attention requires opening each one.
+- [ ] Desktop layout: centered max-w-2xl card leaves wide gutters on wide
+      viewports — reads as a single document, not a multi-section board.
+- [ ] Consistency: "Show completed" menu toggle uses a square checkbox;
+      task-done uses a filled circle — same on/off concept, two shapes.
+      Consider a switch for the view-level toggle.
+- [ ] Icon hierarchy: grip/chevron/archive icons share one visual weight
+      (stone-400/500, size-4/5) — interactive parts take a beat to pick out
+      from decorative ones.
 
 ## Planning (PN)
 
