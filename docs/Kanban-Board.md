@@ -3,47 +3,35 @@
 
 ## InBasket, Inbox (IB)
 
-- [ ] CLAUDE.md Workflow: reword the docs/handoff.md line — file kept but
-      deprecated; this Inbox replaces handoff (handoff now only for oversized
-      reference material).
-- [ ] Collapse / expand all sections at once.
-- [ ] Audit CLAUDE.md: cut/convert descriptive lines that snapshot current code
-      state (they rot into lies). Keep only timeless rules + grep-pointers per
-      Convention 9. Known offenders: Convention 2 enumerates `.anim-*`/`.dot-pop`
-      class names (now stale after anim removal) and calls `.strike` a keyframe
-      (it's a transition). Dated state belongs in a journal, aspirations in the
-      roadmap — not in CLAUDE.md.
-- [ ] Establish a tentative dev workflow in CLAUDE.md (OK to change later, but
-      have one). Rough shape: pick from all lists → spec/design → plan → implement
-      → verify (build+lint) → review diff → small doc cleanup → log decision.
-      Cadence: one feature, then a bit of doc cleanup. No doc-to-doc migration;
-      re-scan all lists each time we pick.
+## Planning (PN)
+
+- [ ] CLAUDE.md doc pass (needs decision on rule placement): reword the
+      docs/handoff.md Workflow line (deprecated, Inbox replaces it — handoff
+      now only for oversized reference material); add a tentative dev workflow
+      shape (pick from all lists → spec/design → plan → implement → verify
+      (build+lint) → review diff → small doc cleanup → log decision; cadence:
+      one feature then a bit of doc cleanup; no doc-to-doc migration, re-scan
+      lists each pick); audit/cut stale descriptive lines per Convention 9
+      (known offenders: Convention 2's `.anim-*`/`.dot-pop` names, `.strike`
+      mislabeled as a keyframe); add a broken-windows note (fix minor
+      convention drift promptly, treat as a defect not cosmetic); note the
+      centered max-w-2xl desktop layout with wide gutters is intentional
+      (calm, single-document feel) — won't-fix, not a kanban board.
 - [ ] Search: title-only match, mirror the `showDone` pattern
       (`searchQuery` in store, one more filter in `visibleSectionTasks`,
       input in `ViewMenu`). Bonus/may-be-cut per requirements.md.
-- [ ] Touch discoverability: archive/move-to are hover/focus-within only —
-      unreachable on touch without tab. Overlaps the right-side-buttons and
-      hover-gaps Backlog items; consider together.
-- [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
-      scanning which list needs attention requires opening each one.
-- [ ] Desktop layout: centered max-w-2xl card leaves wide gutters on wide
-      viewports — reads as a single document, not a multi-section board.
-- [ ] Consistency: "Show completed" menu toggle uses a square checkbox;
-      task-done uses a filled circle — same on/off concept, two shapes.
-      Consider a switch for the view-level toggle.
-- [ ] Icon hierarchy: grip/chevron/archive icons share one visual weight
-      (stone-400/500, size-4/5) — interactive parts take a beat to pick out
-      from decorative ones.
-
-## Planning (PN)
-
-- [ ] Future of the grip (needs decision): auto smooth hide — e.g. rest hidden,
-      fade in on row hover (~150ms opacity, gutter space stays reserved), the
-      Notion/Todoist pattern; drag/keyboard behavior unchanged.
-- [ ] Edit-card pass (needs decision): title editor expands into an inline card
-      holding Move/Archive (+ future notes) → right-side hover buttons die.
-      Interaction model already settled: double-click opens, drag/selection
-      unaffected.
+- [ ] Row-control interaction model (needs decision): grip — auto smooth hide
+      (rest hidden, fade in on row hover ~150ms, gutter space reserved,
+      Notion/Todoist pattern; drag/keyboard unchanged) vs staying permanent;
+      edit-card pass — title editor expands into an inline card holding
+      Move/Archive (+ future notes), right-side hover buttons die if adopted
+      (double-click opens, drag/selection unaffected, already settled); if
+      edit-card doesn't land, right-side buttons need a fallback (fade-in
+      overlay cluster or metadata-at-rest); hover gaps to fix once decided —
+      grip hover (hover:text-stone-600), add-row tint (hover:bg-stone-100),
+      move-to hover:text-stone-700 parity with archive; touch discoverability —
+      archive/move-to are hover/focus-within only, unreachable on touch
+      without tab, same surface as the above.
 - [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass: archive-dialog
       focus rings, restore button indigo → accent, empty-state contrast bump,
       wire useScrollLock (exists in hooks.ts, unused) into both dialogs.
@@ -52,6 +40,14 @@
       §7 empty states. After: §6 animation hardening, cherry-pick by impact.
 - [ ] Update requirements.md Priority note (still dated 2026-06-22) to the
       current order above — requirements is the authoritative source.
+- [ ] QA.md (needs creation): new doc to collect UI-consistency items — hover,
+      outline, checkbox, animation, focus. Update CLAUDE.md Workflow file
+      list to reference it. Seeds: 'Show completed' toggle uses a square
+      checkbox vs task-done's filled circle — same on/off concept, two
+      shapes, consider a switch for the view-level toggle; grip/chevron/
+      archive icons share one visual weight (stone-400/500, size-4/5) —
+      interactive parts take a beat to pick out from decorative ones.
+      Sweeping board/backlog for other related items deferred to later.
 
 ## Ready (RY)
 
@@ -80,17 +76,12 @@
 
 - [ ] Ghost add-row circle: spin the dotted circle while it fills (dotted → solid
       on input focus) — cool-effect polish, keep subtle per Convention 8.
-- [ ] Future of the right-side row buttons (move-to, archive): hover-revealed today;
-      candidates — absorb into the edit-card (preferred if that lands), fade-in
-      overlay cluster, or metadata-at-rest. Depends on the edit-card decision.
-- [ ] Hover gaps (audit 2026-07-03, checkbox = model): grips lack any hover (add
-      hover:text-stone-600); add rows lack the task-row tint (hover:bg-stone-100,
-      optionally preview ghost circle at stone-500); move-to button missing
-      hover:text-stone-700 parity with archive.
 - [ ] Keyboard pass: Enter-to-edit on the focused/selected row, arrow navigation
       between rows, complete/archive shortcuts. Deferred with the focus/semantics
       territory CLAUDE.md parks.
 - [ ] naming outright blunders
 - [ ] Next task: review the animation code (`.anim-*` in `src/index.css` and its usages).
-- [ ] Add a broken-windows note to CLAUDE.md Conventions: fix minor convention drift promptly; treat it as a defect, not cosmetic.
+- [ ] Collapse / expand all sections at once.
+- [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
+      scanning which list needs attention requires opening each one.
 
