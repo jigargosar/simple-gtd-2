@@ -5,18 +5,6 @@
 
 ## Planning (PN)
 
-- [ ] CLAUDE.md doc pass (needs decision on rule placement): reword the
-      docs/handoff.md Workflow line (deprecated, Inbox replaces it — handoff
-      now only for oversized reference material); add a tentative dev workflow
-      shape (pick from all lists → spec/design → plan → implement → verify
-      (build+lint) → review diff → small doc cleanup → log decision; cadence:
-      one feature then a bit of doc cleanup; no doc-to-doc migration, re-scan
-      lists each pick); audit/cut stale descriptive lines per Convention 9
-      (known offenders: Convention 2's `.anim-*`/`.dot-pop` names, `.strike`
-      mislabeled as a keyframe); add a broken-windows note (fix minor
-      convention drift promptly, treat as a defect not cosmetic); note the
-      centered max-w-2xl desktop layout with wide gutters is intentional
-      (calm, single-document feel) — won't-fix, not a kanban board.
 - [ ] Search: title-only match, mirror the `showDone` pattern
       (`searchQuery` in store, one more filter in `visibleSectionTasks`,
       input in `ViewMenu`). Bonus/may-be-cut per requirements.md.
@@ -48,6 +36,13 @@
 
 ## Done (DN)
 
+- [x] CLAUDE.md doc pass: removed stale docs/handoff.md (Inbox replaced its
+      triage role, file deleted); Convention 9 audit already resolved
+      (`.anim-*`/`.dot-pop`/`.strike` gone from Convention 2); added
+      Convention 11 (breaking convention gives AI permission to break in
+      future — fix during or before editing); noted in the intro the
+      centered max-w-2xl layout is intentional; dev-workflow cadence
+      considered and skipped (too tentative to commit).
 - [x] JSON export / import (data safety) — export via file-saver; import:
       parse/validate/preview (summary + scrollable, wrap-anywhere tree,
       archived excluded) → confirm/error dialog → commit via loadRaw,
