@@ -24,7 +24,7 @@ update tailwind classes
 3. Task notes / details — add notes?: string field on Task.
 5. Contexts / tags — tags: string[] field plus a filter hook (@home, @calls).
 6. Quick capture / global Inbox add — single keyboard-focused input that always appends to Inbox.
-7. Search / filter across all sections — one input, a useMatchingTasks(query) selector.
+7. Search / filter across all sections — one input; simplest shape: title-only match mirroring the existing `showDone` pattern (`searchQuery` in store, filter in `visibleSectionTasks`, input in `ViewMenu`); fuller alternative: cross-section filter via a `useMatchingTasks(query)` selector.
 8. Per-section collapse — pairs with the existing showDone pattern.
 9. Empty-state polish — designed empty state for sections/lists that go empty.
 

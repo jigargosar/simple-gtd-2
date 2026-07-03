@@ -5,9 +5,6 @@
 
 ## Planning (PN)
 
-- [ ] Search: title-only match, mirror the `showDone` pattern
-      (`searchQuery` in store, one more filter in `visibleSectionTasks`,
-      input in `ViewMenu`). Bonus/may-be-cut per requirements.md.
 - [ ] Row-control interaction model (needs decision): grip — auto smooth hide
       (rest hidden, fade in on row hover ~150ms, gutter space reserved,
       Notion/Todoist pattern; drag/keyboard unchanged) vs staying permanent;
