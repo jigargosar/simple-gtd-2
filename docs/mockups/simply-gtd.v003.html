@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<!-- ═══════════════════════════════════════════════════════════════════════
+  simply-gtd · DESIGN SOURCE OF TRUTH · v001 · 2026-06-29
+
+  READ-ONLY FILE. Do not hand-edit. To change the design: give this file to
+  Claude Designer and receive the next version (v002, v003 …).
+  The live design below this comment IS the spec — read it, don't guess.
+  Lives in: src/preview-v001/
+
+  ─────────────────────────────────────────────────────────────────────────
+  1 · FOR CLAUDE DESIGNER  (re-onboarding — conversations do not persist)
+  ─────────────────────────────────────────────────────────────────────────
+  WHAT: the simply-gtd board design. Single cream sheet, serif, ruled rows.
+  LOCKED: Paper (Editorial).
+  REJECTED: anon (old blue/Inter/cards design), hybrid (old skeleton recolored).
+  TO TWEAK: edit this file's template + logic, bump the version in the name and
+  this header, re-export, hand back to Jigar.
+
+  ─────────────────────────────────────────────────────────────────────────
+  2 · FOR CLAUDE CODE (CLI)  (build to match the render below)
+  ─────────────────────────────────────────────────────────────────────────
+  STACK: Foldkit (Effect + Elm architecture). Views use h.Class(...) Tailwind.
+         Follow AGENTS.md + CLAUDE.md (evo(), facts-not-commands, ~3 nesting).
+  PALETTE:
+    page     #e6dcd0    sheet/menu   #f8f2eb    edit field   #f1e8dd
+    ink      #19140d    body text    #30291f    secondary    #594f43
+    muted    #928471    faint marker #b4a38e    marker done  #736757
+    hair     #e2d5c5    hair soft    #eadfd2    field ring   #cfc0ac
+    seg track #ece1d4   seg border   #ddd0bf    delete hover #953d21
+  TYPE:
+    Newsreader (serif) = masthead, section titles, item text, inputs, empty states
+    Hanken Grotesk     = eyebrow date, segmented labels, menus, archive link
+                         (uppercase, letter-spaced)
+  SHADOWS: warm-tinted rgba(60,50,30,*), never black.
+    sheet 0 1px 2px /.08 + 0 20px 56px /.11 · menu 0 8px 28px /.18 · chip 0 1px 2px /.14
+  DECISIONS:
+    - Single centered sheet, max-width 680px. Flat ruled rows, NO cards.
+    - Markers: em-dash open / check done. Not checkboxes.
+    - Done filter: segmented Open · Done · All. Default Open.
+    - Edit: INLINE in place (click title / item). No popover.
+    - Section header: chevron (collapse) + title (click to rename) + menu
+      (Archive list) + drag-to-reorder.
+    - Item: marker (toggle done) + text (click to edit) + menu
+      (Archive / Move to <list>) + grip (drag).
+    - Archive view: separate view; Restore / Delete per row.
+    - Add: "New list" (top) and "Add item" (per list).
+  TAILWIND CONFIG (theme.extend):
+    colors{sand,sheet,field,ink,body,sub,muted,faint,hair,hairsoft,ring,track,segborder,danger}
+    fontFamily{serif:[Newsreader,Georgia,serif], ui:["Hanken Grotesk",system-ui,sans-serif]}
+    boxShadow{sheet,menu,chip}  (warm values above)
+  COMPONENT MAP (stateless helper now -> Foldkit Submodel as behaviour lands):
+    headerView · filterView · sectionView(->Disclosure) · itemView ·
+    moveMenu(->Popover) · archiveView
+  SUPERSEDES (these in the repo disagree with this file — this file wins):
+    - docs/visual.md  V1–V12  (old: blue accent, Inter, white cards)
+    - design-system/  (green/amber + Inter; already archived to docs/_archive/)
+    - docs/mockups/board-mock.html  (the anon design)
+  OPEN DELTAS (decide with Jigar; not resolved here):
+    - Edit: inline (this file) vs popover OK/Cancel + blur-confirm (interaction.md I4/I5).
+    - Search: NOT in this design. search.md + roadmap expect it. = pending feature.
+    - Naming: UI says "Lists"; model = Board -> Sections -> Items.
+  PENDING FEATURES (not built; build with Jigar):
+    - search · edit-mode (inline vs popover) · persistence (localStorage)
+    - fractional-index ordering for drag · multiline edit · empty-title rule
+    - modified-timestamp   (sources: handover.md, roadmap.md, item-state.md)
+
+  ─────────────────────────────────────────────────────────────────────────
+  3 · FOR JIGAR (Developer)
+  ─────────────────────────────────────────────────────────────────────────
+  THIS FILE is the single visual source of truth + handoff — no separate doc.
+  It is self-contained (JS embedded); opens anywhere by double-click.
+
+  TWEAK LOOP: give this file to Claude Designer -> get v002 -> replace.
+
+  REPO MIGRATION (one-time; suggestions, your call — tagged [SUGGEST]):
+    - docs/visual.md (V1–V12): superseded. [SUGGEST] replace body with a pointer
+      to this file, or rewrite V->E from section 2 above.
+    - design-system/: superseded (green/amber + Inter). Already archived to
+      docs/_archive/design-system/.
+    - docs/mockups/board-mock.html: the anon design. [SUGGEST] move to docs/_archive/.
+    - CLAUDE.md "Read first": [SUGGEST] add — "Visual source of truth:
+      src/preview-v001/simply-gtd.v001.html (read its top comment). docs/visual.md
+      superseded."
+    - docs/roadmap.md visual-summary line: [SUGGEST] point to this file.
+    - Leave docs/learn/* (cosmetic) and docs/mockups/board-vNNN (off-limits) as-is.
+
+  RATIONALE / why for any decision above: deferred to Jigar. [intentionally blank]
+
+  VERSION LOG:
+    v001 · 2026-06-29 · Paper locked; anon + hybrid rejected; search dropped (pending).
+═══════════════════════════════════════════════════════════════════════════ -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="support.js"></script>
+<!-- Claude Code: skip reading support.js — it's the browser-preview rendering
+     shim only (streaming/template engine), irrelevant to the Foldkit port.
+     The design spec is the header comment above; the actual markup/behavior
+     to implement is the template block and the logic script below it. -->
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;-webkit-font-smoothing:antialiased;background:var(--page,#e6dcd0);}
+  input::placeholder{color:var(--muted);}
+  .ed-act{opacity:0;pointer-events:none;transition:opacity .16s ease;}
+  .ed-row:hover .ed-act,.ed-row:focus-within .ed-act{opacity:1;pointer-events:auto;}
+</style>
+</helmet>
+
+<div style="{{ rootStyle }}">
+  <div style="width:100%;max-width:680px;background:var(--sheet);border-radius:3px;box-shadow:0 1px 2px rgba(var(--shadowrgb),.08),0 20px 56px rgba(var(--shadowrgb),.11);padding:var(--sheet-pad);position:relative">
+
+    <!-- ===================== LISTS VIEW ===================== -->
+    <sc-if value="{{ listsView }}" hint-placeholder-val="{{ true }}">
+  <div style="position:fixed;top:18px;right:18px;z-index:200;background:rgba(22,17,11,.93);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-radius:12px;padding:13px 14px 14px;box-shadow:0 10px 34px rgba(0,0,0,.3);width:176px">
+    <div style="font:700 10px/1 'Hanken Grotesk',system-ui;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:12px">Tweaks</div>
+    <sc-for list="{{ tweakGroups }}" as="grp" hint-placeholder-count="3">
+      <div style="{{ grp.wrapStyle }}">
+        <div style="font:600 9px/1 'Hanken Grotesk',system-ui;letter-spacing:.13em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:6px">{{ grp.label }}</div>
+        <div style="display:flex;gap:4px">
+          <sc-for list="{{ grp.options }}" as="opt" hint-placeholder-count="3">
+            <span onclick="{{ opt.onClick }}" style="{{ opt.style }}">{{ opt.label }}</span>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+      <div style="font:600 12px/1 'Hanken Grotesk',system-ui;letter-spacing:.2em;color:var(--sub);margin-bottom:13px">{{ dateLabel }}</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:13px">
+        <div style="font:500 var(--mast-size)/0.95 'Newsreader';color:var(--ink);letter-spacing:-.01em">Lists</div>
+        <div style="display:flex;align-items:center;gap:18px;padding-bottom:5px">
+          <div style="display:inline-flex;align-items:center;background:var(--track);border:1px solid var(--segborder);border-radius:999px;padding:3px">
+            <span onclick="{{ onFilterOpen }}" style="{{ filterOpenStyle }}">Open</span>
+            <span onclick="{{ onFilterDone }}" style="{{ filterDoneStyle }}">Done</span>
+            <span onclick="{{ onFilterAll }}" style="{{ filterAllStyle }}">All</span>
+          </div>
+          <span onclick="{{ onOpenArchive }}" title="Archive" style="font:600 11px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer" style-hover="color:var(--ink)">{{ archiveLabel }}</span>
+        </div>
+      </div>
+
+      <sc-if value="{{ addingList }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;margin-top:30px;border-bottom:1px solid var(--hair);padding-bottom:9px">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-right:6px;flex:none;color:var(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></span>
+          <input value="{{ newListDraft }}" ref="{{ focusRef }}" onchange="{{ onNewListChange }}" onkeydown="{{ onNewListKey }}" onblur="{{ onNewListBlur }}" placeholder="List name" style="flex:1;border:none;outline:none;background:transparent;font:500 25px/1.2 'Newsreader';color:var(--ink)">
+        </div>
+      </sc-if>
+      <sc-if value="{{ notAddingList }}" hint-placeholder-val="{{ true }}">
+        <div onclick="{{ onStartAddList }}" style="display:flex;align-items:center;margin-top:30px;cursor:pointer">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-right:6px;flex:none;color:var(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></span>
+          <span style="font:400 italic 18px/1 'Newsreader';color:var(--sub)">New list</span>
+        </div>
+      </sc-if>
+
+      <sc-for list="{{ lists }}" as="list" hint-placeholder-count="4">
+        <div ondragover="{{ list.onDragOver }}" ondrop="{{ list.onDrop }}" style="{{ list.dropStyle }}">
+
+          <div class="ed-row" draggable="true" ondragstart="{{ list.onSecGripStart }}" ondragend="{{ list.onSecGripEnd }}" ondragover="{{ list.onSecDragOver }}" ondrop="{{ list.onSecDrop }}" style="position:relative;display:flex;align-items:center;border-bottom:1px solid var(--hair);padding:0 40px 9px 0">
+            <span onclick="{{ list.onToggleCollapse }}" style="{{ list.chevronStyle }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span>
+            <sc-if value="{{ list.renaming }}" hint-placeholder-val="{{ false }}">
+              <input value="{{ list.renameDraft }}" ref="{{ focusRef }}" onchange="{{ list.onRenameChange }}" onkeydown="{{ list.onRenameKey }}" onblur="{{ list.onRenameBlur }}" style="flex:1;border:none;outline:none;background:var(--field);box-shadow:0 0 0 1px var(--ring);border-radius:6px;font:500 25px/1.2 'Newsreader';color:var(--ink);padding:2px 9px;margin:-2px -9px">
+            </sc-if>
+            <sc-if value="{{ list.notRenaming }}" hint-placeholder-val="{{ true }}">
+              <span onclick="{{ list.onTitleClick }}" style="font:500 25px/1.2 'Newsreader';color:var(--ink);flex:1;letter-spacing:-.005em;cursor:text" title="Click to rename">{{ list.title }}</span>
+              <span onclick="{{ list.onSecMenu }}" title="List options" class="ed-act" style="position:absolute;right:0;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;color:var(--muted);cursor:pointer;user-select:none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></span>
+            </sc-if>
+            <sc-if value="{{ list.secMenuOpen }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute;top:100%;right:0;z-index:50;min-width:160px;background:var(--sheet);border:1px solid var(--hair);border-radius:5px;box-shadow:0 8px 28px rgba(var(--shadowrgb),.18);padding:5px 0;font-family:'Hanken Grotesk',system-ui">
+                <div onclick="{{ list.onArchiveSection }}" style="padding:8px 14px;font:500 14px/1.2 'Hanken Grotesk';color:var(--body);cursor:pointer;white-space:nowrap" style-hover="background:var(--field)">Archive list</div>
+              </div>
+            </sc-if>
+          </div>
+
+          <sc-if value="{{ list.expanded }}" hint-placeholder-val="{{ true }}">
+            <div style="padding-top:5px">
+
+              <sc-for list="{{ list.items }}" as="item" hint-placeholder-count="3">
+                <div>
+                <div draggable="true" onmousedown="{{ item.onRowMouseDown }}" ondoubleclick="{{ item.onOpen }}" ondragstart="{{ item.onRowDragStart }}" ondragend="{{ item.onRowDragEnd }}" style="position:relative;display:flex;align-items:center;padding:var(--row-pad-y) 40px var(--row-pad-y) 36px;margin-left:-36px">
+                  <span onclick="{{ item.onToggle }}" onmousedown="{{ item.onMarkerMouseDown }}" style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-right:6px;flex:none;cursor:pointer;color:var(--muted)"><sc-if value="{{ item.done }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if><sc-if value="{{ item.notDone }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg></sc-if></span>
+                  <span style="{{ item.textStyle }}">{{ item.text }}</span>
+                </div>
+
+                <sc-if value="{{ item.detailsOpen }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin:0 40px 14px 36px;padding:14px 16px;background:var(--field);border-radius:8px;box-shadow:inset 0 0 0 1px var(--hair);display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <span style="width:52px;flex:none;font:600 10px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Title</span>
+                      <input value="{{ item.text }}" ref="{{ focusRef }}" onchange="{{ item.onTitleChange }}" style="flex:1;border:none;outline:none;background:transparent;font:400 18px/1.5 'Newsreader',Georgia,serif;color:var(--ink)">
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <span style="width:52px;flex:none;font:600 10px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Due</span>
+                      <input value="{{ item.due }}" onchange="{{ item.onDueChange }}" placeholder="No date" style="flex:1;border:none;outline:none;background:transparent;font:400 16px/1.4 'Newsreader';color:var(--ink)">
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:12px">
+                      <span style="width:52px;flex:none;padding-top:3px;font:600 10px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Tags</span>
+                      <div style="flex:1;display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+                        <sc-for list="{{ item.tags }}" as="tag" hint-placeholder-count="2">
+                          <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;background:var(--sheet);border:1px solid var(--hair);font:500 12px/1.4 'Hanken Grotesk',system-ui;color:var(--sub)">{{ tag.label }}<span onclick="{{ tag.onRemove }}" style="cursor:pointer;color:var(--muted)">×</span></span>
+                        </sc-for>
+                        <input value="{{ item.tagDraft }}" onchange="{{ item.onTagDraftChange }}" onkeydown="{{ item.onTagDraftKey }}" placeholder="+ tag" style="border:none;outline:none;background:transparent;font:400 13px/1.4 'Hanken Grotesk',system-ui;color:var(--sub);width:70px">
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:12px">
+                      <span style="width:52px;flex:none;padding-top:3px;font:600 10px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Notes</span>
+                      <input value="{{ item.notes }}" onchange="{{ item.onNotesChange }}" placeholder="Add notes…" style="flex:1;border:none;outline:none;background:transparent;font:400 16px/1.5 'Newsreader';color:var(--body)">
+                    </div>
+                    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:18px;padding-top:10px;border-top:1px solid var(--hairsoft)">
+                      <sc-for list="{{ item.otherLists }}" as="tgt" hint-placeholder-count="2">
+                        <span onclick="{{ tgt.onMove }}" style="font:600 11px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);cursor:pointer" style-hover="color:var(--ink)">→ {{ tgt.title }}</span>
+                      </sc-for>
+                      <span onclick="{{ item.onArchive }}" style="font:600 11px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer" style-hover="color:var(--danger)">Archive</span>
+                      <span onclick="{{ item.onCloseDetails }}" style="margin-left:auto;font:600 11px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);cursor:pointer" style-hover="color:var(--ink)">Done</span>
+                    </div>
+                  </div>
+                </sc-if>
+                </div>
+              </sc-for>
+
+              <sc-if value="{{ list.addingItem }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;padding:7px 0">
+                  <span style="width:24px;text-align:center;font:400 18px/1 'Newsreader';color:var(--muted);margin-right:8px;flex:none">—</span>
+                  <input value="{{ list.itemDraft }}" ref="{{ focusRef }}" onchange="{{ list.onItemDraftChange }}" onkeydown="{{ list.onItemDraftKey }}" onblur="{{ list.onItemDraftBlur }}" placeholder="New item — Return to save" style="flex:1;border:none;outline:none;background:transparent;font:400 18px/1.6 'Newsreader',Georgia,serif;color:var(--ink)">
+                </div>
+              </sc-if>
+              <sc-if value="{{ list.notAddingItem }}" hint-placeholder-val="{{ true }}">
+                <div onclick="{{ list.onStartAddItem }}" style="display:flex;align-items:center;padding:8px 0 2px;cursor:pointer">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-right:6px;flex:none;color:var(--muted)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></span>
+                  <span style="font:400 italic 16px/1 'Newsreader';color:var(--sub)">Add item</span>
+                </div>
+              </sc-if>
+
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+
+      <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+        <div onclick="{{ onCloseMenu }}" style="position:fixed;inset:0;z-index:40"></div>
+      </sc-if>
+
+    </sc-if>
+
+    <!-- ===================== ARCHIVE VIEW ===================== -->
+    <sc-if value="{{ archiveView }}" hint-placeholder-val="{{ false }}">
+
+      <div style="font:600 12px/1 'Hanken Grotesk',system-ui;letter-spacing:.2em;color:var(--sub);margin-bottom:13px">PUT AWAY</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:13px">
+        <div style="font:500 var(--mast-size)/0.95 'Newsreader';color:var(--ink);letter-spacing:-.01em">Archive</div>
+        <span onclick="{{ onOpenLists }}" style="font:600 12px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);cursor:pointer;padding-bottom:6px" style-hover="color:var(--ink)">← Lists</span>
+      </div>
+
+      <div style="padding-top:10px">
+        <sc-for list="{{ archive }}" as="arc" hint-placeholder-count="2">
+          <div style="display:flex;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--hairsoft)">
+            <span style="font:400 18px/1.6 'Newsreader';color:var(--muted);margin-right:9px;flex:none">—</span>
+            <span style="{{ arc.textStyle }}">{{ arc.text }}</span>
+            <span style="display:flex;align-items:center;gap:16px;margin-left:16px;flex:none;align-self:center">
+              <span onclick="{{ arc.onRestore }}" style="font:600 11px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--sub);cursor:pointer" style-hover="color:var(--ink)">Restore</span>
+              <span onclick="{{ arc.onDelete }}" style="font:600 11px/1 'Hanken Grotesk',system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:pointer" style-hover="color:var(--danger)">Delete</span>
+            </span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ archiveEmpty }}" hint-placeholder-val="{{ true }}">
+          <div style="font:400 italic 18px/1.6 'Newsreader';color:var(--muted);padding:18px 0">Nothing archived yet.</div>
+        </sc-if>
+      </div>
+
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script="">
+class Component extends DCLogic {
+  state = {
+    view: 'lists',
+    filter: 'open',
+    theme: 'paper',
+    density: 'cozy',
+    masthead: 'editorial',
+    nextId: 100,
+    hover: null,
+    menu: null,
+    details: { listId: 'inbox', itemId: 2 },
+    tagDraft: '',
+    tapArm: null,
+    rename: null,
+    renameDraft: '',
+    addItem: null,
+    itemDraft: '',
+    addingList: false,
+    newListDraft: '',
+    drag: null,
+    dragOverList: null,
+    secMenu: null,
+    secDrag: null,
+    secDragOver: null,
+    lists: [
+      { id:'inbox', title:'Inbox', collapsed:false, items:[
+        {id:1, text:'Voicemail from accountant', done:false, tags:['calls']},
+        {id:2, text:'Idea — weekend in Lisbon', done:false, due:'Fri', tags:['personal','travel'], notes:'Check flight prices before committing.'},
+        {id:3, text:'Conference invite to reply', done:false},
+      ]},
+      { id:'next', title:'Next Actions', collapsed:false, items:[
+        {id:4, text:'Call the dentist', done:false},
+        {id:5, text:'Draft Q3 deck outline', done:false},
+        {id:6, text:'Email Sam the brief', done:true},
+      ]},
+      { id:'waiting', title:'Waiting For', collapsed:false, items:[
+        {id:7, text:'Sam — design feedback', done:false},
+        {id:8, text:'Printer — final invoice', done:false},
+      ]},
+      { id:'someday', title:'Someday / Maybe', collapsed:false, items:[
+        {id:9, text:'Learn film photography', done:false},
+        {id:10, text:'Repaint the hallway', done:false},
+        {id:11, text:'Read \u201CA Pattern Language\u201D', done:false},
+      ]},
+    ],
+    archive: [],
+  };
+
+  focusRef = (el) => { if (el) el.focus(); };
+
+  mutateList(id, fn) { this.setState(s => ({ lists: s.lists.map(l => l.id !== id ? l : fn(l)) })); }
+
+  setFilter(f) { this.setState({ filter: f }); }
+  segStyle(active) {
+    const base = { font: "600 11px/1 'Hanken Grotesk',system-ui", letterSpacing: '.12em', textTransform: 'uppercase', padding: '6px 13px', borderRadius: '999px', cursor: 'pointer', userSelect: 'none', transition: 'color .14s, background .14s, box-shadow .14s' };
+    return active
+      ? { ...base, color: 'var(--ink)', background: 'var(--sheet)', boxShadow: '0 1px 2px rgba(var(--shadowrgb),.14)' }
+      : { ...base, color: 'var(--sub)', background: 'transparent' };
+  }
+  setTheme(t){ this.setState({ theme: t }); }
+  setDensity(d){ this.setState({ density: d }); }
+  setMasthead(m){ this.setState({ masthead: m }); }
+  componentDidMount(){ this.applyDocBg(); }
+  componentDidUpdate(){ this.applyDocBg(); }
+  applyDocBg(){ const th = this.THEMES[this.state.theme] || this.THEMES.paper; if (typeof document !== 'undefined') document.documentElement.style.background = th['--page']; }
+  panelPill(active){ return { font: "600 10px/1 'Hanken Grotesk',system-ui", letterSpacing: '.07em', textTransform: 'uppercase', padding: '5px 9px', borderRadius: '7px', cursor: 'pointer', userSelect: 'none', transition: 'all .14s', color: active ? '#fff' : 'rgba(255,255,255,.5)', background: active ? 'rgba(255,255,255,.17)' : 'transparent' }; }
+  THEMES = {
+    paper: { '--page':'#e6dcd0','--sheet':'#f8f2eb','--field':'#f1e8dd','--track':'#ece1d4','--segborder':'#ddd0bf','--ink':'#19140d','--body':'#30291f','--sub':'#594f43','--muted':'#928471','--faint':'#b4a38e','--markerdone':'#736757','--hair':'#e2d5c5','--hairsoft':'#eadfd2','--ring':'#cfc0ac','--danger':'#953d21','--shadowrgb':'60,50,30' },
+    cool:  { '--page':'#e8e8ea','--sheet':'#ffffff','--field':'#f4f4f5','--track':'#e9e9ec','--segborder':'#dcdce0','--ink':'#18181b','--body':'#3f3f46','--sub':'#71717a','--muted':'#a1a1aa','--faint':'#bcbcc2','--markerdone':'#8a8a93','--hair':'#e4e4e7','--hairsoft':'#eeeef0','--ring':'#d4d4d8','--danger':'#b91c1c','--shadowrgb':'30,30,40' },
+    ink:   { '--page':'#211c17','--sheet':'#2a2420','--field':'#352d26','--track':'#3a322a','--segborder':'#4a4034','--ink':'#f4ece0','--body':'#e6dacb','--sub':'#b6a890','--muted':'#8f8270','--faint':'#6e6354','--markerdone':'#9a8d79','--hair':'#3a322a','--hairsoft':'#332c25','--ring':'#5a4f40','--danger':'#d98a6a','--shadowrgb':'0,0,0' },
+  };
+  DENSITY = {
+    compact:  { '--sheet-pad':'38px 46px 42px','--gap':'16px','--row-pad-y':'4px' },
+    cozy:     { '--sheet-pad':'54px 60px 56px','--gap':'26px','--row-pad-y':'7px' },
+    spacious: { '--sheet-pad':'72px 78px 74px','--gap':'42px','--row-pad-y':'12px' },
+  };
+  MAST = { quiet: { '--mast-size':'29px' }, editorial: { '--mast-size':'42px' } };
+  openView(v) { this.setState({ view: v, menu: null }); }
+  toggleCollapse(id) { this.mutateList(id, l => ({ ...l, collapsed: !l.collapsed })); }
+
+  startRename(id, title) { this.setState({ rename: id, renameDraft: title, edit: null, menu: null }); }
+  commitRename(id) { const t = (this.state.renameDraft || '').trim(); this.setState(s => ({ rename: null, renameDraft: '', lists: t ? s.lists.map(l => l.id !== id ? l : { ...l, title: t }) : s.lists })); }
+  cancelRename() { this.setState({ rename: null, renameDraft: '' }); }
+
+  startAddList() { this.setState({ addingList: true, newListDraft: '' }); }
+  commitAddList() { const t = (this.state.newListDraft || '').trim(); if (!t) { this.setState({ addingList: false, newListDraft: '' }); return; } const id = 'l' + this.state.nextId; this.setState(s => ({ nextId: s.nextId + 1, addingList: false, newListDraft: '', lists: [...s.lists, { id, title: t, collapsed: false, items: [] }] })); }
+  cancelAddList() { this.setState({ addingList: false, newListDraft: '' }); }
+
+  startAddItem(id) { this.setState({ addItem: id, itemDraft: '', edit: null, menu: null }); this.mutateList(id, l => ({ ...l, collapsed: false })); }
+  commitAddItem(id) { const t = (this.state.itemDraft || '').trim(); if (!t) { this.setState({ addItem: null, itemDraft: '' }); return; } const iid = this.state.nextId; this.setState(s => ({ nextId: s.nextId + 1, addItem: null, itemDraft: '', lists: s.lists.map(l => l.id !== id ? l : { ...l, items: [...l.items, { id: iid, text: t, done: false }] }) })); }
+  cancelAddItem() { this.setState({ addItem: null, itemDraft: '' }); }
+
+  toggleDone(listId, itemId) { this.mutateList(listId, l => ({ ...l, items: l.items.map(it => it.id !== itemId ? it : { ...it, done: !it.done }) })); }
+
+  toggleDetails(listId, itemId) {
+    this.setState({ details: { listId, itemId }, tagDraft: '', menu: null, rename: null });
+  }
+  closeDetails() { this.setState({ details: null, tagDraft: '' }); }
+  setItemField(listId, itemId, field, value) { this.mutateList(listId, l => ({ ...l, items: l.items.map(it => it.id !== itemId ? it : { ...it, [field]: value }) })); }
+  addTag(listId, itemId) {
+    const t = (this.state.tagDraft || '').trim();
+    if (!t) return;
+    this.mutateList(listId, l => ({ ...l, items: l.items.map(it => it.id !== itemId ? it : { ...it, tags: [...(it.tags || []), t] }) }));
+    this.setState({ tagDraft: '' });
+  }
+  removeTag(listId, itemId, idx) { this.mutateList(listId, l => ({ ...l, items: l.items.map(it => it.id !== itemId ? it : { ...it, tags: (it.tags || []).filter((_, i) => i !== idx) }) })); }
+
+  onMarkerMouseDown(e) { if (e && e.stopPropagation) e.stopPropagation(); }
+  onRowMouseDown(listId, itemId, e) {
+    const key = listId + ':' + itemId;
+    const now = Date.now();
+    const prev = this.state.tapArm;
+    const armed = !!(prev && prev.key === key && (now - prev.t) < 400);
+    this.setState({ tapArm: { key, t: now, armed } });
+  }
+  onRowDragStart(listId, itemId, e) {
+    const key = listId + ':' + itemId;
+    const arm = this.state.tapArm;
+    if (!(arm && arm.key === key && arm.armed)) { if (e) e.preventDefault(); return; }
+    this.onDragStart(listId, itemId, e);
+  }
+  onRowDragEnd() { this.onDragEnd(); this.setState({ tapArm: null }); }
+  setHover(key) { if (this.state.hover !== key) this.setState({ hover: key }); }
+  clearHover(key) { this.setState(s => s.hover === key ? { hover: null } : {}); }
+  openMenu(listId, itemId) { this.setState({ menu: { listId, itemId } }); }
+  closeMenu() { this.setState({ menu: null }); }
+  openSecMenu(id) { this.setState({ secMenu: id, menu: null }); }
+  closeSecMenu() { this.setState({ secMenu: null }); }
+  archiveSection(id) { this.setState(s => { const sec = s.lists.find(l => l.id === id); if (!sec) return { secMenu: null }; return { secMenu: null, lists: s.lists.filter(l => l.id !== id), archive: [{ id: sec.id, text: sec.title, kind: 'list', section: sec }, ...s.archive] }; }); }
+  onSecDragStart(id, e) { if (e && e.dataTransfer) { e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(id)); } catch (_) {} } this.setState({ secDrag: id, menu: null, secMenu: null }); }
+  onSecDragEnd() { this.setState({ secDrag: null, secDragOver: null }); }
+  onSecDragOver(id, e) { if (this.state.secDrag) { if (e) e.preventDefault(); if (this.state.secDragOver !== id) this.setState({ secDragOver: id }); } }
+  onSecDrop(id, e) { const d = this.state.secDrag; if (d) { if (e) e.preventDefault(); this.reorderSection(d, id); } this.setState({ secDrag: null, secDragOver: null }); }
+  reorderSection(fromId, toId) { if (fromId === toId) return; this.setState(s => { const arr = [...s.lists]; const fi = arr.findIndex(l => l.id === fromId); const ti = arr.findIndex(l => l.id === toId); if (fi < 0 || ti < 0) return {}; const [m] = arr.splice(fi, 1); arr.splice(ti, 0, m); return { lists: arr }; }); }
+
+  archiveItem(listId, itemId) {
+    this.setState(s => {
+      let moved;
+      const srcTitle = (s.lists.find(l => l.id === listId) || {}).title;
+      const lists = s.lists.map(l => {
+        if (l.id !== listId) return l;
+        moved = l.items.find(i => i.id === itemId);
+        return { ...l, items: l.items.filter(i => i.id !== itemId) };
+      });
+      if (!moved) return { menu: null };
+      return { menu: null, lists, archive: [{ id: moved.id, text: moved.text, fromList: listId, fromTitle: srcTitle }, ...s.archive] };
+    });
+  }
+  moveItem(listId, itemId, toId) {
+    if (listId === toId) { this.setState({ menu: null, drag: null, dragOverList: null }); return; }
+    this.setState(s => {
+      let moved;
+      const lists = s.lists.map(l => {
+        if (l.id !== listId) return l;
+        moved = l.items.find(i => i.id === itemId);
+        return { ...l, items: l.items.filter(i => i.id !== itemId) };
+      });
+      if (!moved) return { menu: null, drag: null, dragOverList: null };
+      return { menu: null, drag: null, dragOverList: null, lists: lists.map(l => l.id === toId ? { ...l, items: [...l.items, moved] } : l) };
+    });
+  }
+
+  restoreArchive(id) {
+    this.setState(s => {
+      const a = s.archive.find(x => x.id === id);
+      if (!a) return {};
+      if (a.kind === 'list') { return { archive: s.archive.filter(x => x.id !== id), lists: [...s.lists, a.section] }; }
+      const exists = s.lists.some(l => l.id === a.fromList);
+      const targetId = exists ? a.fromList : (s.lists[0] && s.lists[0].id);
+      return { archive: s.archive.filter(x => x.id !== id), lists: s.lists.map(l => l.id === targetId ? { ...l, items: [...l.items, { id: a.id, text: a.text, done: false }] } : l) };
+    });
+  }
+  deleteArchive(id) { this.setState(s => ({ archive: s.archive.filter(x => x.id !== id) })); }
+
+  onDragStart(listId, itemId, e) {
+    if (e && e.dataTransfer) { e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(itemId)); } catch (_) {} }
+    this.setState({ drag: { listId, itemId }, menu: null });
+  }
+  onDragEnd() { this.setState({ drag: null, dragOverList: null }); }
+  onListDragOver(id, e) { if (e) { e.preventDefault(); if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'; } if (this.state.drag && this.state.dragOverList !== id) this.setState({ dragOverList: id }); }
+  onListDrop(id, e) { if (e) e.preventDefault(); const d = this.state.drag; if (d) this.moveItem(d.listId, d.itemId, id); else this.setState({ drag: null, dragOverList: null }); }
+
+  dateLabel() {
+    const d = new Date();
+    const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+    const mons = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    return days[d.getDay()] + '  ·  ' + mons[d.getMonth()] + ' ' + d.getDate();
+  }
+
+  renderVals() {
+    const baseText = { font: "400 18px/1.6 'Newsreader',Georgia,serif", color: 'var(--body)', flex: '1', cursor: 'text' };
+    const doneText = { font: "400 18px/1.6 'Newsreader',Georgia,serif", color: 'var(--sub)', textDecoration: 'line-through', flex: '1', cursor: 'text' };
+    const markerBase = { display: 'inline-block', width: '24px', textAlign: 'center', font: "400 19px/1 'Newsreader'", color: 'var(--faint)', marginRight: '8px', flex: 'none', cursor: 'pointer', userSelect: 'none' };
+    const markerDone = { display: 'inline-block', width: '24px', textAlign: 'center', font: "400 16px/1 'Newsreader'", color: 'var(--markerdone)', marginRight: '8px', flex: 'none', cursor: 'pointer', userSelect: 'none' };
+    const s = this.state;
+    const _tv = { ...(this.THEMES[s.theme] || this.THEMES.paper), ...(this.DENSITY[s.density] || this.DENSITY.cozy), ...(this.MAST[s.masthead] || this.MAST.editorial) };
+    const rootStyle = { minHeight: '100vh', display: 'flex', justifyContent: 'center', padding: '56px 24px 160px', fontFamily: "'Newsreader',Georgia,serif", background: 'var(--page)', ..._tv };
+    const tweakGroups = [
+      { label: 'Paper', wrapStyle: { marginBottom: '12px' }, options: [
+        { label: 'Warm', style: this.panelPill(s.theme === 'paper'), onClick: () => this.setTheme('paper') },
+        { label: 'Cool', style: this.panelPill(s.theme === 'cool'), onClick: () => this.setTheme('cool') },
+        { label: 'Ink', style: this.panelPill(s.theme === 'ink'), onClick: () => this.setTheme('ink') },
+      ]},
+      { label: 'Density', wrapStyle: { marginBottom: '12px' }, options: [
+        { label: 'Tight', style: this.panelPill(s.density === 'compact'), onClick: () => this.setDensity('compact') },
+        { label: 'Cozy', style: this.panelPill(s.density === 'cozy'), onClick: () => this.setDensity('cozy') },
+        { label: 'Airy', style: this.panelPill(s.density === 'spacious'), onClick: () => this.setDensity('spacious') },
+      ]},
+      { label: 'Masthead', wrapStyle: { marginBottom: '0' }, options: [
+        { label: 'Quiet', style: this.panelPill(s.masthead === 'quiet'), onClick: () => this.setMasthead('quiet') },
+        { label: 'Grand', style: this.panelPill(s.masthead === 'editorial'), onClick: () => this.setMasthead('editorial') },
+      ]},
+    ];
+
+    const lists = s.lists.map(l => {
+      const visItems = s.filter === 'all' ? l.items : l.items.filter(i => s.filter === 'done' ? i.done : !i.done);
+      const others = s.lists.filter(x => x.id !== l.id);
+      const items = visItems.map(it => {
+        const key = l.id + ':' + it.id;
+        const detailsOpen = !!(s.details && s.details.listId === l.id && s.details.itemId === it.id);
+        return {
+          id: it.id, text: it.text, done: it.done, notDone: !it.done,
+          markerChar: it.done ? '\u2713' : '\u2014',
+          markerStyle: it.done ? markerDone : markerBase,
+          textStyle: it.done ? doneText : baseText,
+          detailsOpen,
+          due: it.due || '',
+          notes: it.notes || '',
+          tags: (it.tags || []).map((t, i) => ({ label: t, onRemove: () => this.removeTag(l.id, it.id, i) })),
+          tagDraft: detailsOpen ? s.tagDraft : '',
+          otherLists: others.map(o => ({ id: o.id, title: o.title, onMove: () => this.moveItem(l.id, it.id, o.id) })),
+          onToggle: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.toggleDone(l.id, it.id); },
+          onMarkerMouseDown: (e) => this.onMarkerMouseDown(e),
+          onOpen: () => this.toggleDetails(l.id, it.id),
+          onTitleChange: (e) => this.setItemField(l.id, it.id, 'text', e.target.value),
+          onRowMouseDown: (e) => this.onRowMouseDown(l.id, it.id, e),
+          onRowDragStart: (e) => this.onRowDragStart(l.id, it.id, e),
+          onRowDragEnd: () => this.onRowDragEnd(),
+          onCloseDetails: () => this.closeDetails(),
+          onDueChange: (e) => this.setItemField(l.id, it.id, 'due', e.target.value),
+          onNotesChange: (e) => this.setItemField(l.id, it.id, 'notes', e.target.value),
+          onTagDraftChange: (e) => this.setState({ tagDraft: e.target.value }),
+          onTagDraftKey: (e) => { if (e.key === 'Enter') this.addTag(l.id, it.id); },
+          onArchive: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.archiveItem(l.id, it.id); },
+        };
+      });
+      return {
+        id: l.id, title: l.title,
+        expanded: !l.collapsed,
+        chevronStyle: { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', color: 'var(--muted)', cursor: 'pointer', flex: 'none', marginRight: '6px', borderRadius: '8px', transform: l.collapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform .12s' },
+        renaming: s.rename === l.id, notRenaming: s.rename !== l.id,
+        renameDraft: s.renameDraft,
+        addingItem: s.addItem === l.id, notAddingItem: s.addItem !== l.id,
+        itemDraft: s.itemDraft,
+        dropStyle: { margin: 'var(--gap) -10px 0', padding: '0 10px', borderRadius: '5px', background: s.dragOverList === l.id ? 'var(--field)' : 'transparent', transition: 'background .12s' },
+        items,
+        onToggleCollapse: () => this.toggleCollapse(l.id),
+        onTitleClick: () => this.startRename(l.id, l.title),
+        onRenameChange: (e) => this.setState({ renameDraft: e.target.value }),
+        onRenameKey: (e) => { if (e.key === 'Enter') this.commitRename(l.id); if (e.key === 'Escape') this.cancelRename(); },
+        onRenameBlur: () => this.commitRename(l.id),
+        onStartAddItem: () => this.startAddItem(l.id),
+        onItemDraftChange: (e) => this.setState({ itemDraft: e.target.value }),
+        onItemDraftKey: (e) => { if (e.key === 'Enter') this.commitAddItem(l.id); if (e.key === 'Escape') this.cancelAddItem(); },
+        onItemDraftBlur: () => this.commitAddItem(l.id),
+        onDragOver: (e) => this.onListDragOver(l.id, e),
+        onDrop: (e) => this.onListDrop(l.id, e),
+        secMenuOpen: s.secMenu === l.id,
+        onSecMenu: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.openSecMenu(l.id); },
+        onArchiveSection: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.archiveSection(l.id); },
+        onSecGripStart: (e) => this.onSecDragStart(l.id, e),
+        onSecGripEnd: () => this.onSecDragEnd(),
+        onSecDragOver: (e) => this.onSecDragOver(l.id, e),
+        onSecDrop: (e) => this.onSecDrop(l.id, e),
+      };
+    });
+
+    const archive = s.archive.map(a => ({
+      id: a.id, text: a.text,
+      textStyle: { font: "400 18px/1.6 'Newsreader',Georgia,serif", color: 'var(--body)', flex: '1' },
+      onRestore: () => this.restoreArchive(a.id),
+      onDelete: () => this.deleteArchive(a.id),
+    }));
+
+    return {
+      listsView: s.view === 'lists', archiveView: s.view === 'archive',
+      dateLabel: this.dateLabel(),
+      rootStyle,
+      tweakGroups,
+      filterOpenStyle: this.segStyle(s.filter === 'open'),
+      filterDoneStyle: this.segStyle(s.filter === 'done'),
+      filterAllStyle: this.segStyle(s.filter === 'all'),
+      onFilterOpen: () => this.setFilter('open'),
+      onFilterDone: () => this.setFilter('done'),
+      onFilterAll: () => this.setFilter('all'),
+      archiveLabel: s.archive.length ? ('Archive (' + s.archive.length + ')') : 'Archive',
+      onOpenArchive: () => this.openView('archive'),
+      onOpenLists: () => this.openView('lists'),
+      lists,
+      addingList: s.addingList, notAddingList: !s.addingList,
+      newListDraft: s.newListDraft,
+      onStartAddList: () => this.startAddList(),
+      onNewListChange: (e) => this.setState({ newListDraft: e.target.value }),
+      onNewListKey: (e) => { if (e.key === 'Enter') this.commitAddList(); if (e.key === 'Escape') this.cancelAddList(); },
+      onNewListBlur: () => this.commitAddList(),
+      menuOpen: !!s.menu || !!s.secMenu,
+      onCloseMenu: () => { this.closeMenu(); this.closeSecMenu(); },
+      focusRef: this.focusRef,
+      archive,
+      archiveEmpty: s.archive.length === 0,
+    };
+  }
+}
+</script>
+
+
+</body></html>
