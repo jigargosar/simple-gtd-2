@@ -1,4 +1,4 @@
-# Journal
+# ADR
 
 Append-only, dated. One line per event (decision or completion). Newest at bottom.
 

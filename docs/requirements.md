@@ -4,7 +4,7 @@ Goal: ship a **fully usable v1** for real users by **end of June 2026 (30 Jun)**
 
 **Priority (2026-06-22):** functional scope first (§1 → §4). Animation (§6) and
 visual niceties are **post-functional** — near the deadline, cherry-pick the
-highest-impact items by impact; the rest may be cut. See `journal.md`.
+highest-impact items by impact; the rest may be cut. See `adr.md`.
 
 - Archive model spec: [archive-visibility](reference/archive-visibility.md)
 

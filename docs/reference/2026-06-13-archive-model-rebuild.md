@@ -14,7 +14,7 @@
 
 **Spec mapping:** Implements roadmap `§1 Archive model`. The permanent-delete-inside-archive piece also resolves roadmap §1's open "decide permanent delete" item; it is an intentional addition beyond the visibility-only spec.
 
-**Animation note (2026-06-22 decision — see `journal.md`):** Keyframe animations were removed from the codebase and visual niceties are deferred to the end of v1. Implement archive/unarchive as **instant state changes — no exit animation**. The `setExiting` / `onAnimationEnd` / `e.animationName === 'task-out'` gating shown in Tasks 3–4 below is **stale** (those keyframes no longer exist in `src/index.css`, so the handler would never fire and the button would do nothing). Replace it with a direct call — e.g. `onClick={() => archiveTask(task.id)}` — dropping the `exiting` state and the `anim-*` classes. Revisit motion only in the late niceties pass.
+**Animation note (2026-06-22 decision — see `adr.md`):** Keyframe animations were removed from the codebase and visual niceties are deferred to the end of v1. Implement archive/unarchive as **instant state changes — no exit animation**. The `setExiting` / `onAnimationEnd` / `e.animationName === 'task-out'` gating shown in Tasks 3–4 below is **stale** (those keyframes no longer exist in `src/index.css`, so the handler would never fire and the button would do nothing). Replace it with a direct call — e.g. `onClick={() => archiveTask(task.id)}` — dropping the `exiting` state and the `anim-*` classes. Revisit motion only in the late niceties pass.
 
 ---
 

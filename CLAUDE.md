@@ -52,7 +52,7 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 
 ## Workflow
 
-Files (Place new items on top; except docs/journal.md):
+Files (Place new items on top; except docs/adr.md):
 
 - docs/design-system.md — UI-consistency rules and known gaps (checkbox
   shapes, icon weight, animation, focus, outline).
@@ -60,7 +60,7 @@ Files (Place new items on top; except docs/journal.md):
 - docs/requirements.md — committed v1 scope.
 - docs/Kanban-Board.md — Work Tracker, details below
 - docs/backlog.md — May implement
-- docs/journal.md — ADR
+- docs/adr.md — ADR
 
 Board sections (what each holds):
 
