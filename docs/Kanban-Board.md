@@ -5,26 +5,22 @@
 
 ## Planning (PN)
 
-- [ ] Row-control interaction model (needs decision): grip — auto smooth hide
-      (rest hidden, fade in on row hover ~150ms, gutter space reserved,
-      Notion/Todoist pattern; drag/keyboard unchanged) vs staying permanent;
-      edit-card pass — title editor expands into an inline card holding
-      Move/Archive (+ future notes), right-side hover buttons die if adopted
-      (double-click opens, drag/selection unaffected, already settled); if
-      edit-card doesn't land, right-side buttons need a fallback (fade-in
-      overlay cluster or metadata-at-rest); hover gaps to fix once decided —
-      grip hover (hover:text-stone-600), add-row tint (hover:bg-stone-100),
-      move-to hover:text-stone-700 parity with archive; touch discoverability —
-      archive/move-to are hover/focus-within only, unreachable on touch
-      without tab, same surface as the above.
-- [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass: archive-dialog
-      focus rings, restore button indigo → accent, empty-state contrast bump,
-      wire useScrollLock (exists in hooks.ts, unused) into both dialogs.
-- [ ] V1 UX/UI pass (requirements §5, incl. §4 edit↔display parity) — NEXT UP.
-      Then in order: §4 done-status in archive view, §4 auto-scroll to new input,
-      §7 empty states. After: §6 animation hardening, cherry-pick by impact.
-- [ ] Update requirements.md Priority note (still dated 2026-06-22) to the
-      current order above — requirements is the authoritative source.
+- [ ] Row-control interaction model (needs decision): grip visibility —
+      auto-hide-on-hover (Notion/Todoist pattern, ~150ms fade, drag/keyboard
+      unaffected) vs always visible; and whether title-edit expands into an
+      inline action card (holding Move/Archive, replacing today's hover
+      buttons) or hover buttons stay with a touch-friendly fallback.
+      Hover-state and touch-reachability polish follow once decided.
+- [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass:
+      archive-dialog focus rings, restore-button color (indigo → accent),
+      empty-state contrast, and wiring the unused useScrollLock hook into
+      both dialogs.
+- [ ] V1 UX/UI pass (requirements §5): edit↔display parity, archive
+      done-status, auto-scroll to new input, empty states, then animation
+      hardening, cherry-picked by impact.
+- [ ] Sync requirements.md's stale Priority note (dated 2026-06-22) to the
+      V1 pass's step order above — requirements.md is the authoritative
+      source.
 
 ## Ready (RY)
 
