@@ -40,14 +40,6 @@
       §7 empty states. After: §6 animation hardening, cherry-pick by impact.
 - [ ] Update requirements.md Priority note (still dated 2026-06-22) to the
       current order above — requirements is the authoritative source.
-- [ ] QA.md (needs creation): new doc to collect UI-consistency items — hover,
-      outline, checkbox, animation, focus. Update CLAUDE.md Workflow file
-      list to reference it. Seeds: 'Show completed' toggle uses a square
-      checkbox vs task-done's filled circle — same on/off concept, two
-      shapes, consider a switch for the view-level toggle; grip/chevron/
-      archive icons share one visual weight (stone-400/500, size-4/5) —
-      interactive parts take a beat to pick out from decorative ones.
-      Sweeping board/backlog for other related items deferred to later.
 
 ## Ready (RY)
 
@@ -71,6 +63,10 @@
       note, easy-flow rule-7 block, Floor 9 quote) and the stale /of-skill Inbox
       card — content already lived in skill-builder-workspace src/fmt/dump.md /
       frontend-baseline skill.
+- [x] docs/design-system.md created — seeded with checkbox/toggle shapes, icon
+      weight, and animation gaps (animation content also pulled from
+      backlog.md); focus points to CLAUDE.md Convention 6; outline has no
+      source yet. Referenced from CLAUDE.md's Workflow file list.
 
 ## Backlog (BL)
 
@@ -84,4 +80,6 @@
 - [ ] Collapse / expand all sections at once.
 - [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
       scanning which list needs attention requires opening each one.
+- [ ] Sweep board/backlog for more design-system.md candidates (hover, outline,
+      checkbox, animation, focus) beyond the initial seed.
 

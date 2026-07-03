@@ -21,15 +21,6 @@ update tailwind classes
 
 ---
 
-## Animation
-for long lines editor input causes layout shift
-on add section, anim causes layout shift
-delete also has jumpy anim
-move menu: dropdown open/close and the moved item are abrupt and jarring
-full anim need to be reviewed.
-
----
-
 3. Task notes / details — add notes?: string field on Task.
 5. Contexts / tags — tags: string[] field plus a filter hook (@home, @calls).
 6. Quick capture / global Inbox add — single keyboard-focused input that always appends to Inbox.
