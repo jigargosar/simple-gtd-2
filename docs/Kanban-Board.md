@@ -3,26 +3,6 @@
 
 ## InBasket, Inbox (IB)
 
-- [ ] Future of the grip (needs decision): auto smooth hide — e.g. rest hidden,
-      fade in on row hover (~150ms opacity, gutter space stays reserved), the
-      Notion/Todoist pattern; drag/keyboard behavior unchanged.
-- [ ] Edit-card pass (needs decision): title editor expands into an inline card
-      holding Move/Archive (+ future notes) → right-side hover buttons die.
-      Interaction model already settled: double-click opens, drag/selection
-      unaffected.
-- [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass: archive-dialog
-      focus rings, restore button indigo → accent, empty-state contrast bump,
-      wire useScrollLock (exists in hooks.ts, unused) into both dialogs.
-
-- [ ] V1 UX/UI pass (requirements §5, incl. §4 edit↔display parity) — NEXT UP.
-      Then in order: §4 done-status in archive view, §4 auto-scroll to new input,
-      §7 empty states. After: §6 animation hardening, cherry-pick by impact.
-- [ ] Update requirements.md Priority note (still dated 2026-06-22) to the
-      current order above — requirements is the authoritative source.
-- [ ] Doc cleanup: trash the skill-leftover lines now moved/addressed elsewhere —
-      backlog.md: scrollbar-shift note, easy-flow rule-7 block, Floor 9 quote;
-      this board: the /of-skill Inbox card (all live in skill-builder-workspace
-      src/fmt/dump.md or in the frontend-baseline skill as Floors 10-12).
 - [ ] CLAUDE.md Workflow: reword the docs/handoff.md line — file kept but
       deprecated; this Inbox replaces handoff (handoff now only for oversized
       reference material).
@@ -41,9 +21,6 @@
 - [ ] Search: title-only match, mirror the `showDone` pattern
       (`searchQuery` in store, one more filter in `visibleSectionTasks`,
       input in `ViewMenu`). Bonus/may-be-cut per requirements.md.
-- [ ] /of skill (personal tooling, not app scope): Critical Step checklist
-      has 4 redundant clusters, documented but unmerged — trim decision
-      pending. See `~/.claude/skills/of/docs/ADR.md`.
 - [ ] Touch discoverability: archive/move-to are hover/focus-within only —
       unreachable on touch without tab. Overlaps the right-side-buttons and
       hover-gaps Backlog items; consider together.
@@ -59,6 +36,22 @@
       from decorative ones.
 
 ## Planning (PN)
+
+- [ ] Future of the grip (needs decision): auto smooth hide — e.g. rest hidden,
+      fade in on row hover (~150ms opacity, gutter space stays reserved), the
+      Notion/Todoist pattern; drag/keyboard behavior unchanged.
+- [ ] Edit-card pass (needs decision): title editor expands into an inline card
+      holding Move/Archive (+ future notes) → right-side hover buttons die.
+      Interaction model already settled: double-click opens, drag/selection
+      unaffected.
+- [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass: archive-dialog
+      focus rings, restore button indigo → accent, empty-state contrast bump,
+      wire useScrollLock (exists in hooks.ts, unused) into both dialogs.
+- [ ] V1 UX/UI pass (requirements §5, incl. §4 edit↔display parity) — NEXT UP.
+      Then in order: §4 done-status in archive view, §4 auto-scroll to new input,
+      §7 empty states. After: §6 animation hardening, cherry-pick by impact.
+- [ ] Update requirements.md Priority note (still dated 2026-06-22) to the
+      current order above — requirements is the authoritative source.
 
 ## Ready (RY)
 
@@ -78,6 +71,10 @@
 - [x] Collapsible sections — persisted `collapsed` flag per section + chevron toggle; folded sections hide their task list.
 - [x] fixed: Now, move menu items are follow focus-ring consistently.
 - [x] ViewMoveMenu: violates fundamental leaky abstraction. (`useMoveTargets` selector)
+- [x] Doc cleanup: removed skill-leftover lines from backlog.md (scrollbar-shift
+      note, easy-flow rule-7 block, Floor 9 quote) and the stale /of-skill Inbox
+      card — content already lived in skill-builder-workspace src/fmt/dump.md /
+      frontend-baseline skill.
 
 ## Backlog (BL)
 
