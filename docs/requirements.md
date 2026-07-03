@@ -106,7 +106,7 @@ Includes §4's edit ↔ display parity; prioritize together when tackled.
 - [ ] 3-state filter — Active / Done / All (replaces the binary `showDone`
       toggle) (bonus, if time remains)
 - [ ] Quick capture — global keyboard-first Inbox add
-- [ ] Search / filter — one input + `useMatchingTasks(query)` (bonus, if time remains)
+- [ ] Search / filter — one input + `useMatchingTasks(query)` (bonus, if time remains).  docs/reference/search-notes
 - [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
 
 ## Out of scope
