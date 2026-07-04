@@ -20,7 +20,7 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
 - Adding a section causes layout shift.
 - Delete has a jumpy animation.
 - Move-menu dropdown open/close and the moved item are abrupt and jarring.
-- Full `.anim-*` review needed (see Kanban-Board.md Backlog: "review the
+- Full `.anim-*` review needed (see Backlog: "review the
   animation code").
 
 ## Focus

@@ -46,7 +46,7 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 8. Appearance, disappearance, and value changes should not be jarring.
 9. This file documents stable contracts, not volatile specifics. Don't enumerate things that drift (full component lists, exact counts, every hook/action name) — they go stale silently. Name the pattern and a grep to find the current set instead.
 10. Interaction model: double-click edits a title; hold-and-move anywhere on a row drags it (touch: long-press); plain click does nothing; Tab reaches controls, Space/Enter activates the focused one.
-11. Breaking convention gives AI permission to break in future. Better to fix during or before editing.
+11. Breaking convention gives AI permission to break in the future. Better to fix during or before editing.
 
 ---
 
@@ -70,4 +70,4 @@ Board sections (what each holds):
 - Ready — Ready to implement, with plan.
 - In Progress — actively being worked.
 - Done — complete + verified.
-- Backlog (ext of backlog file).
+

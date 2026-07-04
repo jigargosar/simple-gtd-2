@@ -56,7 +56,3 @@
       weight, and animation gaps (animation content also pulled from
       backlog.md); focus points to CLAUDE.md Convention 6; outline has no
       source yet. Referenced from CLAUDE.md's Workflow file list.
-
-## Backlog (BL)
-
-
