@@ -18,9 +18,6 @@
 - [ ] V1 UX/UI pass (requirements §5): edit↔display parity, archive
       done-status, auto-scroll to new input, empty states, then animation
       hardening, cherry-picked by impact.
-- [ ] Sync requirements.md's stale Priority note (dated 2026-06-22) to the
-      V1 pass's step order above — requirements.md is the authoritative
-      source.
 
 ## Ready (RY)
 
@@ -29,6 +26,8 @@
 
 ## Done (DN)
 
+- [x] Synced requirements.md's Priority note to the V1 pass step order above
+      (§4 → §5 → §6, stale past-deadline framing removed).
 - [x] CLAUDE.md doc pass: removed stale docs/handoff.md (Inbox replaced its
       triage role, file deleted); Convention 9 audit already resolved
       (`.anim-*`/`.dot-pop`/`.strike` gone from Convention 2); added
