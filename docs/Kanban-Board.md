@@ -2,6 +2,8 @@
 - AI should never use short names, of following sections, only infer them when user uses them.
 
 ## InBasket, Inbox (IB)
+- [ ] Sweep board/backlog for more design-system.md candidates (hover, outline,
+  checkbox, animation, focus) beyond the initial seed.
 
 ## Planning (PN)
 
@@ -57,16 +59,4 @@
 
 ## Backlog (BL)
 
-- [ ] Ghost add-row circle: spin the dotted circle while it fills (dotted → solid
-      on input focus) — cool-effect polish, keep subtle per Convention 8.
-- [ ] Keyboard pass: Enter-to-edit on the focused/selected row, arrow navigation
-      between rows, complete/archive shortcuts. Deferred with the focus/semantics
-      territory CLAUDE.md parks.
-- [ ] naming outright blunders
-- [ ] Next task: review the animation code (`.anim-*` in `src/index.css` and its usages).
-- [ ] Collapse / expand all sections at once.
-- [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
-      scanning which list needs attention requires opening each one.
-- [ ] Sweep board/backlog for more design-system.md candidates (hover, outline,
-      checkbox, animation, focus) beyond the initial seed.
 
