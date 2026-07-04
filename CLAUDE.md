@@ -61,6 +61,7 @@ Files (Place new items on top; except docs/adr.md):
 - docs/Kanban-Board.md — Work Tracker, details below
 - docs/backlog.md — May implement
 - docs/adr.md — ADR
+- docs/mockups/ — do not read; not a reflection of current design.
 
 Board sections (what each holds):
 
