@@ -23,3 +23,6 @@ Append-only, dated. One line per event (decision or completion). Newest at botto
 
 - 2026-07-04 — Decision: row-level icons are hidden by default and fade in/out on hover, using a slow transition rather than an instant toggle.
   - Why: instant show/hide reads as abrupt, violating the "appearance/disappearance should not be jarring" convention.
+
+- 2026-07-04 — Hover-revealed buttons over an inline edit dialog.
+  - Why: simpler to implement. No other reason.

@@ -30,3 +30,7 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
 ## Outline
 
 - No documented rule yet.
+
+## Click targets
+
+- Run frontend-baseline skill (QA).
