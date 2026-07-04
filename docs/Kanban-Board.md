@@ -7,7 +7,6 @@
 
 ## Planning (PN)
 
-- [ ] Row model: all 3 icons, hover state — run frontend-baseline skill (QA)
 - [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass:
       archive-dialog focus rings, restore-button color (indigo → accent),
       empty-state contrast, and wiring the unused useScrollLock hook into
@@ -20,6 +19,8 @@
 
 
 ## In Progress (IP)
+- 
+- [ ] Row model: all 3 icons, hover state — run frontend-baseline skill (QA)
 
 ## Done (DN)
 
