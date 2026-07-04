@@ -32,7 +32,7 @@ Prettier runs on save in the IDE — no format-on-edit hook needed.
 2. Ordering is fractional-indexing (string `order`), not array index.
 3. Persistence via Zustand `persist` + `migrate`; bump version and extend normalizers for breaking state-shape changes.
 4. TS project references; the `strict` umbrella is off, explicit flags on.
-5. Drag-and-drop is unimplemented.
+5. Drag-and-drop via `@dnd-kit/react` (`useSortable`; whole-row pointer/keyboard sensors); see `docs/adr.md` for the interaction-model decisions.
 
 ## Conventions
 

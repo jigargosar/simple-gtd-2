@@ -2,9 +2,9 @@
 
 Goal: ship a **fully usable v1** for real users by **end of June 2026 (30 Jun)**.
 
-**Priority (2026-06-22):** functional scope first (§1 → §4). Animation (§6) and
-visual niceties are **post-functional** — near the deadline, cherry-pick the
-highest-impact items by impact; the rest may be cut. See `adr.md`.
+**Priority:** §1–§3 done. Remaining functional work is §4 → §5 (edit↔display
+parity, archive done-status, auto-scroll, empty states), then §6 animation
+hardening — cherry-picked by impact, past the 30 Jun deadline. See `adr.md`.
 
 - Archive model spec: [archive-visibility](reference/archive-visibility.md)
 
