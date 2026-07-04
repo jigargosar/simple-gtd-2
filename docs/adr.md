@@ -20,3 +20,6 @@ Append-only, dated. One line per event (decision or completion). Newest at botto
 - 2026-07-03 — Decision: focus rings stay keyboard-only (`focus-visible`) everywhere, grips included.
   - Always-visible grip ring was tried and reverted: the post-drop reparenting workaround (dnd-kit#1747) force-blurs the grip, so the "armed" ring lied after every mouse drag.
   - Keyboard drag anchor is either/or (dnd-kit binds keys to handle-or-element); grip won — one clean tab stop per row instead of a full-row ring.
+
+- 2026-07-04 — Decision: row-level icons are hidden by default and fade in/out on hover, using a slow transition rather than an instant toggle.
+  - Why: instant show/hide reads as abrupt, violating the "appearance/disappearance should not be jarring" convention.
