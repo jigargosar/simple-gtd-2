@@ -25,47 +25,66 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
 
 ## Focus
 
-- See CLAUDE.md Convention 6 — focus-visible ring pattern. No known gaps yet.
+- See CLAUDE.md Convention 6 — focus-visible ring pattern.
+- Icon-button rings sit flush on the hit-area edge (no `ring-offset`), so the
+  ring never implies a bigger clickable area than what's actually there.
 
 ## Outline
 
-- No documented rule yet.
+- Row hover/focus-within: a blue accent-colored bottom border only (`border-b
+  border-transparent … hover:border-accent focus-within:border-accent`), not
+  always-on. Shown as a "ruled notebook" line rather than a full-row fill —
+  full-row background fill was tried and rejected for low contrast (didn't
+  clear the WCAG 1.4.11 3:1 floor even at `stone-400`).
+- Section headers do not have their own permanent underline — removed because
+  its contrast read worse than the row treatment it was compared against.
 
 ## Click targets
 
-- Run frontend-baseline skill (QA).
+- Shipped (see table below). `/frontend-baseline` skill run as formal QA is
+  still outstanding — floors were hand-checked in conversation, not run
+  through the skill itself.
 
-## Icon button target spec (proposed, not yet approved)
+## Icon button target spec (shipped)
 
-Concrete target values for the icon buttons in this row model (grip, move-to, archive), independent of what's in the code today:
+Actual values for every row control (grip, move-to, archive, checkbox) — same
+28×28 hit-box across all of them, so nothing in a row is taller than anything
+else:
 
 ```
 +----------------------+----------------------+-------------------------------------------+
-| Parameter            | Target               | Basis                                     |
+| Parameter            | Value                | Basis                                      |
 +----------------------+----------------------+-------------------------------------------+
-| Glyph, rest state    | stone-500            | Hard floor: 4.40:1 on hovered row bg,     |
-|                      |                      | 4.80:1 on section header.                 |
+| Glyph size           | size-5 (20px)         | Consistency call.                         |
 +----------------------+----------------------+-------------------------------------------+
-| Glyph, hover/focus   | stone-700            | Hard floor, wide margin across            |
-|                      |                      | all contexts (8-10:1).                    |
+| Icon padding          | p-1 (4px)             | 20px content + 4px/side = 28×28.          |
 +----------------------+----------------------+-------------------------------------------+
-| Hover bg             | stone-300            | Design call, not a floor. stone-200       |
-| (icon-local)         |                      | too close to row hover bg (1.15:1);       |
-|                      |                      | stone-300 gives 1.37:1 (floor 8).         |
+| Hit target            | 28×28px               | Clears hard floor 7 (24×24 min) with      |
+|                      |                       | margin; 44×44 judged unrealistic here.    |
 +----------------------+----------------------+-------------------------------------------+
-| Glyph size           | size-4 (16px)        | Consistency call; already                 |
-|                      |                      | uniform today.                            |
+| Glyph color, rest      | stone-500             | 4.80:1 on white/row bg — passes.          |
 +----------------------+----------------------+-------------------------------------------+
-| Hit target           | 24x24px minimum      | Hard floor 7. 44x44 is the goal           |
-|                      |                      | but unrealistic here; 24x24 is            |
-|                      |                      | the real target.                          |
+| Glyph color, hover/focus | stone-500 (unchanged) | No icon-local hover color change —    |
+|                      |                       | see below.                                |
 +----------------------+----------------------+-------------------------------------------+
-| Focus ring           | ring-accent, ring-2  | Fixed convention                          |
-|                      |                      | (CLAUDE.md #6).                           |
+| Icon hover bg          | none                  | Explicitly rejected — icons only appear   |
+|                      |                       | on hover already; a second hover bg on    |
+|                      |                       | top was redundant and, per user feedback, |
+|                      |                       | broke row-to-icon scanability (Gestalt    |
+|                      |                       | common-region: the row's own hover/focus  |
+|                      |                       | underline is what ties icons to their row).|
 +----------------------+----------------------+-------------------------------------------+
-| Reveal mechanism     | opacity 0->100       | Decision already made this                |
-|                      | on hover/focus       | session; not a floor value.               |
+| Focus ring             | ring-accent, ring-2, no offset | Fixed convention (CLAUDE.md #6). |
++----------------------+----------------------+-------------------------------------------+
+| Reveal mechanism       | opacity 0->100 on hover/focus-within/focus-visible | Icons hidden at rest. |
++----------------------+----------------------+-------------------------------------------+
+| Gap between controls   | gap-4 (16px)          | Ratio: icon padding(4) : row edge(8) :    |
+|                      |                       | gap(16) = 1:2:4.                          |
 +----------------------+----------------------+-------------------------------------------+
 ```
 
-So: two colors total for all icon glyphs (`stone-500` rest, `stone-700` active), one background for the hover/focus box (`stone-300`, replacing the current `stone-100` which fuses with the row), one size, one hit-target floor. That's the full target state — everything in the earlier findings (grip's `stone-400`, move-to's missing hover color, the `stone-100`-on-`stone-100` fusion) is a gap against this table.
+One color for all icon glyphs (`stone-500`, no rest/hover distinction), no
+icon-local hover background, one size, one hit-box. Shared as module-level
+tokens in `src/App.tsx` (`rowIconSize`, `rowGap`, `rowIconBtn`,
+`rowIconBtnHoverReveal`) — grep those names for the current definitions rather
+than trusting the literal values above if this table goes stale again.

@@ -20,10 +20,16 @@
 
 ## In Progress (IP)
 - 
-- [ ] Row model: all 3 icons, hover state — run frontend-baseline skill (QA)
 
 ## Done (DN)
 
+- [x] Row model: all 3 icons, hover state. Unified 1:2:4 sizing/spacing
+      tokens (28×28 hit-box on every row control), ring flush on hit-area
+      edge, no icon hover bg/color; row hover/focus-within redesigned to a
+      blue accent bottom border ("ruled notebook" line, hover-only). Formal
+      `/frontend-baseline` skill run still outstanding — floors were
+      hand-checked in conversation instead; see backlog if that's wanted as
+      a separate QA pass.
 - [x] Synced requirements.md's Priority note to the V1 pass step order above
       (§4 → §5 → §6, stale past-deadline framing removed).
 - [x] CLAUDE.md doc pass: removed stale docs/handoff.md (Inbox replaced its
