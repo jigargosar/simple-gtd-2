@@ -571,7 +571,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
                     'flex h-5 w-5 items-center justify-center rounded-full border-2 transition',
                     done
                         ? 'border-accent bg-accent'
-                        : 'group-hover/check:border-accent border-stone-500 bg-transparent',
+                        : 'group-hover/check:border-accent group-focus-visible/check:border-accent border-stone-500 bg-transparent',
                 )}
             >
                 {done && (
