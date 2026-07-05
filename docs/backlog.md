@@ -1,4 +1,8 @@
 - 
+- [ ] Ruled-notebook / hand-drawn direction: sketchy, non-straight lines
+  somewhere in the UI via `roughjs` or `rough-notation` — candidate
+  locations: checkbox, section dividers, outer card border. "Wow factor"
+  idea, never implemented, needs explicit scoping before any code.
 - [ ] Custom icons: explored replacing the checkbox's checkmark with a
   hand-rolled SVG (ring + solid dot for done) instead of lucide's default —
   reverted for now, revisit as part of a deliberate icon-design pass.
