@@ -31,13 +31,18 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
 
 ## Outline
 
-- Row hover/focus-within: a blue accent-colored bottom border only (`border-b
-  border-transparent … hover:border-accent focus-within:border-accent`), not
-  always-on. Shown as a "ruled notebook" line rather than a full-row fill —
-  full-row background fill was tried and rejected for low contrast (didn't
-  clear the WCAG 1.4.11 3:1 floor even at `stone-400`).
-- Section headers do not have their own permanent underline — removed because
-  its contrast read worse than the row treatment it was compared against.
+- No row-level hover/focus indication currently — the accent bottom-border
+  ("ruled notebook" line, `hover:border-accent focus-within:border-accent`)
+  was tried, then hidden. The `border-b border-transparent` placeholder stays
+  in the classes (so a future border doesn't shift layout) but nothing
+  renders on hover/focus right now.
+- Found alongside: the flex `gap` between rows/header sits outside every
+  row's own `group`, so hover/reveal drops out in that strip regardless of
+  what treatment the row itself uses. See Backlog: "Row hover/focus
+  highlight."
+- Section header and task row now share identical structural classes
+  (padding, rounded corners, border placeholder, transition, `items-center`)
+  — no divergence between the two left to track here.
 
 ## Click targets
 
@@ -79,9 +84,25 @@ else:
 | Reveal mechanism       | opacity 0->100 on hover/focus-within/focus-visible | Icons hidden at rest. |
 +----------------------+----------------------+-------------------------------------------+
 | Gap between controls   | gap-4 (16px)          | Ratio: icon padding(4) : row edge(8) :    |
-|                      |                       | gap(16) = 1:2:4.                          |
+|                      |                       | gap(16) = 1:2:4. Horizontal, within a row —|
+|                      |                       | unrelated to vertical row/section gaps.   |
++----------------------+----------------------+-------------------------------------------+
+| Transition duration    | duration-300          | Bumped from Tailwind's default 150ms —    |
+|                      |                       | 150ms read as a jump, not a fade, for the |
+|                      |                       | icon reveal and focus ring.               |
 +----------------------+----------------------+-------------------------------------------+
 ```
+
+Vertical spacing (separate from the table above): between sections, `gap-6`
+(24px); between a section's header and its task list, `gap-2` (8px) — both
+reduced from `gap-10`/`gap-4` for being too much whitespace. Task-to-task
+spacing isn't a flex gap at all — it comes from each row's own `p-2`
+padding.
+
+Checkbox: the last icon-local hover-color exception (`group-hover/check:
+border-accent` on the unchecked state) has been removed — no icon or
+checkbox anywhere changes color on hover now, only the (currently hidden)
+row-level border was ever meant to signal hover.
 
 One color for all icon glyphs (`stone-500`, no rest/hover distinction), no
 icon-local hover background, one size, one hit-box. Shared as module-level

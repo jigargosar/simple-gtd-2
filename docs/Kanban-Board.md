@@ -23,13 +23,21 @@
 
 ## Done (DN)
 
-- [x] Row model: all 3 icons, hover state. Unified 1:2:4 sizing/spacing
-      tokens (28×28 hit-box on every row control), ring flush on hit-area
-      edge, no icon hover bg/color; row hover/focus-within redesigned to a
-      blue accent bottom border ("ruled notebook" line, hover-only). Formal
-      `/frontend-baseline` skill run still outstanding — floors were
-      hand-checked in conversation instead; see backlog if that's wanted as
-      a separate QA pass.
+- [x] Persist `showDone` filter across reloads (was deliberately transient;
+      now included in `partialize`/`migrate`, same safe-default pattern as
+      other fields, no version bump needed).
+- [x] Row/section model finalized: unified 1:2:4 icon sizing/spacing tokens
+      (28×28 hit-box on every row control), ring flush on hit-area edge, no
+      icon or checkbox hover-color anywhere. Row-level hover/focus bottom
+      border tried, then hidden (see backlog — no row hover indication
+      currently, plus a found gap-hover-dropout issue between rows).
+      Section header unified to the task row's exact structural classes
+      (padding, rounded corners, border placeholder, transition,
+      items-center). Between-section and header-to-tasks gaps reduced
+      (40px→24px, 16px→8px). Transition durations bumped 150ms→300ms so
+      state changes read as a fade. Formal `/frontend-baseline` skill run
+      still outstanding — floors were hand-checked in conversation instead;
+      see backlog if that's wanted as a separate QA pass.
 - [x] Synced requirements.md's Priority note to the V1 pass step order above
       (§4 → §5 → §6, stale past-deadline framing removed).
 - [x] CLAUDE.md doc pass: removed stale docs/handoff.md (Inbox replaced its
