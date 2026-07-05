@@ -33,8 +33,7 @@ const useApp = create<AppState>()(
     persist(mockState, {
         name: 'simple-gtd',
         version: 6,
-        // Only the data is persisted; `showDone` is transient and starts false.
-        partialize: ({ sections, tasks }) => ({ sections, tasks }),
+        partialize: ({ sections, tasks, showDone }) => ({ sections, tasks, showDone }),
         migrate,
     }),
 )
@@ -74,7 +73,6 @@ function normalizeTask(r: Record<string, unknown>): Task {
 
 // Normalizes persisted data to the current shape. Missing fields get safe defaults
 // (e.g. `archived` defaults to false for data saved before the flag existed).
-// `showDone` is never persisted.
 function migrate(persisted: unknown): AppState {
     const base = mockState()
     if (!isRecord(persisted)) return base
@@ -86,6 +84,7 @@ function migrate(persisted: unknown): AppState {
         tasks: Array.isArray(persisted.tasks)
             ? persisted.tasks.filter(isRecord).map(normalizeTask)
             : base.tasks,
+        showDone: asBool(persisted.showDone, base.showDone),
     }
 }
 
