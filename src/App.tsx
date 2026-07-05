@@ -603,7 +603,15 @@ const titleBox = 'block min-w-0 flex-1 rounded-md px-2 text-base leading-6 wrap-
 function ViewTitle({ done, title, onEdit }: { done: boolean; title: string; onEdit: () => void }) {
     return (
         <span
+            role="button"
+            tabIndex={0}
             onDoubleClick={onEdit}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onEdit()
+                }
+            }}
             // Swallow the native word-select of the double-click so the editor
             // opens without a selection flash.
             onMouseDown={(e) => {
@@ -611,7 +619,7 @@ function ViewTitle({ done, title, onEdit }: { done: boolean; title: string; onEd
             }}
             className={clsx(
                 titleBox,
-                'cursor-text transition',
+                'focus-visible:ring-accent cursor-text transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                 done ? 'text-stone-600' : 'text-stone-900',
             )}
         >
