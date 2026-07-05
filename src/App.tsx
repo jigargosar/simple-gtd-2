@@ -174,7 +174,7 @@ function ViewBoard() {
                 })
             }}
         >
-            <main className="flex flex-col gap-10">
+            <main className="flex flex-col gap-6">
                 {sections.map((section, index) => (
                     <ViewSection key={section.id} section={section} index={index} />
                 ))}
@@ -380,7 +380,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
     return (
         <div
             ref={ref}
-            className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}
+            className={clsx('flex flex-col gap-2 transition', isDragging && 'opacity-50')}
         >
             <div
                 className={clsx(
