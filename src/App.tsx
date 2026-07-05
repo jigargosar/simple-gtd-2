@@ -385,7 +385,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                             pointer drags start anywhere on the header. */}
                         <span
                             ref={gripRef}
-                            className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-700 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                         >
                             <GripVertical className="size-4" />
                         </span>
@@ -493,7 +493,7 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
                 pointer guard doesn't swallow presses on it. */}
             <span
                 ref={gripRef}
-                className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-700 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
                 <GripVertical className="size-4" />
             </span>
