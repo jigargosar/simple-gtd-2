@@ -94,7 +94,7 @@ const rowGap = 'gap-4'
 // implies a bigger clickable area than what's actually there. No hover color
 // change — the row's own hover background is the only rest/hover distinction.
 const rowIconBtn =
-    'focus-visible:ring-accent shrink-0 rounded-md p-1 text-stone-500 transition focus-visible:ring-2 focus-visible:outline-none'
+    'focus-visible:ring-accent shrink-0 rounded-md p-1 text-stone-500 transition duration-300 focus-visible:ring-2 focus-visible:outline-none'
 const rowIconBtnHoverReveal =
     'opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100'
 
@@ -513,10 +513,7 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
         <li
             ref={ref}
             className={clsx(
-                // Ruled-notebook blue accent line, hover/focus-only (not
-                // always-on) — the section underline is gone too, so this
-                // is the row's only divider, shown on demand.
-                'group flex items-start rounded-lg border-b border-transparent p-2 transition hover:border-accent focus-within:border-accent',
+                'group flex items-start rounded-lg border-b border-transparent p-2 transition duration-300',
                 rowGap,
                 isDragging && 'opacity-50',
             )}
@@ -571,7 +568,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
                     'flex h-5 w-5 items-center justify-center rounded-full border-2 transition',
                     done
                         ? 'border-accent bg-accent'
-                        : 'group-hover/check:border-accent group-focus-visible/check:border-accent border-stone-500 bg-transparent',
+                        : 'group-focus-visible/check:border-accent border-stone-500 bg-transparent',
                 )}
             >
                 {done && (
@@ -722,7 +719,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     return (
         <li
             className={clsx(
-                'group flex items-center rounded-lg border-b border-transparent p-2 transition hover:border-accent focus-within:border-accent focus-within:bg-stone-100',
+                'group flex items-center rounded-lg border-b border-transparent p-2 transition duration-300 focus-within:bg-stone-100',
                 rowGap,
             )}
         >

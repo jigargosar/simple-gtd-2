@@ -1,4 +1,9 @@
 - 
+- [ ] Row hover/focus highlight: bottom accent border (hover:border-accent/
+  focus-within:border-accent) hidden for now — no row-level hover
+  indication at all currently. Also found: flex `gap-4` between rows/header
+  sits outside any row's own group, so hover drops out in that strip
+  regardless of treatment. Revisit both together.
 - [ ] Ruled-notebook / hand-drawn direction: sketchy, non-straight lines
   somewhere in the UI via `roughjs` or `rough-notation` — candidate
   locations: checkbox, section dividers, outer card border. "Wow factor"
