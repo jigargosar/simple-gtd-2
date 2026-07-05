@@ -79,6 +79,25 @@ const rowDragSensors = [
     KeyboardSensor,
 ]
 
+// Row design tokens, all in one 1:2:4 ratio off a 4px base (Tailwind's own
+// spacing-1) instead of independently-tuned numbers:
+//   icon padding  1×base = p-1  (4px)
+//   row edge      2×base = *-2  (8px) — both py and px, so ring clearance
+//                 is the same on every side, and it's exactly half of gap
+//   row gap       4×base = gap-4 (16px)
+// Icon glyph and the checkbox dot are both 20px "content" — the same tier —
+// so content(20) + padding(4 each side) = 28×28 on every row control
+// (buttons and checkbox alike), and no row element is taller than another.
+const rowIconSize = 'size-5'
+const rowGap = 'gap-4'
+// Ring sits flush on the hit-area edge (no ring-offset) so the ring never
+// implies a bigger clickable area than what's actually there. No hover color
+// change — the row's own hover background is the only rest/hover distinction.
+const rowIconBtn =
+    'focus-visible:ring-accent shrink-0 rounded-md p-1 text-stone-500 transition focus-visible:ring-2 focus-visible:outline-none'
+const rowIconBtnHoverReveal =
+    'opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 focus-visible:opacity-100'
+
 function ViewApp() {
     return (
         <div className="mx-auto w-full max-w-2xl px-4 pt-6 pb-24 sm:px-6 sm:pt-10">
@@ -363,13 +382,15 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
             ref={ref}
             className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}
         >
-            <div className="group flex items-center gap-3 border-b border-stone-200 pb-2">
+            <div
+                className={clsx('group flex items-center border-b border-stone-200 px-2 pb-2', rowGap)}
+            >
                 {editingTitle ? (
                     <>
                         {/* Spacers stand in for the drag handle and chevron so the
                             editor input opens exactly where the title text sits. */}
-                        <span className="h-6 w-6 shrink-0" />
-                        <span className="h-6 w-6 shrink-0" />
+                        <span className="h-7 w-7 shrink-0" />
+                        <span className="h-7 w-7 shrink-0" />
                         <ViewSectionTitleEditor
                             title={section.title}
                             onSave={(next) => {
@@ -385,9 +406,13 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                             pointer drags start anywhere on the header. */}
                         <span
                             ref={gripRef}
-                            className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-700 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                            className={clsx(
+                                rowIconBtn,
+                                rowIconBtnHoverReveal,
+                                'grid cursor-grab touch-none place-items-center',
+                            )}
                         >
-                            <GripVertical className="size-4" />
+                            <GripVertical className={rowIconSize} />
                         </span>
                         <ViewCollapseBtn
                             collapsed={section.collapsed}
@@ -450,11 +475,16 @@ function ViewAddSection() {
         clearOnSave: true,
     })
     return (
-        <div className="group flex items-center gap-3 border-b border-stone-200 pb-2 transition focus-within:bg-stone-100/40">
+        <div
+            className={clsx(
+                'group flex items-center border-b border-stone-200 px-2 pb-2 transition focus-within:bg-stone-100/40',
+                rowGap,
+            )}
+        >
             {/* Spacer holds the drag-handle column so the + and input line up with
                 section headers. */}
-            <span className="h-6 w-6 shrink-0" />
-            <span className="group-focus-within:text-accent grid h-6 w-6 shrink-0 place-items-center text-stone-500 transition select-none">
+            <span className="h-7 w-7 shrink-0" />
+            <span className="group-focus-within:text-accent grid h-7 w-7 shrink-0 place-items-center text-stone-500 transition select-none">
                 <Plus className="size-5" />
             </span>
             <input
@@ -483,7 +513,8 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
         <li
             ref={ref}
             className={clsx(
-                'group flex items-start gap-3 rounded-lg py-2 transition hover:bg-stone-100',
+                'group flex items-start rounded-lg p-2 transition hover:bg-stone-200',
+                rowGap,
                 isDragging && 'opacity-50',
             )}
         >
@@ -493,9 +524,13 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
                 pointer guard doesn't swallow presses on it. */}
             <span
                 ref={gripRef}
-                className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-grab touch-none place-items-center rounded-md text-stone-400 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-700 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className={clsx(
+                    rowIconBtn,
+                    rowIconBtnHoverReveal,
+                    'grid cursor-grab touch-none place-items-center',
+                )}
             >
-                <GripVertical className="size-4" />
+                <GripVertical className={rowIconSize} />
             </span>
             <ViewCheckbox done={task.done} onClick={() => toggleTask(task.id)} />
             {editing ? (
@@ -526,7 +561,7 @@ function ViewCheckbox({ done, onClick }: { done: boolean; onClick: () => void })
     return (
         <button
             onClick={onClick}
-            className="group/check focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-full transition focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="group/check focus-visible:ring-accent grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-full transition focus-visible:ring-2 focus-visible:outline-none"
         >
             <span
                 className={clsx(
@@ -613,9 +648,9 @@ function ViewCollapseBtn({ collapsed, onClick }: { collapsed: boolean; onClick: 
         <button
             onClick={onClick}
             aria-label={collapsed ? 'Expand section' : 'Collapse section'}
-            className="focus-visible:ring-accent grid h-6 w-6 shrink-0 cursor-pointer place-items-center rounded-md text-stone-500 transition hover:bg-stone-100 hover:text-stone-700 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className={clsx(rowIconBtn, 'grid cursor-pointer place-items-center')}
         >
-            <Icon className="size-5" />
+            <Icon className={rowIconSize} />
         </button>
     )
 }
@@ -629,9 +664,9 @@ function ViewArchiveBtn({ onClick, label }: { onClick: () => void; label: string
             onClick={onClick}
             aria-label={label}
             title={label}
-            className="focus-visible:ring-accent shrink-0 cursor-pointer rounded-md p-1 text-stone-500 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 hover:text-stone-700 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className={clsx(rowIconBtn, rowIconBtnHoverReveal, 'cursor-pointer')}
         >
-            <Archive className="size-4" />
+            <Archive className={rowIconSize} />
         </button>
     )
 }
@@ -646,9 +681,9 @@ function ViewMoveMenu({ task }: { task: Task }) {
         <div className="relative shrink-0">
             <button
                 onClick={() => setOpen((v) => !v)}
-                className="focus-visible:ring-accent block cursor-pointer rounded-md p-1 text-stone-500 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-stone-100 focus-visible:bg-stone-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className={clsx(rowIconBtn, rowIconBtnHoverReveal, 'block cursor-pointer')}
             >
-                <FolderInput className="size-4" />
+                <FolderInput className={rowIconSize} />
             </button>
             {open && (
                 <>
@@ -682,13 +717,18 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     })
 
     return (
-        <li className="group flex items-center gap-3 rounded-lg py-2 transition focus-within:bg-stone-100">
+        <li
+            className={clsx(
+                'group flex items-center rounded-lg p-2 transition focus-within:bg-stone-100',
+                rowGap,
+            )}
+        >
             {/* Spacer holds the drag-handle column so the ghost checkbox and input
                 line up with real task rows. */}
-            <span className="h-6 w-6 shrink-0" />
+            <span className="h-7 w-7 shrink-0" />
             {/* Decorative ghost checkbox: previews the row an entry will become.
                 Dotted at rest, solid while the input has focus. */}
-            <span className="grid h-6 w-6 shrink-0 place-items-center">
+            <span className="grid h-7 w-7 shrink-0 place-items-center">
                 <span className="h-5 w-5 rounded-full border-2 border-dotted border-stone-400 transition group-focus-within:border-solid group-focus-within:border-stone-500" />
             </span>
             <input
