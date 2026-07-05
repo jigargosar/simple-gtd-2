@@ -383,7 +383,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
             className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}
         >
             <div
-                className={clsx('group flex items-center border-b border-stone-200 px-2 pb-2', rowGap)}
+                className={clsx('group flex items-center px-2 pb-2', rowGap)}
             >
                 {editingTitle ? (
                     <>
@@ -477,7 +477,7 @@ function ViewAddSection() {
     return (
         <div
             className={clsx(
-                'group flex items-center border-b border-stone-200 px-2 pb-2 transition focus-within:bg-stone-100/40',
+                'group flex items-center px-2 pb-2 transition focus-within:bg-stone-100/40',
                 rowGap,
             )}
         >
@@ -513,7 +513,10 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
         <li
             ref={ref}
             className={clsx(
-                'group flex items-start rounded-lg p-2 transition hover:bg-stone-200',
+                // Ruled-notebook blue accent line, hover/focus-only (not
+                // always-on) — the section underline is gone too, so this
+                // is the row's only divider, shown on demand.
+                'group flex items-start rounded-lg border-b border-transparent p-2 transition hover:border-accent focus-within:border-accent',
                 rowGap,
                 isDragging && 'opacity-50',
             )}
@@ -719,7 +722,7 @@ function ViewAddTask({ sectionId }: { sectionId: string }) {
     return (
         <li
             className={clsx(
-                'group flex items-center rounded-lg p-2 transition focus-within:bg-stone-100',
+                'group flex items-center rounded-lg border-b border-transparent p-2 transition hover:border-accent focus-within:border-accent focus-within:bg-stone-100',
                 rowGap,
             )}
         >
