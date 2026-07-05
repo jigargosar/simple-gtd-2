@@ -383,7 +383,10 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
             className={clsx('flex flex-col gap-4 transition', isDragging && 'opacity-50')}
         >
             <div
-                className={clsx('group flex items-center px-2 pb-2', rowGap)}
+                className={clsx(
+                    'group flex items-center rounded-lg border-b border-transparent p-2 transition duration-300',
+                    rowGap,
+                )}
             >
                 {editingTitle ? (
                     <>
@@ -513,7 +516,7 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
         <li
             ref={ref}
             className={clsx(
-                'group flex items-start rounded-lg border-b border-transparent p-2 transition duration-300',
+                'group flex items-center rounded-lg border-b border-transparent p-2 transition duration-300',
                 rowGap,
                 isDragging && 'opacity-50',
             )}
