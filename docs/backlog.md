@@ -1,4 +1,7 @@
 - 
+- [ ] Custom icons: explored replacing the checkbox's checkmark with a
+  hand-rolled SVG (ring + solid dot for done) instead of lucide's default —
+  reverted for now, revisit as part of a deliberate icon-design pass.
 - [ ] Ghost add-row circle: spin the dotted circle while it fills (dotted → solid
   on input focus) — cool-effect polish, keep subtle per Convention 8.
 - [ ] Keyboard pass: Enter-to-edit on the focused/selected row, arrow navigation
