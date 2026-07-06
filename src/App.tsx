@@ -380,7 +380,11 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
     return (
         <div
             ref={ref}
-            className={clsx('flex flex-col gap-2 transition', isDragging && 'opacity-50')}
+            className={clsx(
+                'flex flex-col gap-2 transition',
+                isDragging &&
+                    'rotate-2 bg-stone-100 [mask-image:linear-gradient(to_bottom_right,black,transparent)]',
+            )}
         >
             <div
                 className={clsx(
@@ -439,7 +443,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                     </>
                 )}
             </div>
-            {!section.collapsed && (
+            {!section.collapsed && !isDragging && (
                 <ul>
                     {tasks.map((task, index) => (
                         <ViewTask key={task.id} task={task} index={index} />
@@ -518,7 +522,8 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
             className={clsx(
                 'group flex items-center rounded-lg border-b border-transparent p-2 transition duration-300',
                 rowGap,
-                isDragging && 'opacity-50',
+                isDragging &&
+                    'rotate-2 bg-stone-100 [mask-image:linear-gradient(to_bottom_right,black,transparent)]',
             )}
         >
             {/* Grip: visual grab affordance + the keyboard anchor (dnd-kit gives it
