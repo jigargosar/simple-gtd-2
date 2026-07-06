@@ -1,4 +1,4 @@
-import { Feedback, KeyboardSensor, PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
+import { KeyboardSensor, PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
 import { DragDropProvider } from '@dnd-kit/react'
 import { isSortable, useSortable } from '@dnd-kit/react/sortable'
 import { clsx } from 'clsx'
@@ -375,22 +375,12 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
         accept: 'section',
         handle: gripRef,
         sensors: rowDragSensors,
-        // Default feedback clones the section into a frozen placeholder to hold
-        // its pre-drag size — since we collapse to header-only while dragging,
-        // that clone would keep reserving the old, full height. 'move' relocates
-        // the real node instead, so the reserved space always matches its
-        // current (collapsed) size.
-        plugins: (defaults) => [...defaults, Feedback.configure({ feedback: 'move' })],
     })
 
     return (
         <div
             ref={ref}
-            className={clsx(
-                'flex flex-col gap-2 transition',
-                isDragging &&
-                    'rotate-2 bg-stone-100 [mask-image:linear-gradient(to_bottom_right,black,transparent)]',
-            )}
+            className={clsx('flex flex-col gap-2 transition', isDragging && 'opacity-50')}
         >
             <div
                 className={clsx(
@@ -449,7 +439,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                     </>
                 )}
             </div>
-            {!section.collapsed && !isDragging && (
+            {!section.collapsed && (
                 <ul>
                     {tasks.map((task, index) => (
                         <ViewTask key={task.id} task={task} index={index} />
@@ -528,8 +518,7 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
             className={clsx(
                 'group flex items-center rounded-lg border-b border-transparent p-2 transition duration-300',
                 rowGap,
-                isDragging &&
-                    'rotate-2 bg-stone-100 [mask-image:linear-gradient(to_bottom_right,black,transparent)]',
+                isDragging && 'opacity-50',
             )}
         >
             {/* Grip: visual grab affordance + the keyboard anchor (dnd-kit gives it
