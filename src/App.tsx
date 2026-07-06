@@ -1,4 +1,4 @@
-import { KeyboardSensor, PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
+import { Feedback, KeyboardSensor, PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
 import { DragDropProvider } from '@dnd-kit/react'
 import { isSortable, useSortable } from '@dnd-kit/react/sortable'
 import { clsx } from 'clsx'
@@ -375,6 +375,12 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
         accept: 'section',
         handle: gripRef,
         sensors: rowDragSensors,
+        // Default feedback clones the section into a frozen placeholder to hold
+        // its pre-drag size — since we collapse to header-only while dragging,
+        // that clone would keep reserving the old, full height. 'move' relocates
+        // the real node instead, so the reserved space always matches its
+        // current (collapsed) size.
+        plugins: (defaults) => [...defaults, Feedback.configure({ feedback: 'move' })],
     })
 
     return (
