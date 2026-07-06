@@ -57,9 +57,7 @@ Files (Place new items on top; except docs/adr.md):
 - docs/design-system.md — UI-consistency rules and known gaps (checkbox
   shapes, icon weight, animation, focus, outline).
 - docs/scratch-pad.md — ad hoc work.
-- docs/requirements.md — committed v1 scope.
-- docs/Kanban-Board.md — Work Tracker, details below
-- docs/backlog.md — May implement
+- docs/board.md — committed v1 scope + Work Tracker + backlog, combined.
 - docs/adr.md — ADR
 - docs/mockups/ — do not read; not a reflection of current design.
 
