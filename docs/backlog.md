@@ -1,4 +1,5 @@
 - 
+- [ ] Try animations.
 - [ ] Draft recovery: transient in-progress edits (open title/add inputs) are
   pure local state and vanish on refresh/crash — consider persisting drafts
   so they survive and can be recovered.
@@ -19,7 +20,6 @@
 - [ ] Keyboard pass: Enter-to-edit on the focused/selected row, arrow navigation
   between rows, complete/archive shortcuts. Deferred with the focus/semantics
   territory CLAUDE.md parks.
-- [ ] Next task: review the animation code (`.anim-*` in `src/index.css` and its usages).
 - [ ] Collapse / expand all sections at once.
 - [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
   scanning which list needs attention requires opening each one.

@@ -18,7 +18,6 @@ Status: `[x]` done · `[~]` partial · `[ ]` todo. Done-markers reflect a read o
 - [x] Show-completed toggle (global `showDone`)
 - [x] Fractional ordering on append (sections + tasks)
 - [x] localStorage persistence (Zustand `persist` + `migrate`)
-- [x] Entrance animations (header / section / task / checkbox)
 
 ## 1. Archive model — REBUILD (was built, then removed)
 
@@ -73,12 +72,8 @@ Includes §4's edit ↔ display parity; prioritize together when tackled.
 ## 6. Animation hardening (zero jank) — POST-FUNCTIONAL: cherry-pick by impact, rest may be cut
 
 - [ ] No layout shift on long-line edit / add-section / delete
-- [ ] Shorten exit stagger — exit reuses the entrance `animationDelay` (up to
-      360ms section / 240ms task before sliding out)
 - [ ] Resolve delete-on-`animationend` fragility (`App.tsx:185`, flagged
       "won't fix") — delete-on-click vs animation-gated
-- [ ] Checkbox out-animation — `dot-pop` animates in only (asymmetric)
-- [ ] Keyframe naming — `task-out` drives section exits via `.anim-out`
 
 ## 7. Empty states
 

@@ -18,10 +18,7 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
 
 - Long lines in the editor input cause layout shift.
 - Adding a section causes layout shift.
-- Delete has a jumpy animation.
 - Move-menu dropdown open/close and the moved item are abrupt and jarring.
-- Full `.anim-*` review needed (see Backlog: "review the
-  animation code").
 
 ## Focus
 
@@ -31,6 +28,7 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
 
 ## Outline
 
+- Use hovers, and consistently.
 - No row-level hover/focus indication currently — the accent bottom-border
   ("ruled notebook" line, `hover:border-accent focus-within:border-accent`)
   was tried, then hidden. The `border-b border-transparent` placeholder stays
