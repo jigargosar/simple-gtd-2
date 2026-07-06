@@ -2,7 +2,7 @@
 
 Goal: ship a **fully usable v1** for real users by **end of June 2026 (30 Jun)**.
 
-**Priority:** §1–§3 done. Remaining functional work is §4 → §5 (edit↔display
+**Priority:** §1–§3, §9 done. Remaining functional work is §4 (edit↔display
 parity, archive done-status, auto-scroll, empty states), then §6 animation
 hardening — cherry-picked by impact, past the 30 Jun deadline. See `adr.md`.
 
@@ -18,6 +18,7 @@ Status: `[x]` done · `[~]` partial · `[ ]` todo. Done-markers reflect a read o
 - [x] Show-completed toggle (global `showDone`)
 - [x] Fractional ordering on append (sections + tasks)
 - [x] localStorage persistence (Zustand `persist` + `migrate`)
+- [x] Per-section collapse/expand
 
 ## 1. Archive model — REBUILD (was built, then removed)
 
@@ -46,23 +47,24 @@ Foundational — items in §2, §3, §4 depend on it.
 - [x] Rename
 - [x] Delete — board action is now archive; hard delete lives only in the archive dialog (§1)
 
-## 4. Interaction correctness
+## 9. Drag-and-drop reordering
+
+- [x] Reorder tasks within a section (`@dnd-kit/react` `useSortable`; order
+      recomputed via `orderBetween` between drop neighbors)
+- [x] Move task between sections (same mechanism, cross-section drop)
+- [x] Reorder sections (same mechanism, flat `sections` group)
+
+## 4. Interaction correctness & readability — V1 UX/UI pass
 
 - [x] Click title to edit — pencil removed, title span is the trigger
 - [ ] Edit ↔ display parity — display wraps multi-line, editor is single-line
       `<input>` (`wrap-anywhere` is a no-op on inputs); reconcile (textarea or
-      truncate), never overflow horizontally. Grouped into the §5 V1 UX/UI
-      pass, not standalone — prioritize alongside §5 when tackled.
+      truncate), never overflow horizontally.
 - [~] Checkbox ↔ edit-input spacing — display + editor share `titleBox`; verify
       whether it still reads too narrow
 - [x] Board view: archive-only, no delete button (`Trash2` lives only in the archive) — §1
 - [ ] Done status visible in archive view — §1
 - [ ] Auto-scroll to a newly-added input (add-section on a long page)
-
-## 5. Readability / visual baseline — V1 UX/UI pass
-
-Includes §4's edit ↔ display parity; prioritize together when tackled.
-
 - [~] Reduce over-dark / over-bold text; font pass (Inter set; tone pass pending)
 - [ ] Tailwind class cleanup
 - [ ] Page-scrollbar shift fix (`scrollbar-gutter`)
@@ -79,29 +81,10 @@ Includes §4's edit ↔ display parity; prioritize together when tackled.
 
 - [ ] Designed empty state for empty sections / lists / first run
 
-## 8. Per-section collapse / show
-
-- [x] Collapse/expand each section
-
-## 9. Drag-and-drop reordering
-
-- [x] Reorder tasks within a section (`@dnd-kit/react` `useSortable`; order
-      recomputed via `orderBetween` between drop neighbors)
-- [x] Move task between sections (same mechanism, cross-section drop)
-- [x] Reorder sections (same mechanism, flat `sections` group)
-
 ## Known issues, might not fix
 
 - [ ] `hooks.ts:14` — `initialValue` shouldn't change after mount
 - [ ] `App.tsx:185` — exit removal depends on the animation firing (see §6)
-
-## Later (post-v1)
-
-- [ ] 3-state filter — Active / Done / All (replaces the binary `showDone`
-      toggle) (bonus, if time remains)
-- [ ] Quick capture — global keyboard-first Inbox add
-- [ ] Search / filter — one input + `useMatchingTasks(query)` (bonus, if time remains).  docs/reference/search-notes
-- [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
 
 ## Out of scope
 

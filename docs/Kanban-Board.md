@@ -11,7 +11,7 @@
       archive-dialog focus rings, restore-button color (indigo → accent),
       empty-state contrast, and wiring the unused useScrollLock hook into
       both dialogs.
-- [ ] V1 UX/UI pass (requirements §5): edit↔display parity, archive
+- [ ] V1 UX/UI pass (requirements §4): edit↔display parity, archive
       done-status, auto-scroll to new input, empty states, then animation
       hardening, cherry-picked by impact.
 

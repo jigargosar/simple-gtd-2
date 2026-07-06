@@ -23,6 +23,12 @@
 - [ ] Collapse / expand all sections at once.
 - [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
   scanning which list needs attention requires opening each one.
+- [ ] 3-state filter — Active / Done / All (replaces the binary `showDone`
+  toggle) (bonus, if time remains)
+- [ ] Quick capture — global keyboard-first Inbox add
+- [ ] Search / filter — one input + `useMatchingTasks(query)` (bonus, if time
+  remains). docs/reference/search-notes
+- [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
 
 
 ---
