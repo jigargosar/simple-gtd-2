@@ -44,6 +44,15 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
   (padding, rounded corners, border placeholder, transition, `items-center`)
   — no divergence between the two left to track here.
 
+## Drag feedback
+
+- Sections use a `DragOverlay` (header-only ghost, scoped to sections via its
+  `disabled` prop) instead of the default whole-element feedback — see the
+  `DragOverlay` usage in `ViewBoard` and Kanban Done for why. Tasks still use
+  plain default feedback (single row, no collapse needed).
+- No shared token for the ghost's own styling yet (bg/shadow/rounding chosen
+  ad hoc for this one overlay) — revisit if a second overlay use appears.
+
 ## Click targets
 
 - Shipped (see table below). `/frontend-baseline` skill run as formal QA is

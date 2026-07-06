@@ -23,6 +23,21 @@
 
 ## Done (DN)
 
+- [x] Section drag ghost: dragging a section now shows a header-only overlay
+      (via `@dnd-kit/react`'s `DragOverlay`, scoped to sections only) instead
+      of floating/reserving space for the full task list. The original
+      section also collapses to header-only while dragging. Tried first
+      without an overlay (plain `isDragging` collapse, then a manual
+      `sortable.refreshShape()`, then `Feedback.configure({feedback:'move'})`)
+      — all failed because dnd-kit's default feedback mode clones a frozen
+      placeholder at drag-start to reserve space, and that clone predates our
+      React collapse. `DragOverlay` sidesteps the clone entirely. Tasks are
+      single rows already, so they keep the plain default behavior.
+- [x] `ViewTitle` (task title): added `tabIndex`, `role="button"`, and an
+      Enter/Space keydown handler so entering edit mode no longer requires a
+      double-click — double-click still works too. Matching gap on
+      `ViewSection`'s title-edit span is still open (not in scope, noted for
+      later).
 - [x] Persist `showDone` filter across reloads (was deliberately transient;
       now included in `partialize`/`migrate`, same safe-default pattern as
       other fields, no version bump needed).

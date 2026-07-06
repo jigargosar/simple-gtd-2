@@ -30,8 +30,10 @@ one toast, undoes whatever just happened.
 ---
 
 DnD: fix section flickerint issues
-DnD: decide whether to collapse size of dragged list, long lists will leave huge gaps.
 DnD: Should we style, with tilt and gradient opacity.
+DnD: collapse ALL sections to header-only while any section is being dragged
+(not just the dragged one) — easier to navigate/drop into on a long board.
+(Collapsing just the dragged section to header-only — via DragOverlay — shipped, see Kanban Done.)
 
 ---
 
