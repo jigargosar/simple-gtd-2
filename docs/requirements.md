@@ -98,7 +98,6 @@ Includes §4's edit ↔ display parity; prioritize together when tackled.
 ## Known issues, might not fix
 
 - [ ] `hooks.ts:14` — `initialValue` shouldn't change after mount
-- [ ] `hooks.ts:19` — Enter on an empty value closes the editor and reverts
 - [ ] `App.tsx:185` — exit removal depends on the animation firing (see §6)
 
 ## Later (post-v1)

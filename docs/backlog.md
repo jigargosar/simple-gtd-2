@@ -1,4 +1,7 @@
 - 
+- [ ] Draft recovery: transient in-progress edits (open title/add inputs) are
+  pure local state and vanish on refresh/crash — consider persisting drafts
+  so they survive and can be recovered.
 - [ ] Row hover/focus highlight: bottom accent border (hover:border-accent/
   focus-within:border-accent) hidden for now — no row-level hover
   indication at all currently. Also found: flex `gap-4` between rows/header

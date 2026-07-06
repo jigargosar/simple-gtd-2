@@ -29,8 +29,6 @@ export function useEditInput({
     // Escape unmounts this input and fires onBlur — this flag makes blur a no-op
     // once Enter/Escape has already resolved the edit.
     const finished = useRef(false)
-    // Won't fix now: pressing Enter with an empty value closes the
-    // editor and reverts to the old text.
     const save = () => {
         onSave(value)
         if (clearOnSave) setValue('')

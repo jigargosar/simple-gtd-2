@@ -5,6 +5,7 @@ import { generateKeyBetween, generateNKeysBetween } from 'fractional-indexing'
 import { filter, pipe, sortBy, prop } from 'remeda'
 import { v4 as uuidv4 } from 'uuid'
 import { saveAs } from 'file-saver'
+import { isBlank } from './util'
 
 export type Task = {
     id: string
@@ -163,15 +164,14 @@ export function useArchivedSections() {
 }
 
 export function appendTask(sectionId: string, title: string) {
-    const trimmed = title.trim()
-    if (!trimmed) return
+    if (isBlank(title)) return
     mapState((s) => {
         const lastOrder = getSectionTasks(s.tasks, sectionId).at(-1)?.order ?? null
         const newTask = {
             id: uuidv4(),
             sectionId,
             order: orderBetween(lastOrder, null),
-            title: trimmed,
+            title: title.trim(),
             done: false,
             archived: false,
         }
@@ -198,9 +198,8 @@ export function toggleTask(id: string) {
 }
 
 export function updateTaskTitle(id: string, title: string) {
-    const trimmed = title.trim()
-    if (!trimmed) return
-    mapTasks((t) => (t.id === id ? { ...t, title: trimmed } : t))
+    if (isBlank(title)) return
+    mapTasks((t) => (t.id === id ? { ...t, title: title.trim() } : t))
 }
 
 // Drag-and-drop drop target: moves a task to `index` within `sectionId`'s visible
@@ -240,8 +239,7 @@ export function setTaskSection(id: string, sectionId: string) {
 }
 
 export function appendSection(title: string) {
-    const trimmed = title.trim()
-    if (!trimmed) return
+    if (isBlank(title)) return
     mapState((s) => {
         const lastOrder = sortBy(s.sections, prop('order')).at(-1)?.order ?? null
         return {
@@ -250,7 +248,7 @@ export function appendSection(title: string) {
                 {
                     id: uuidv4(),
                     order: orderBetween(lastOrder, null),
-                    title: trimmed,
+                    title: title.trim(),
                     archived: false,
                     collapsed: false,
                 },
@@ -264,9 +262,8 @@ export function toggleSectionCollapsed(id: string) {
 }
 
 export function updateSectionTitle(id: string, title: string) {
-    const trimmed = title.trim()
-    if (!trimmed) return
-    mapSections((sec) => (sec.id === id ? { ...sec, title: trimmed } : sec))
+    if (isBlank(title)) return
+    mapSections((sec) => (sec.id === id ? { ...sec, title: title.trim() } : sec))
 }
 
 // Archiving a section does NOT touch its tasks' archived flags (independent flags).

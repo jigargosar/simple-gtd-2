@@ -26,3 +26,13 @@ Append-only, dated. One line per event (decision or completion). Newest at botto
 
 - 2026-07-04 — Hover-revealed buttons over an inline edit dialog.
   - Why: simpler to implement. No other reason.
+
+- 2026-07-06 — Decision: an edit input (task/section title) that closes while
+  empty (trimmed length 0 — whitespace-only counts as empty) always reverts to
+  the prior value — true for Enter, Escape, and blur/click-away alike, not
+  just one trigger.
+  - Why: titles can't be blank (store-level guard on trimmed length 0 already
+    no-ops any empty save), so reverting is the only sane outcome for "closed
+    while empty" — not a bug.
+  - Consequence: hooks.ts's stale "Won't fix" comment and requirements.md's
+    matching "Known issues" line both contradicted this and are removed.
