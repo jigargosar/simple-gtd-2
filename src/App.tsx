@@ -1,5 +1,5 @@
 import { KeyboardSensor, PointerActivationConstraints, PointerSensor } from '@dnd-kit/dom'
-import { DragDropProvider } from '@dnd-kit/react'
+import { DragDropProvider, DragOverlay } from '@dnd-kit/react'
 import { isSortable, useSortable } from '@dnd-kit/react/sortable'
 import { clsx } from 'clsx'
 import {
@@ -180,6 +180,29 @@ function ViewBoard() {
                 ))}
                 <ViewAddSection />
             </main>
+            {/* Sections can be long; floating the full task list under the cursor
+                makes dragging awkward, so the overlay ghost shows just the header.
+                Tasks are single rows already — no overlay needed, they just move. */}
+            <DragOverlay disabled={(source) => !source || source.type !== 'section'}>
+                {(source) => {
+                    const section = source.data as Section
+                    return (
+                        <div
+                            className={clsx(
+                                'flex items-center rounded-lg bg-stone-100 p-2 shadow-md',
+                                rowGap,
+                            )}
+                        >
+                            <span className={clsx(rowIconBtn, 'grid place-items-center')}>
+                                <GripVertical className={rowIconSize} />
+                            </span>
+                            <span className="flex-1 px-2 text-lg font-bold text-stone-800">
+                                {section.title}
+                            </span>
+                        </div>
+                    )
+                }}
+            </DragOverlay>
         </DragDropProvider>
     )
 }
@@ -369,6 +392,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
     const gripRef = useRef<HTMLSpanElement>(null)
     const { ref, isDragging } = useSortable({
         id: section.id,
+        data: section,
         index,
         group: 'sections',
         type: 'section',
@@ -439,7 +463,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                     </>
                 )}
             </div>
-            {!section.collapsed && (
+            {!section.collapsed && !isDragging && (
                 <ul>
                     {tasks.map((task, index) => (
                         <ViewTask key={task.id} task={task} index={index} />
