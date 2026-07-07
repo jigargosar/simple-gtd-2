@@ -210,3 +210,66 @@ Foundational — items in §2, §3, §4 depend on it.
 - [ ] No layout shift on long-line edit / add-section / delete.
 - [ ] Resolve delete-on-`animationend` fragility (`App.tsx:185`, flagged
       "won't fix") — delete-on-click vs animation-gated.
+
+---
+---
+
+**— content vs. process — everything above is board content; everything
+below describes the system itself, not a task —**
+
+---
+---
+
+# Workflow
+
+Three sections, split by commitment:
+
+- **Inbox** — raw, fast capture. Untriaged on purpose — capture now, decide
+  later, so capturing never interrupts current work.
+- **Requirements (main-spec)** — committed to v1. Status per item is just
+  `[ ]` todo, `[~]` partial, `[x]` done — no separate planning/ready/
+  in-progress stage. If an item needs more granularity, split it into
+  sub-items or a nested list instead of inventing a new status marker. Done
+  items either attach to the existing section/item they relate to, or — if
+  orphaned (no reasonable existing home) — collect in one general Done
+  bucket. Best-fit judgment call, not a perfect mapping.
+- **Backlog** — not committed, someday/maybe. Grouped by whatever dimension
+  is useful (feature area, DnD, visual, etc.) — if an item fits more than
+  one group, it lives in one canonical place and the others link to it,
+  never duplicated.
+
+Requirements and Backlog are not two groups on the same dimension — they're
+opposite, mutually-exclusive commitment states. An item is exactly one or
+the other, never both, and never cross-linked between them. That absolute
+line is different in kind from Backlog's internal categories, which are
+soft groupings and can cross-link freely.
+
+Detail handling (applies everywhere):
+
+- Long item detail with no reference doc yet → keep as one item + a nested
+  sub-list, not one dense paragraph.
+- Item detail that's disproportionately large for the board → extract to
+  `docs/reference/*.md`, link from the board item.
+- Per-item stable markers (a number, or a symbol + 2-letter shortcode) are
+  added only when something actually needs to link back to that specific
+  item — not applied universally up front.
+
+When splitting, merging, or moving items between sections: preserve the
+original intent of the item, and don't let an issue silently vanish in the
+shuffle — if unsure where something goes, a rough note beats dropping it.
+
+This system doesn't need to be perfect — approximate, good-enough placement
+beats stalling on precise categorization.
+
+## Open questions (not urgent)
+
+- No marker distinguishes "actively being worked on today" from "partially
+  done" — that distinction is gone; unclear if it's ever missed in practice.
+- No marker distinguishes "committed but not yet planned" from "committed,
+  scoped, ready to start" — informally, a detailed sub-list can imply
+  "planned" and a bare one-liner "not yet," but this isn't an enforced rule.
+- Per-item marker format (plain number vs. symbol + 2-letter shortcode)
+  isn't fixed to one convention — decide per case when a link is actually
+  needed.
+- Cross-links between Backlog categories (when one item fits several) are
+  described in principle but not yet demonstrated in practice.
