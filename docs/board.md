@@ -4,6 +4,9 @@
 
 - [ ] Sweep board/backlog for more design-system.md candidates (hover, outline,
   checkbox, animation, focus) beyond the initial seed.
+- [ ] Add a "Micro-replies" rule to `C:\Users\jigar\.claude\skills\fmt\SKILL.md`
+  — single trivial-fact replies skip numbering/tldr, one `— ` prefixed line
+  instead. Proposed earlier, not tracked anywhere until now.
 
 ---
 ---
@@ -147,35 +150,6 @@ Foundational — items in §2, §3, §4 depend on it.
 
 # Backlog
 
-- [ ] Try animations.
-- [ ] Draft recovery: transient in-progress edits (open title/add inputs) are
-  pure local state and vanish on refresh/crash — consider persisting drafts
-  so they survive and can be recovered.
-- [ ] Row hover/focus highlight: bottom accent border (hover:border-accent/
-  focus-within:border-accent) hidden for now — no row-level hover
-  indication at all currently. Also found: flex `gap-4` between rows/header
-  sits outside any row's own group, so hover drops out in that strip
-  regardless of treatment. Revisit both together.
-- [ ] Ruled-notebook / hand-drawn direction: sketchy, non-straight lines
-  somewhere in the UI via `roughjs` or `rough-notation` — candidate
-  locations: checkbox, section dividers, outer card border. "Wow factor"
-  idea, never implemented, needs explicit scoping before any code.
-- [ ] Custom icons: explored replacing the checkbox's checkmark with a
-  hand-rolled SVG (ring + solid dot for done) instead of lucide's default —
-  reverted for now, revisit as part of a deliberate icon-design pass.
-- [ ] Ghost add-row circle: spin the dotted circle while it fills (dotted → solid
-  on input focus) — cool-effect polish, keep subtle per Convention 8.
-- [ ] Keyboard pass: Enter-to-edit on the focused/selected row, arrow navigation
-  between rows, complete/archive shortcuts. Deferred with the focus/semantics
-  territory CLAUDE.md parks.
-- [ ] Collapse / expand all sections at once.
-- [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
-  scanning which list needs attention requires opening each one.
-- [ ] 3-state filter — Active / Done / All (replaces the binary `showDone`
-  toggle) (bonus, if time remains)
-- [ ] Quick capture — global keyboard-first Inbox add
-- [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
-
 ## DnD
 
 - [ ] Fix section flickering issues during drag.
@@ -190,6 +164,19 @@ Foundational — items in §2, §3, §4 depend on it.
 - [ ] Click-to-edit on the entire row (not just the title text), so no edit
       button is needed — needs a decision on scope (whole row incl.
       checkbox/icons vs. just title).
+- [ ] Draft recovery: transient in-progress edits (open title/add inputs) are
+      pure local state and vanish on refresh/crash — consider persisting
+      drafts so they survive and can be recovered.
+- [ ] Keyboard pass: Enter-to-edit on the focused/selected row, arrow
+      navigation between rows, complete/archive shortcuts. Deferred with the
+      focus/semantics territory CLAUDE.md parks.
+- [ ] Collapse / expand all sections at once.
+- [ ] Section-level progress: no task count/tally per section (e.g. "3/8") —
+      scanning which list needs attention requires opening each one.
+- [ ] 3-state filter — Active / Done / All (replaces the binary `showDone`
+      toggle) (bonus, if time remains)
+- [ ] Quick capture — global keyboard-first Inbox add
+- [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
 
 ## Menu & interaction
 
@@ -206,12 +193,30 @@ Foundational — items in §2, §3, §4 depend on it.
 ## Visual & style exploration
 
 - [ ] Item/section alignment — general pass, all alignment UI.
+- [ ] Row hover/focus highlight: bottom accent border (hover:border-accent/
+      focus-within:border-accent) hidden for now — no row-level hover
+      indication at all currently. Also found: flex `gap-4` between
+      rows/header sits outside any row's own group, so hover drops out in
+      that strip regardless of treatment. Revisit both together.
+- [ ] Ruled-notebook / hand-drawn direction: sketchy, non-straight lines
+      somewhere in the UI via `roughjs` or `rough-notation` — candidate
+      locations: checkbox, section dividers, outer card border. "Wow
+      factor" idea, never implemented, needs explicit scoping before any
+      code.
+- [ ] Custom icons: explored replacing the checkbox's checkmark with a
+      hand-rolled SVG (ring + solid dot for done) instead of lucide's
+      default — reverted for now, revisit as part of a deliberate
+      icon-design pass.
+- [ ] Ghost add-row circle: spin the dotted circle while it fills (dotted →
+      solid on input focus) — cool-effect polish, keep subtle per
+      Convention 8.
 
 ## Animation
 
 - [ ] No layout shift on long-line edit / add-section / delete.
 - [ ] Resolve delete-on-`animationend` fragility (`App.tsx:185`, flagged
       "won't fix") — delete-on-click vs animation-gated.
+- [ ] Try animations.
 
 ---
 ---
@@ -267,6 +272,9 @@ otherwise needs to be linked back to.
   items. Compression only removes verbosity (redundant wording, restated
   context) — never a fact. If preserving a fact makes a line longer, keep
   the fact and accept the length.
+- When a review deliberately leaves an item alone (not critical, not worth
+  acting on now), add a tiny dated note saying so. That note is what stops
+  the same item from being re-litigated on the next pass.
 
 ## Progression/Evolution Cadence
 Check `git log --follow -- docs/board.md` on the first request of each day.
