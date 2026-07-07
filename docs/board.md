@@ -222,54 +222,26 @@ below describes the system itself, not a task —**
 
 # Workflow
 
-Three sections, split by commitment:
+Everything below is a guideline, not a rigid rule — deviating from it is fine
+using judgement, but any such judgement call should get explicit confirmation
+before being acted on.
 
-- **Inbox** — raw, fast capture. Untriaged on purpose — capture now, decide
-  later, so capturing never interrupts current work.
-- **Requirements (main-spec)** — committed to v1. Status per item is just
-  `[ ]` todo, `[~]` partial, `[x]` done — no separate planning/ready/
-  in-progress stage. If an item needs more granularity, split it into
-  sub-items or a nested list instead of inventing a new status marker. Done
-  items either attach to the existing section/item they relate to, or — if
-  orphaned (no reasonable existing home) — collect in one general Done
-  bucket. Best-fit judgment call, not a perfect mapping.
-- **Backlog** — not committed, someday/maybe. Grouped by whatever dimension
-  is useful (feature area, DnD, visual, etc.) — if an item fits more than
-  one group, it lives in one canonical place and the others link to it,
-  never duplicated.
+## What goes where
+- **InBasket** — freshly noticed items, not yet triaged.
+- **Planning** — items being actively scoped/thought through before work starts.
+- **Ready** — scoped and queued, next up.
+- **In Progress** — actively being worked on right now.
+- **Done** — recently completed, kept as a live changelog.
+- **Requirements** (by phase) — the canonical, locked record of what each phase contains and its status; items are never deleted once a phase is defined.
+- **Backlog** — not-yet-committed / maybe items; promote into Planning when picked up.
 
-Requirements and Backlog are not two groups on the same dimension — they're
-opposite, mutually-exclusive commitment states. An item is exactly one or
-the other, never both, and never cross-linked between them. That absolute
-line is different in kind from Backlog's internal categories, which are
-soft groupings and can cross-link freely.
+## Ideal path
+InBasket → Planning → Ready → In Progress → Done, with a duplicate, `§N`-tagged entry kept in sync in Requirements/Backlog.
 
-Detail handling (applies everywhere):
+## Progression/Evolution Cadence
+Check `git log --follow -- docs/board.md` on the first request of each day.
 
-- Long item detail with no reference doc yet → keep as one item + a nested
-  sub-list, not one dense paragraph.
-- Item detail that's disproportionately large for the board → extract to
-  `docs/reference/*.md`, link from the board item.
-- Per-item stable markers (a number, or a symbol + 2-letter shortcode) are
-  added only when something actually needs to link back to that specific
-  item — not applied universally up front.
+---
 
-When splitting, merging, or moving items between sections: preserve the
-original intent of the item, and don't let an issue silently vanish in the
-shuffle — if unsure where something goes, a rough note beats dropping it.
-
-This system doesn't need to be perfect — approximate, good-enough placement
-beats stalling on precise categorization.
-
-## Open questions (not urgent)
-
-- No marker distinguishes "actively being worked on today" from "partially
-  done" — that distinction is gone; unclear if it's ever missed in practice.
-- No marker distinguishes "committed but not yet planned" from "committed,
-  scoped, ready to start" — informally, a detailed sub-list can imply
-  "planned" and a bare one-liner "not yet," but this isn't an enforced rule.
-- Per-item marker format (plain number vs. symbol + 2-letter shortcode)
-  isn't fixed to one convention — decide per case when a link is actually
-  needed.
-- Cross-links between Backlog categories (when one item fits several) are
-  described in principle but not yet demonstrated in practice.
+## Open questions (workflow-only — product open questions live inline in the Requirements section above)
+- None yet.
