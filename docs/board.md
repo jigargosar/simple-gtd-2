@@ -1,11 +1,14 @@
-# Kanban Board
-- AI should never use short names, of following sections, only infer them when user uses them.
+# AI should never use short names, of following sections, only infer them when user uses them.
 
-## InBasket, Inbox (IB)
+# InBasket, Inbox (IB)
+
 - [ ] Sweep board/backlog for more design-system.md candidates (hover, outline,
   checkbox, animation, focus) beyond the initial seed.
 
-## Planning (PN)
+---
+---
+
+# Planning (PN)
 
 - [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass:
       archive-dialog focus rings, restore-button color (indigo → accent),
@@ -17,13 +20,22 @@
 - [ ] Single undo notification for the last operation (archive, done toggle,
       etc.) — one toast, undoes whatever just happened.
 
-## Ready (RY)
+---
+---
+
+# Ready (RD)
 -
 
-## In Progress (IP)
+---
+---
+
+# In Progress (IP)
 - 
 
-## Done (DN)
+---
+---
+
+# Done (DN)
 
 - [x] Section drag ghost — header-only `DragOverlay` while dragging a
       section. See [reference/2026-07-06-section-drag-ghost.md](reference/2026-07-06-section-drag-ghost.md).
@@ -53,8 +65,9 @@
       weight, and animation gaps; focus/outline sources still pending.
 
 ---
+---
 
-# SimpleGTD v1 Roadmap
+# Requirements (SimpleGTD v1 Roadmap)
 
 Goal: ship a **fully usable v1** for real users by **end of June 2026 (30 Jun)**.
 
@@ -142,6 +155,7 @@ Foundational — items in §2, §3, §4 depend on it.
 - ARIA / semantic HTML / `prefers-reduced-motion` (per CLAUDE.md)
 
 ---
+---
 
 # Backlog
 
@@ -214,15 +228,11 @@ Foundational — items in §2, §3, §4 depend on it.
 ---
 ---
 
-**— content vs. process — everything above is board content; everything
-below describes the system itself, not a task —**
+═══════════════════════════════════════════════════════════════
+# Workflow (WF) How to work with this file
+═══════════════════════════════════════════════════════════════
 
----
----
-
-# Workflow
-
-Everything below is a guideline, not a rigid rule — deviating from it is fine
+- Everything below is a guideline, not a rigid rule — deviating from it is fine
 using judgement, but any such judgement call should get explicit confirmation
 before being acted on.
 
@@ -231,12 +241,28 @@ before being acted on.
 - **Planning** — items being actively scoped/thought through before work starts.
 - **Ready** — scoped and queued, next up.
 - **In Progress** — actively being worked on right now.
-- **Done** — recently completed, kept as a live changelog.
+- **Done** — recently completed, kept as a live changelog. An item attaches
+  to the existing Requirements/Backlog entry it relates to; if orphaned (no
+  reasonable existing home), it collects in one general Done bucket instead
+  of inventing a new section. Best-fit judgement call, not a perfect mapping.
 - **Requirements** (by phase) — the canonical, locked record of what each phase contains and its status; items are never deleted once a phase is defined.
-- **Backlog** — not-yet-committed / maybe items; promote into Planning when picked up.
+- **Backlog** — not-yet-committed / maybe items; promote into Planning when
+  picked up. Grouped by whatever dimension is useful — an item fitting more
+  than one group lives in one canonical place, with links from the others,
+  never duplicated.
 
 ## Ideal path
 InBasket → Planning → Ready → In Progress → Done, with a duplicate, `§N`-tagged entry kept in sync in Requirements/Backlog.
+
+## Detail handling
+- Long item detail with no reference doc yet → keep as one item + a nested
+  sub-list, not one dense paragraph.
+- Item detail that's disproportionately large for the board → extract to
+  `docs/reference/*.md`, link back to it.
+
+When splitting, merging, or moving items between sections: preserve the
+original intent of the item, and don't let an issue silently vanish in the
+shuffle — if unsure where something goes, a rough note beats dropping it.
 
 ## Progression/Evolution Cadence
 Check `git log --follow -- docs/board.md` on the first request of each day.
