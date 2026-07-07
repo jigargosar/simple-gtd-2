@@ -37,26 +37,7 @@
 
 # Done (DN)
 
-- [x] Section drag ghost — header-only `DragOverlay` while dragging a
-      section. See [reference/2026-07-06-section-drag-ghost.md](reference/2026-07-06-section-drag-ghost.md).
-- [x] `ViewTitle` — keyboard-activatable (Enter/Space via `tabIndex`/
-      `role="button"`), no longer double-click-only. Matching gap on
-      `ViewSection` still open.
-- [x] Persist `showDone` filter across reloads (was deliberately transient;
-      now included in `partialize`/`migrate`, same safe-default pattern as
-      other fields, no version bump needed).
-- [x] Row/section model finalized — unified icon sizing, spacing, and
-      hover/focus treatment across rows and section headers. See
-      [reference/2026-07-05-row-section-model.md](reference/2026-07-05-row-section-model.md).
-- [x] Synced requirements.md's Priority note to the V1 pass step order above
-      (§4 → §5 → §6, stale past-deadline framing removed).
 - [x] CLAUDE.md doc pass — cleanup, Convention 9 audit, added Convention 11.
-- [x] JSON export / import (data safety) — export via file-saver; import via
-      parse/validate/preview → confirm/error dialog.
-- [x] Reorder tasks within a section (`@dnd-kit/react` `useSortable`; order recomputed via `orderBetween` between drop neighbors)
-- [x] Move task between sections (same mechanism, cross-section drop)
-- [x] Reorder sections (same mechanism, flat `sections` group)
-- [x] Collapsible sections — persisted `collapsed` flag per section + chevron toggle; folded sections hide their task list.
 - [x] fixed: Now, move menu items are follow focus-ring consistently.
 - [x] ViewMoveMenu: violates fundamental leaky abstraction. (`useMoveTargets` selector)
 - [x] Doc cleanup — removed skill-leftover lines from backlog.md and the
@@ -84,7 +65,7 @@ Status: `[x]` done · `[~]` partial · `[ ]` todo. Done-markers reflect a read o
 
 - [x] Task CRUD — add / inline-edit / delete / toggle done
 - [x] Section create + inline rename
-- [x] Show-completed toggle (global `showDone`)
+- [x] Show-completed toggle (global `showDone`), persisted across reloads
 - [x] Fractional ordering on append (sections + tasks)
 - [x] localStorage persistence (Zustand `persist` + `migrate`)
 - [x] Per-section collapse/expand
@@ -122,10 +103,17 @@ Foundational — items in §2, §3, §4 depend on it.
       recomputed via `orderBetween` between drop neighbors)
 - [x] Move task between sections (same mechanism, cross-section drop)
 - [x] Reorder sections (same mechanism, flat `sections` group)
+- [x] Section drag ghost — header-only `DragOverlay` while dragging a
+      section. See [reference/2026-07-06-section-drag-ghost.md](reference/2026-07-06-section-drag-ghost.md).
 
 ## 4. Interaction correctness & readability — V1 UX/UI pass
 
-- [x] Click title to edit — pencil removed, title span is the trigger
+- [x] Click title to edit — pencil removed, title span is the trigger;
+      keyboard-activatable (Enter/Space via `tabIndex`/`role="button"`), no
+      longer double-click-only. Matching gap on `ViewSection` still open.
+- [x] Row/section model finalized — unified icon sizing, spacing, and
+      hover/focus treatment across rows and section headers. See
+      [reference/2026-07-05-row-section-model.md](reference/2026-07-05-row-section-model.md).
 - [ ] Edit ↔ display parity — display wraps multi-line, editor is single-line
       `<input>` (`wrap-anywhere` is a no-op on inputs); reconcile (textarea or
       truncate), never overflow horizontally.
@@ -235,6 +223,9 @@ Foundational — items in §2, §3, §4 depend on it.
 - Everything below is a guideline, not a rigid rule — deviating from it is fine
 using judgement, but any such judgement call should get explicit confirmation
 before being acted on.
+- The checkout model (below) describes how new work gets picked up going
+  forward. It is not retroactive — existing Planning/Ready/In Progress/Done
+  items are not required to trace back to a Requirements or Backlog entry.
 
 ## What goes where
 - **InBasket** — freshly noticed, not yet triaged.
@@ -272,6 +263,10 @@ otherwise needs to be linked back to.
   item, not a dense paragraph.
 - Disproportionately large detail → extract to `docs/reference/*.md`, link
   back to it.
+- Default to preserving every critical fact when merging or compressing
+  items. Compression only removes verbosity (redundant wording, restated
+  context) — never a fact. If preserving a fact makes a line longer, keep
+  the fact and accept the length.
 
 ## Progression/Evolution Cadence
 Check `git log --follow -- docs/board.md` on the first request of each day.
