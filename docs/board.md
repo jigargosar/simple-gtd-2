@@ -2,12 +2,6 @@
 
 # InBasket, Inbox (IB)
 
-- [ ] Sweep board/backlog for more design-system.md candidates (hover, outline,
-  checkbox, animation, focus) beyond the initial seed.
-- [ ] Add a "Micro-replies" rule to `C:\Users\jigar\.claude\skills\fmt\SKILL.md`
-  — single trivial-fact replies skip numbering/tldr, one `— ` prefixed line
-  instead. Proposed earlier, not tracked anywhere until now.
-
 ---
 ---
 
@@ -149,6 +143,9 @@ Foundational — items in §2, §3, §4 depend on it.
 ---
 
 # Backlog
+
+- [ ] Sweep board/backlog for more design-system.md candidates (hover, outline,
+  checkbox, animation, focus) beyond the initial seed.
 
 ## DnD
 
