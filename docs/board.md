@@ -237,37 +237,44 @@ using judgement, but any such judgement call should get explicit confirmation
 before being acted on.
 
 ## What goes where
-- **InBasket** — freshly noticed items, not yet triaged.
-- **Planning** — items being actively scoped/thought through before work starts.
-- **Ready** — scoped and queued, next up.
+- **InBasket** — freshly noticed, not yet triaged.
+- **Planning** — being scoped/thought through before work starts.
+- **Ready** — scoped, queued, next up.
 - **In Progress** — actively being worked on right now.
-- **Done** — recently completed, kept as a live changelog. An item attaches
-  to the existing Requirements/Backlog entry it relates to; if orphaned (no
-  reasonable existing home), it collects in one general Done bucket instead
-  of inventing a new section. Best-fit judgement call, not a perfect mapping.
-- **Requirements** (by phase) — the canonical, locked record of what each phase contains and its status; items are never deleted once a phase is defined.
-- **Backlog** — not-yet-committed / maybe items; promote into Planning when
-  picked up. Grouped by whatever dimension is useful — an item fitting more
-  than one group lives in one canonical place, with links from the others,
-  never duplicated.
+- **Done** — recently finished pipeline entries; not a permanent home.
+- **Requirements** — authoritative record of committed scope and its status
+  ([ ]/[~]/[x]).
+- **Backlog** — not-yet-committed items, grouped by whatever dimension is
+  useful; an item fitting more than one group lives in one canonical place,
+  linked from the others, never duplicated.
 
-## Ideal path
-InBasket → Planning → Ready → In Progress → Done, with a duplicate, `§N`-tagged entry kept in sync in Requirements/Backlog.
+## Checking an item out
+Requirements and Backlog items are authoritative. Picking one up creates a
+full duplicate in the pipeline (Planning/Ready/In Progress) — real content,
+not a bare link. The pipeline entry is tagged `$N`, a back-reference to the
+authoritative item; it carries no `[ ]`/`[~]`/`[x]` checkbox, since which
+section it's in already is its status.
+
+Splitting a checked-out item keeps every split part tagged back to the same
+`$N`. When any split part finishes, that result is captured back onto the
+authoritative item immediately (its status updates, e.g. to `[~]`).
+
+Once every split part is done, the final state folds back into the
+authoritative item and the pipeline duplicate is deleted — the authoritative
+item is then the only remaining record.
+
+## Stable references
+`$N` tags are added lazily — only once an item is actually checked out or
+otherwise needs to be linked back to.
 
 ## Detail handling
-- Long item detail with no reference doc yet → keep as one item + a nested
-  sub-list, not one dense paragraph.
-- Item detail that's disproportionately large for the board → extract to
-  `docs/reference/*.md`, link back to it.
-
-When splitting, merging, or moving items between sections: preserve the
-original intent of the item, and don't let an issue silently vanish in the
-shuffle — if unsure where something goes, a rough note beats dropping it.
+- Long item detail with no reference doc yet → nested sub-list under the
+  item, not a dense paragraph.
+- Disproportionately large detail → extract to `docs/reference/*.md`, link
+  back to it.
 
 ## Progression/Evolution Cadence
 Check `git log --follow -- docs/board.md` on the first request of each day.
-
----
 
 ## Open questions (workflow-only — product open questions live inline in the Requirements section above)
 - None yet.
