@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Settling — todo mockup 001</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300&family=Karla:wght@400;500;600&display=swap');
+
+:root {
+	--mist: #e6e8e6;
+	--paper: #f2f1ed;
+	--graphite: #3a3d42;
+	--hush: #686a6d;
+	--moss: #6e7f6b;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	height: 100%;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--mist);
+	font-family: 'Karla', sans-serif;
+	color: var(--graphite);
+	padding: 48px 20px;
+}
+
+.sheet {
+	width: min(560px, 100%);
+	background: var(--paper);
+	border-radius: 28px;
+	padding: 56px 40px 48px;
+	box-shadow:
+		0 30px 60px -24px rgba(58, 61, 66, 0.16),
+		0 2px 10px rgba(58, 61, 66, 0.05);
+}
+
+.masthead {
+	margin-bottom: 12px;
+}
+
+.eyebrow {
+	margin: 0;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--hush);
+}
+
+.list-section {
+	margin-top: 56px;
+}
+
+.list-section:first-child {
+	margin-top: 0;
+}
+
+.list-title {
+	margin: 0;
+	font-family: 'Fraunces', serif;
+	font-weight: 300;
+	font-size: 30px;
+	color: var(--graphite);
+}
+
+.composer {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	margin: 32px 0 4px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid rgba(58, 61, 66, 0.12);
+	transition:
+		border-color 400ms ease,
+		box-shadow 400ms ease;
+}
+
+.composer:focus-within {
+	border-bottom-color: var(--moss);
+	box-shadow: 0 8px 16px -12px rgba(110, 127, 107, 0.55);
+}
+
+.caret {
+	width: 2px;
+	height: 20px;
+	background: var(--moss);
+	flex-shrink: 0;
+}
+
+.composer:focus-within .caret {
+	opacity: 0;
+}
+
+.composer-input {
+	flex: 1;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-family: 'Karla', sans-serif;
+	font-size: 17px;
+	font-weight: 500;
+	color: var(--graphite);
+	caret-color: var(--moss);
+}
+
+.composer-input::placeholder {
+	color: var(--hush);
+	font-weight: 400;
+}
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.task {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 18px 2px;
+	position: relative;
+	transition:
+		opacity 500ms ease,
+		transform 500ms ease;
+}
+
+.task:not(:last-child)::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 1px;
+	background: linear-gradient(
+		to right,
+		transparent,
+		rgba(58, 61, 66, 0.14) 18%,
+		rgba(58, 61, 66, 0.14) 82%,
+		transparent
+	);
+}
+
+.task.is-settling {
+	opacity: 0.5;
+	transform: translateY(6px);
+}
+
+.check {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	border: 1.5px solid rgba(58, 61, 66, 0.7);
+	background: transparent;
+	flex-shrink: 0;
+	cursor: pointer;
+	padding: 0;
+	transition:
+		background 500ms ease,
+		border-color 500ms ease;
+}
+
+.check:hover {
+	border-color: var(--moss);
+}
+
+.check:focus-visible {
+	outline: 2px solid var(--moss);
+	outline-offset: 3px;
+}
+
+.check.is-checked {
+	border-color: var(--moss);
+	background: radial-gradient(
+		circle,
+		var(--moss) 0%,
+		var(--moss) 55%,
+		rgba(110, 127, 107, 0.35) 75%,
+		transparent 100%
+	);
+}
+
+.task-text {
+	font-size: 17px;
+	font-weight: 400;
+	color: var(--graphite);
+	transition: color 500ms ease;
+}
+
+.task.is-settled .task-text {
+	color: var(--hush);
+}
+
+.seam {
+	height: 1px;
+	margin: 36px 0 20px;
+	background: linear-gradient(
+		to right,
+		transparent,
+		rgba(58, 61, 66, 0.18) 20%,
+		rgba(58, 61, 66, 0.18) 80%,
+		transparent
+	);
+}
+
+.settled-label {
+	margin: 0 0 4px;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--hush);
+}
+</style>
+</head>
+<body>
+<main class="sheet">
+	<header class="masthead">
+		<p class="eyebrow">Tuesday, 9 July</p>
+	</header>
+
+	<section class="list-section">
+		<h2 class="list-title">Today</h2>
+
+		<div class="composer">
+			<span class="caret" aria-hidden="true"></span>
+			<input type="text" class="composer-input" placeholder="What's next" />
+		</div>
+
+		<ul class="list active-list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Buy stamps</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Call the dentist</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Draft the memo</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Water the plants</span>
+			</li>
+		</ul>
+
+		<div class="seam" aria-hidden="true"></div>
+
+		<p class="settled-label">Settled &middot; <span class="settled-count">1</span></p>
+		<ul class="list settled-list">
+			<li class="task is-settled">
+				<button class="check is-checked" aria-label="Mark not done"></button>
+				<span class="task-text">Pay rent</span>
+			</li>
+		</ul>
+	</section>
+
+	<section class="list-section">
+		<h2 class="list-title">Groceries</h2>
+
+		<div class="composer">
+			<span class="caret" aria-hidden="true"></span>
+			<input type="text" class="composer-input" placeholder="What's next" />
+		</div>
+
+		<ul class="list active-list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Milk</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Eggs</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Coffee filters</span>
+			</li>
+		</ul>
+
+		<div class="seam" aria-hidden="true"></div>
+
+		<p class="settled-label">Settled &middot; <span class="settled-count">1</span></p>
+		<ul class="list settled-list">
+			<li class="task is-settled">
+				<button class="check is-checked" aria-label="Mark not done"></button>
+				<span class="task-text">Olive oil</span>
+			</li>
+		</ul>
+	</section>
+
+	<section class="list-section">
+		<h2 class="list-title">Someday</h2>
+
+		<div class="composer">
+			<span class="caret" aria-hidden="true"></span>
+			<input type="text" class="composer-input" placeholder="What's next" />
+		</div>
+
+		<ul class="list active-list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Learn woodworking</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Repaint the fence</span>
+			</li>
+		</ul>
+
+		<div class="seam" aria-hidden="true"></div>
+
+		<p class="settled-label">Settled &middot; <span class="settled-count">0</span></p>
+		<ul class="list settled-list"></ul>
+	</section>
+</main>
+
+<script>
+	function toggleTask(li, btn) {
+		const section = li.closest('.list-section')
+		const activeList = section.querySelector('.active-list')
+		const settledList = section.querySelector('.settled-list')
+		const settledCount = section.querySelector('.settled-count')
+		const settling = !li.classList.contains('is-settled')
+
+		li.classList.add('is-settling')
+		window.setTimeout(() => {
+			li.classList.remove('is-settling')
+			li.classList.toggle('is-settled', settling)
+			btn.classList.toggle('is-checked', settling)
+			btn.setAttribute('aria-label', settling ? 'Mark not done' : 'Mark done')
+			;(settling ? settledList : activeList).appendChild(li)
+			settledCount.textContent = settledList.children.length
+		}, 480)
+	}
+
+	document.querySelectorAll('.check').forEach((btn) => {
+		btn.addEventListener('click', () => toggleTask(btn.closest('.task'), btn))
+	})
+
+	document.querySelectorAll('.composer-input').forEach((input) => {
+		input.addEventListener('keydown', (e) => {
+			if (e.key !== 'Enter' || !input.value.trim()) return
+
+			const section = input.closest('.list-section')
+			const activeList = section.querySelector('.active-list')
+
+			const li = document.createElement('li')
+			li.className = 'task'
+
+			const btn = document.createElement('button')
+			btn.className = 'check'
+			btn.setAttribute('aria-label', 'Mark done')
+			btn.addEventListener('click', () => toggleTask(li, btn))
+
+			const span = document.createElement('span')
+			span.className = 'task-text'
+			span.textContent = input.value.trim()
+
+			li.append(btn, span)
+			activeList.insertBefore(li, activeList.firstChild)
+			input.value = ''
+		})
+	})
+</script>
+</body>
+</html>

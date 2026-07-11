@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Breathing — six variations</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300&family=Karla:wght@400;500;600&display=swap');
+
+:root {
+	--mist: #e6e8e6;
+	--paper: #f2f1ed;
+	--graphite: #3a3d42;
+	--hush: #686a6d;
+	--moss: #6e7f6b;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--mist);
+	font-family: 'Karla', sans-serif;
+	color: var(--graphite);
+	padding: 72px 20px 220px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 140px;
+}
+
+.page-head {
+	width: min(480px, 100%);
+	text-align: center;
+}
+
+.page-head .demo-eyebrow {
+	justify-content: center;
+	display: flex;
+}
+
+.page-head h1 {
+	margin: 6px 0 0;
+	font-family: 'Fraunces', serif;
+	font-weight: 300;
+	font-size: 34px;
+}
+
+.page-head p {
+	margin: 14px 0 0;
+	font-size: 14px;
+	color: var(--hush);
+	line-height: 1.6;
+}
+
+.demo {
+	width: min(480px, 100%);
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.demo-eyebrow {
+	margin: 0;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--hush);
+}
+
+.demo-title {
+	margin: 0;
+	font-family: 'Fraunces', serif;
+	font-weight: 300;
+	font-size: 26px;
+	color: var(--graphite);
+}
+
+.demo-caption {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.55;
+	color: var(--hush);
+	max-width: 46ch;
+}
+
+.card {
+	background: var(--paper);
+	border-radius: 20px;
+	padding: 28px 26px;
+	box-shadow:
+		0 20px 40px -22px rgba(58, 61, 66, 0.16),
+		0 2px 8px rgba(58, 61, 66, 0.05);
+}
+
+/* shared composer */
+.composer {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding-bottom: 14px;
+	margin-bottom: 6px;
+	border-bottom: 1px solid rgba(58, 61, 66, 0.12);
+	transition: border-color 400ms ease;
+}
+
+.caret {
+	width: 2px;
+	height: 18px;
+	background: var(--moss);
+	flex-shrink: 0;
+}
+
+.composer-input {
+	flex: 1;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-family: 'Karla', sans-serif;
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--graphite);
+	caret-color: var(--moss);
+}
+
+.composer-input::placeholder {
+	color: var(--hush);
+	font-weight: 400;
+}
+
+/* shared task list */
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.task {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 13px 2px;
+	position: relative;
+}
+
+.task:not(:last-child)::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 1px;
+	background: linear-gradient(
+		to right,
+		transparent,
+		rgba(58, 61, 66, 0.14) 18%,
+		rgba(58, 61, 66, 0.14) 82%,
+		transparent
+	);
+}
+
+.check {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	border: 1.5px solid rgba(58, 61, 66, 0.7);
+	background: transparent;
+	flex-shrink: 0;
+	cursor: pointer;
+	padding: 0;
+	transition:
+		background 400ms ease,
+		border-color 400ms ease;
+}
+
+.check:focus-visible {
+	outline: 2px solid var(--moss);
+	outline-offset: 3px;
+}
+
+.check.is-checked {
+	border-color: var(--moss);
+	background: radial-gradient(
+		circle,
+		var(--moss) 0%,
+		var(--moss) 55%,
+		rgba(110, 127, 107, 0.35) 75%,
+		transparent 100%
+	);
+}
+
+.task-text {
+	font-size: 16px;
+	font-weight: 400;
+	color: var(--graphite);
+	transition: color 400ms ease;
+}
+
+.task.is-done .task-text {
+	color: var(--hush);
+}
+
+.settled-label {
+	margin: 4px 0 0;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--hush);
+	display: inline-block;
+}
+
+.demo-note {
+	margin: 0;
+	font-size: 12px;
+	color: var(--hush);
+	font-style: italic;
+}
+
+/* ===== Demo 1 — idle caret glow (ambient) ===== */
+#demo-1 .caret {
+	animation: d1-breathe 4s ease-in-out infinite;
+}
+
+@keyframes d1-breathe {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 var(--moss);
+	}
+	50% {
+		box-shadow: 0 0 6px 2px var(--moss);
+	}
+}
+
+/* ===== Demo 2 — settle-triggered pulse (one-shot, event-triggered) ===== */
+@keyframes d2-pulse {
+	0% {
+		transform: scale(1);
+	}
+	45% {
+		transform: scale(1.15);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+#demo-2 .settled-label.pulse {
+	animation: d2-pulse 650ms ease-out;
+}
+
+/* ===== Demo 3 — row hover, fixed contrast (solid tonal wash) ===== */
+#demo-3 .list {
+	margin: 0 -14px;
+}
+
+#demo-3 .task {
+	border-radius: 10px;
+	padding: 13px 14px;
+	transition: background-color 400ms ease;
+}
+
+@keyframes d3-breathe {
+	0%,
+	100% {
+		background-color: #acacac;
+	}
+	50% {
+		background-color: #808080;
+	}
+}
+
+#demo-3 .task:hover {
+	animation: d3-breathe 4s ease-in-out infinite;
+}
+
+/* ===== Demo 4 — focus-bounded breathing (2 cycles, then settles) ===== */
+@keyframes d4-glow {
+	0%,
+	100% {
+		box-shadow: 0 0 0 0 var(--moss);
+	}
+	50% {
+		box-shadow: 0 8px 20px -10px var(--moss);
+	}
+}
+
+#demo-4 .composer:focus-within {
+	border-bottom-color: var(--moss);
+	animation: d4-glow 1.6s ease-in-out 2;
+}
+
+/* ===== Demo 5 — checkbox hover ring-pulse (solid geometry, loops while hovered) ===== */
+@keyframes d5-ring {
+	0%,
+	100% {
+		box-shadow: 0 0 0 1px var(--moss);
+	}
+	50% {
+		box-shadow: 0 0 0 4px var(--moss);
+	}
+}
+
+#demo-5 .check:hover {
+	border-color: var(--moss);
+	animation: d5-ring 3s ease-in-out infinite;
+}
+
+/* ===== Demo 6 — whole-card ambient shadow breathing (macro, infinite) ===== */
+@keyframes d6-breathe {
+	0%,
+	100% {
+		box-shadow:
+			0 24px 48px -24px rgba(58, 61, 66, 0.14),
+			0 2px 8px rgba(58, 61, 66, 0.04);
+	}
+	50% {
+		box-shadow:
+			0 30px 60px -22px rgba(58, 61, 66, 0.24),
+			0 2px 10px rgba(58, 61, 66, 0.07);
+	}
+}
+
+#demo-6 .card {
+	animation: d6-breathe 9s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+<div class="page-head">
+	<p class="demo-eyebrow">Decision mock 001</p>
+	<h1>Breathing — six takes</h1>
+	<p>Each one is independent and live — hover, click, or focus inside its own card. Pick one, mix traits, or drop the idea.</p>
+</div>
+
+<section class="demo" id="demo-1">
+	<p class="demo-eyebrow">01</p>
+	<h2 class="demo-title">Idle caret glow</h2>
+	<p class="demo-caption">Ambient — loops forever, touched or not. Solid-color spread animation (0 &rarr; 6px), so the glow's core is always full-strength moss, never a faded alpha.</p>
+	<div class="card">
+		<div class="composer">
+			<span class="caret" aria-hidden="true"></span>
+			<input type="text" class="composer-input" placeholder="What's next" />
+		</div>
+		<ul class="list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Buy stamps</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Call the dentist</span>
+			</li>
+		</ul>
+	</div>
+</section>
+
+<section class="demo" id="demo-2">
+	<p class="demo-eyebrow">02</p>
+	<h2 class="demo-title">Settle-triggered pulse</h2>
+	<p class="demo-caption">Event-triggered, one shot — check a task and the label breathes once, via <code>transform: scale</code>. No color/opacity involved, so it's contrast-floor-immune by construction.</p>
+	<div class="card">
+		<ul class="list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Draft the memo</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Water the plants</span>
+			</li>
+		</ul>
+		<p class="settled-label">Settled &middot; <span class="settled-count">0</span></p>
+	</div>
+</section>
+
+<section class="demo" id="demo-3">
+	<p class="demo-eyebrow">03</p>
+	<h2 class="demo-title">Row hover, fixed contrast</h2>
+	<p class="demo-caption">Hover a row. Solid tonal wash (not alpha-blended) swinging between two flat greys, ~2.0:1 and ~3.5:1 against paper &mdash; both actually perceptible this time.</p>
+	<div class="card">
+		<ul class="list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Buy stamps</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Call the dentist</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Draft the memo</span>
+			</li>
+		</ul>
+	</div>
+</section>
+
+<section class="demo" id="demo-4">
+	<p class="demo-eyebrow">04</p>
+	<h2 class="demo-title">Focus-bounded breathing</h2>
+	<p class="demo-caption">Click into the input. The focus indicator (border) is permanent and steady; a glow breathes exactly twice as a greeting, then settles &mdash; ambient personality with a stop condition.</p>
+	<div class="card">
+		<div class="composer">
+			<span class="caret" aria-hidden="true"></span>
+			<input type="text" class="composer-input" placeholder="What's next" />
+		</div>
+		<ul class="list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Water the plants</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Pay rent</span>
+			</li>
+		</ul>
+	</div>
+</section>
+
+<section class="demo" id="demo-5">
+	<p class="demo-eyebrow">05</p>
+	<h2 class="demo-title">Checkbox ring-pulse</h2>
+	<p class="demo-caption">Hover a checkbox. A solid moss ring (never blurred, never alpha-faded) breathes between 1px and 4px spread &mdash; only the geometry moves, the color stays fully compliant throughout.</p>
+	<div class="card">
+		<ul class="list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Buy stamps</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Draft the memo</span>
+			</li>
+		</ul>
+	</div>
+</section>
+
+<section class="demo" id="demo-6">
+	<p class="demo-eyebrow">06</p>
+	<h2 class="demo-title">Whole-card ambient shadow</h2>
+	<p class="demo-caption">The entire sheet breathes &mdash; a slow 9s swell/ease of its own drop shadow. Macro-scale, not per-row.</p>
+	<p class="demo-note">Honest flag: this is the ambient-forever pattern we were skeptical of &mdash; included so you can reject it deliberately, not by omission.</p>
+	<div class="card">
+		<ul class="list">
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Call the dentist</span>
+			</li>
+			<li class="task">
+				<button class="check" aria-label="Mark done"></button>
+				<span class="task-text">Water the plants</span>
+			</li>
+		</ul>
+	</div>
+</section>
+
+<script>
+	document.querySelectorAll('.check').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const li = btn.closest('.task')
+			const checked = !btn.classList.contains('is-checked')
+			btn.classList.toggle('is-checked', checked)
+			li.classList.toggle('is-done', checked)
+			btn.setAttribute('aria-label', checked ? 'Mark not done' : 'Mark done')
+
+			const card = btn.closest('.card')
+			const label = card && card.querySelector('.settled-label')
+			if (label) {
+				const count = card.querySelectorAll('.task.is-done').length
+				card.querySelector('.settled-count').textContent = count
+				label.classList.remove('pulse')
+				// restart the animation even if it's already mid-pulse
+				void label.offsetWidth
+				label.classList.add('pulse')
+			}
+		})
+	})
+
+	document.querySelectorAll('.settled-label').forEach((label) => {
+		label.addEventListener('animationend', () => label.classList.remove('pulse'))
+	})
+</script>
+</body>
+</html>
