@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Current, refined — mockup 002</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+	--stone-50: #fafaf9;
+	--stone-100: #f5f5f4;
+	--stone-200: #e7e5e4;
+	--stone-300: #d6d3d1;
+	--stone-400: #a8a29e;
+	--stone-500: #78716c;
+	--stone-700: #44403c;
+	--stone-800: #292524;
+	--accent: #1d4ed8; /* Tailwind blue-700, same token as src/index.css */
+}
+
+* { box-sizing: border-box; }
+
+html, body { min-height: 100%; }
+
+body {
+	margin: 0;
+	background: var(--stone-100);
+	font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	color: var(--stone-800);
+	padding: 56px 20px 200px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 48px;
+}
+
+/* ---------- intro / legend ---------- */
+.intro {
+	width: min(640px, 100%);
+}
+.intro .eyebrow {
+	margin: 0;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--stone-500);
+}
+.intro h1 {
+	margin: 6px 0 10px;
+	font-size: 26px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+.intro p {
+	margin: 0 0 20px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: var(--stone-500);
+	max-width: 62ch;
+}
+.legend {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	background: #fff;
+	border: 1px solid var(--stone-200);
+	border-radius: 12px;
+	padding: 16px 18px;
+}
+.legend h2 {
+	margin: 0 0 6px;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+.legend .kept h2 { color: var(--stone-500); }
+.legend .changed h2 { color: var(--accent); }
+.legend ul {
+	margin: 0;
+	padding-left: 16px;
+	font-size: 13px;
+	line-height: 1.7;
+	color: var(--stone-700);
+}
+.legend .note {
+	grid-column: 1 / -1;
+	margin: 4px 0 0;
+	font-size: 12px;
+	font-style: italic;
+	color: var(--stone-500);
+	border-top: 1px solid var(--stone-200);
+	padding-top: 10px;
+}
+
+/* ---------- board ---------- */
+.sheet {
+	width: min(640px, 100%);
+	background: #fff;
+	border-radius: 20px;
+	padding: 32px 32px 20px;
+	box-shadow:
+		0 1px 2px rgba(41, 37, 36, 0.04),
+		0 12px 32px -16px rgba(41, 37, 36, 0.10);
+}
+
+.masthead {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: 28px;
+}
+.masthead .wordmark {
+	margin: 0;
+	font-size: 19px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+.masthead .wordmark::after {
+	content: '.';
+	color: var(--accent);
+}
+.masthead .menu {
+	background: none;
+	border: none;
+	color: var(--stone-400);
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+	padding: 6px;
+	border-radius: 8px;
+	transition: background-color 150ms ease, color 150ms ease;
+}
+.masthead .menu:hover { background: var(--stone-100); color: var(--stone-700); }
+
+.section {
+	padding: 18px 0;
+}
+.section + .section {
+	border-top: 1px solid var(--stone-200);
+}
+
+.section-head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 2px 4px;
+	margin: -2px -4px 6px;
+	border-radius: 8px;
+	transition: background-color 150ms ease;
+}
+.section-head:hover { background: var(--stone-50); }
+.section-head:hover .row-actions { opacity: 1; }
+
+.chevron {
+	color: var(--stone-400);
+	width: 16px;
+	flex-shrink: 0;
+	transition: transform 200ms ease;
+}
+.section.is-collapsed .chevron { transform: rotate(-90deg); }
+
+.section-title {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 600;
+	flex: 1;
+}
+.section-count {
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--stone-400);
+}
+
+.row-actions {
+	display: flex;
+	gap: 4px;
+	opacity: 0;
+	transition: opacity 150ms ease;
+}
+.row-actions button {
+	background: none;
+	border: none;
+	color: var(--stone-400);
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 6px;
+	font-size: 13px;
+	transition: background-color 150ms ease, color 150ms ease;
+}
+.row-actions button:hover { background: var(--stone-200); color: var(--stone-700); }
+
+.list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden; /* clips the height-collapse on removal */
+}
+
+.task {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 4px;
+	margin: 0 -4px;
+	border-radius: 8px;
+	transition:
+		background-color 150ms ease,
+		opacity 200ms ease,
+		height 200ms ease,
+		padding 200ms ease,
+		margin 200ms ease;
+}
+.task:hover { background: var(--stone-50); }
+.task:hover .row-actions { opacity: 1; }
+
+.check {
+	width: 20px;
+	height: 20px;
+	border-radius: 999px;
+	border: 1.5px solid var(--stone-300);
+	background: #fff;
+	flex-shrink: 0;
+	cursor: pointer;
+	padding: 0;
+	display: grid;
+	place-items: center;
+	transition: background-color 150ms ease, border-color 150ms ease;
+}
+.check svg {
+	width: 12px;
+	height: 12px;
+	opacity: 0;
+	transform: scale(0.6);
+	transition: opacity 150ms ease, transform 150ms ease;
+}
+.check.is-checked {
+	background: var(--accent);
+	border-color: var(--accent);
+}
+.check.is-checked svg {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.task-text {
+	flex: 1;
+	min-width: 0;
+	font-size: 14.5px;
+	color: var(--stone-800);
+	transition: color 0.45s ease;
+}
+.task.is-done .task-text {
+	color: var(--stone-400);
+}
+/* strike lives on an inline child sized to the text, not the flex-1 row */
+.task-text .strike {
+	background-image: linear-gradient(to bottom, transparent 45%, currentColor 45%, currentColor 55%, transparent 55%);
+	background-repeat: no-repeat;
+	background-size: 0% 100%;
+	transition: background-size 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.task.is-done .task-text .strike {
+	background-size: 100% 100%;
+}
+
+/* removal collapse — triggered once, never looping */
+.task.is-leaving {
+	height: 0 !important;
+	padding-top: 0;
+	padding-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+	opacity: 0;
+}
+
+.add-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 8px 4px;
+	margin: 0 -4px;
+	border-radius: 8px;
+	cursor: text;
+	transition: background-color 150ms ease;
+}
+.add-row:hover { background: var(--stone-50); }
+.add-row .check {
+	border-style: dashed;
+	border-color: var(--stone-300);
+}
+.add-row input {
+	flex: 1;
+	border: none;
+	outline: none;
+	background: transparent;
+	font-family: inherit;
+	font-size: 14.5px;
+	color: var(--stone-800);
+	caret-color: var(--accent);
+}
+.add-row input::placeholder { color: var(--stone-400); }
+
+.add-section {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 14px 4px 4px;
+	color: var(--stone-400);
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: color 150ms ease;
+}
+.add-section:hover { color: var(--stone-700); }
+
+.toggle-row {
+	width: min(640px, 100%);
+	display: flex;
+	justify-content: flex-end;
+}
+.toggle-row label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	color: var(--stone-500);
+	cursor: pointer;
+	user-select: none;
+}
+</style>
+</head>
+<body>
+
+<div class="intro">
+	<p class="eyebrow">Mockup 002</p>
+	<h1>Current, refined</h1>
+	<p>Same structure as the live app, not a reinvention. The two spikes before this leaned too far into mood (ambient glow, serif type); this one is deliberately plain — closer to Things/Todoist/Reminders than to a design exercise.</p>
+	<div class="legend">
+		<div class="kept">
+			<h2>Kept from current</h2>
+			<ul>
+				<li>Narrow centered card, chevron sections</li>
+				<li>Circular checkbox, sequential strikethrough</li>
+				<li>Hover-reveal row actions</li>
+				<li>"+ New section" affordance</li>
+			</ul>
+		</div>
+		<div class="changed">
+			<h2>Changed</h2>
+			<ul>
+				<li>Hairline divider between sections (was whitespace-only)</li>
+				<li>Item count next to section title</li>
+				<li>Add-task row has a visible placeholder, not a bare dot</li>
+				<li>Removal/reorder now animates (FLIP-style), no more snap</li>
+			</ul>
+		</div>
+		<p class="note">No ambient or looping motion anywhere on this page. Every transition below is a one-shot reaction to a click — try the checkboxes and the toggle.</p>
+	</div>
+</div>
+
+<div class="toggle-row">
+	<label>
+		<input type="checkbox" id="show-done" checked />
+		Show completed
+	</label>
+</div>
+
+<div class="sheet">
+	<div class="masthead">
+		<p class="wordmark">SimpleGTD</p>
+		<button class="menu" aria-label="Menu">&#8230;</button>
+	</div>
+
+	<div class="section" data-section>
+		<div class="section-head">
+			<span class="chevron">&#9662;</span>
+			<h3 class="section-title">Waiting For</h3>
+			<span class="section-count">2</span>
+			<div class="row-actions"><button aria-label="Archive section">&#9633;</button></div>
+		</div>
+		<ul class="list">
+			<li class="task is-done" data-task>
+				<button class="check is-checked" aria-label="Mark not done"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				<span class="task-text"><span class="strike">Deploy staging build</span></span>
+			</li>
+			<li class="task" data-task>
+				<button class="check" aria-label="Mark done"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				<span class="task-text"><span class="strike">Design assets from contractor</span></span>
+			</li>
+		</ul>
+		<div class="add-row">
+			<span class="check" aria-hidden="true"></span>
+			<input type="text" placeholder="Add task…" />
+		</div>
+	</div>
+
+	<div class="section" data-section>
+		<div class="section-head">
+			<span class="chevron">&#9662;</span>
+			<h3 class="section-title">Next Actions</h3>
+			<span class="section-count">5</span>
+			<div class="row-actions"><button aria-label="Archive section">&#9633;</button></div>
+		</div>
+		<ul class="list">
+			<li class="task" data-task>
+				<button class="check" aria-label="Mark done"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				<span class="task-text"><span class="strike">Redesign onboarding flow</span></span>
+			</li>
+			<li class="task" data-task>
+				<button class="check" aria-label="Mark done"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				<span class="task-text"><span class="strike">Migrate DB to Postgres</span></span>
+			</li>
+			<li class="task" data-task>
+				<button class="check" aria-label="Mark done"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				<span class="task-text"><span class="strike">Write unit tests for auth module</span></span>
+			</li>
+			<li class="task" data-task>
+				<button class="check" aria-label="Mark done"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				<span class="task-text"><span class="strike">Review project proposal</span></span>
+			</li>
+			<li class="task is-done" data-task>
+				<button class="check is-checked" aria-label="Mark not done"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10.5l4 4 8-9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+				<span class="task-text"><span class="strike">Schedule team sync</span></span>
+			</li>
+		</ul>
+		<div class="add-row">
+			<span class="check" aria-hidden="true"></span>
+			<input type="text" placeholder="Add task…" />
+		</div>
+	</div>
+
+	<div class="add-section">
+		<span aria-hidden="true">&#43;</span>
+		<span>New section&#8230;</span>
+	</div>
+</div>
+
+<script>
+const showDone = document.getElementById('show-done')
+
+function setDone(li, done) {
+	li.classList.toggle('is-done', done)
+	const btn = li.querySelector('.check')
+	btn.classList.toggle('is-checked', done)
+	btn.setAttribute('aria-label', done ? 'Mark not done' : 'Mark done')
+	applyVisibility(li)
+}
+
+// FLIP: measure -> mutate -> invert -> play, so siblings slide instead of snapping
+function withFlip(list, mutate) {
+	const items = [...list.querySelectorAll('[data-task]')]
+	const before = new Map(items.map((el) => [el, el.getBoundingClientRect().top]))
+	mutate()
+	requestAnimationFrame(() => {
+		items.forEach((el) => {
+			if (!el.isConnected || el.classList.contains('is-leaving')) return
+			const after = el.getBoundingClientRect().top
+			const delta = before.get(el) - after
+			if (delta) {
+				el.style.transition = 'none'
+				el.style.transform = `translateY(${delta}px)`
+				requestAnimationFrame(() => {
+					el.style.transition = 'transform 200ms ease'
+					el.style.transform = ''
+				})
+			}
+		})
+	})
+}
+
+function applyVisibility(li) {
+	const hide = li.classList.contains('is-done') && !showDone.checked
+	const list = li.closest('.list')
+	if (hide && !li.classList.contains('is-leaving')) {
+		withFlip(list, () => {
+			li.classList.add('is-leaving')
+			li.style.height = li.getBoundingClientRect().height + 'px'
+			requestAnimationFrame(() => { li.classList.add('is-leaving') })
+		})
+	} else if (!hide && li.classList.contains('is-leaving')) {
+		withFlip(list, () => {
+			li.classList.remove('is-leaving')
+			li.style.height = ''
+		})
+	}
+}
+
+document.querySelectorAll('[data-task] .check').forEach((btn) => {
+	btn.addEventListener('click', () => {
+		const li = btn.closest('[data-task]')
+		const list = li.closest('.list')
+		withFlip(list, () => setDone(li, !li.classList.contains('is-done')))
+	})
+})
+
+showDone.addEventListener('change', () => {
+	document.querySelectorAll('[data-task].is-done').forEach((li) => applyVisibility(li))
+})
+
+document.querySelectorAll('[data-section]').forEach((section) => {
+	section.querySelector('.section-head').addEventListener('click', (e) => {
+		if (e.target.closest('.row-actions')) return
+		section.classList.toggle('is-collapsed')
+		const list = section.querySelector('.list')
+		const addRow = section.querySelector('.add-row')
+		const collapsed = section.classList.contains('is-collapsed')
+		list.style.display = collapsed ? 'none' : ''
+		addRow.style.display = collapsed ? 'none' : ''
+	})
+})
+</script>
+</body>
+</html>
