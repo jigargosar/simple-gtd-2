@@ -7,6 +7,11 @@ calm — a single document, not a multi-column board.
 
 ---
 
+## Response style
+
+Lead with the verdict/answer in one line. Then only what's necessary, in short
+bullets — no explanatory paragraphs unless asked why.
+
 ## Files
 
 - `src/main.tsx`   — React entry.
