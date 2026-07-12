@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FLIP spike — isolated repro</title>
+<style>
+	body { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 16px; max-width: 480px; margin: 40px auto; }
+	.list { list-style: none; margin: 0; padding: 0; border: 1px solid #ddd; border-radius: 8px; }
+	.row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #eee; }
+	.row:last-child { border-bottom: none; }
+	.row input { width: 18px; height: 18px; }
+	#log {
+		white-space: pre-wrap;
+		font-family: ui-monospace, monospace;
+		font-size: 13px;
+		background: #111;
+		color: #0f0;
+		padding: 10px;
+		border-radius: 8px;
+		margin-top: 16px;
+	}
+</style>
+</head>
+<body>
+
+<label><input type="checkbox" id="show-done" checked /> Show completed</label>
+<button id="run-scroll-test">Run: Show completed off, scroll 150px, check Item 2</button>
+<button id="copy-log">Copy log</button>
+
+<ul class="list" id="list">
+	<li class="row" data-id="1"><input type="checkbox" /> Item 1</li>
+	<li class="row" data-id="2"><input type="checkbox" /> Item 2</li>
+	<li class="row" data-id="3"><input type="checkbox" /> Item 3</li>
+	<li class="row" data-id="4"><input type="checkbox" /> Item 4</li>
+	<li class="row" data-id="5"><input type="checkbox" /> Item 5</li>
+	<li class="row" data-id="6"><input type="checkbox" /> Item 6 (last)</li>
+</ul>
+
+<div id="log"></div>
+
+<div style="height:2000px"></div>
+
+<script>
+const list = document.getElementById('list')
+const showDone = document.getElementById('show-done')
+const logEl = document.getElementById('log')
+const prevTops = new Map()
+
+function log(msg) {
+	logEl.textContent += msg + '\n'
+}
+
+// document-relative, not viewport-relative — cancels out scroll, whether from
+// the user or from the browser's own scroll-anchoring adjustments.
+function measureTop(row) {
+	return row.getBoundingClientRect().top + window.scrollY
+}
+
+function seedPositions() {
+	prevTops.clear()
+	list.querySelectorAll('.row').forEach((row) => {
+		prevTops.set(row.dataset.id, measureTop(row))
+	})
+}
+seedPositions()
+
+function applyVisibility(row, done) {
+	row.dataset.done = done ? '1' : ''
+	row.style.display = done && !showDone.checked ? 'none' : ''
+}
+
+function runFlip(mutate) {
+	const rows = [...list.querySelectorAll('.row')]
+	mutate()
+	rows.forEach((row) => {
+		const id = row.dataset.id
+		if (row.style.display === 'none') return
+		const newTop = measureTop(row)
+		const oldTop = prevTops.get(id)
+		const delta = oldTop - newTop
+		if (delta !== 0) {
+			log(`row ${id}: delta=${delta.toFixed(1)}`)
+			row.style.transition = 'none'
+			row.style.transform = `translateY(${delta}px)`
+			requestAnimationFrame(() => {
+				row.style.transition = 'transform 200ms ease'
+				row.style.transform = ''
+			})
+		}
+		prevTops.set(id, newTop)
+	})
+}
+
+list.addEventListener('change', (e) => {
+	if (e.target.type !== 'checkbox') return
+	const row = e.target.closest('.row')
+	log(`--- checked row ${row.dataset.id} = ${e.target.checked} ---`)
+	runFlip(() => applyVisibility(row, e.target.checked))
+})
+
+showDone.addEventListener('change', () => {
+	log(`--- show completed = ${showDone.checked} ---`)
+	runFlip(() => {
+		list.querySelectorAll('.row').forEach((row) => {
+			if (row.dataset.done) applyVisibility(row, true)
+		})
+	})
+})
+
+document.getElementById('run-scroll-test').addEventListener('click', () => {
+	showDone.checked = false
+	log(`--- show completed = false ---`)
+	runFlip(() => {})
+	window.scrollBy(0, 150)
+	log(`--- scrolled to ${window.scrollY.toFixed(1)} ---`)
+	const row2 = document.querySelector('[data-id="2"]')
+	row2.querySelector('input').checked = true
+	log(`--- checked row 2 = true, scrollY now ${window.scrollY.toFixed(1)} ---`)
+	runFlip(() => applyVisibility(row2, true))
+	log(`--- after runFlip, scrollY now ${window.scrollY.toFixed(1)} ---`)
+})
+
+document.getElementById('copy-log').addEventListener('click', () => {
+	navigator.clipboard.writeText(logEl.textContent)
+})
+</script>
+</body>
+</html>
