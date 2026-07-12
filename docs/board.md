@@ -2,6 +2,10 @@
 
 # InBasket, Inbox (IB)
 
+- [ ] Two spike mockups added under docs/spikes/mockups/ ("Breathing — six
+      variations", "Settling — todo mockup 001") — untriaged; review and fold
+      the decision into design-system.md or adr.md, then discard the mockups.
+
 ---
 ---
 
