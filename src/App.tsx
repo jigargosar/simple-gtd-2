@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { useEditInput, useFlip } from './hooks'
+import { useEditInput } from './hooks'
 import {
     appendSection,
     appendTask,
@@ -388,11 +388,6 @@ function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () =
 
 function ViewSection({ section, index }: { section: Section; index: number }) {
     const tasks = useVisibleSectionTasks(section.id)
-    const listRef = useRef<HTMLUListElement>(null)
-    useFlip(
-        listRef,
-        tasks.map((t) => t.id),
-    )
     const [editingTitle, setEditingTitle] = useState(false)
     const gripRef = useRef<HTMLSpanElement>(null)
     const { ref, isDragging } = useSortable({
@@ -469,7 +464,7 @@ function ViewSection({ section, index }: { section: Section; index: number }) {
                 )}
             </div>
             {!section.collapsed && !isDragging && (
-                <ul ref={listRef}>
+                <ul>
                     {tasks.map((task, index) => (
                         <ViewTask key={task.id} task={task} index={index} />
                     ))}
@@ -539,6 +534,7 @@ function ViewTask({ task, index }: { task: Task; index: number }) {
         accept: 'task',
         handle: gripRef,
         sensors: rowDragSensors,
+        transition: { idle: true },
     })
 
     return (
