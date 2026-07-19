@@ -28,6 +28,12 @@
 
 # In Progress (IP)
 
+- [H] [doc] Extract dev workflow into its own file (docs/workflow.md) — move
+      board.md's "## Workflow" section there, and expand it to cover: each
+      doc file's responsibility (adr.md, new icebox.md, trimmed board.md),
+      the task format (kind tags like [bug]/[feature]/[doc]/[chore],
+      priority tags [H]/[M]/[L]), and the doc-structure split logged in
+      scratch-pad.md (2026-07-19).
 - Dialog/menu polish (2026-07-19) — code done, build/lint clean;
       manual browser testing done 2026-07-19, one bug found (see below);
       backdrop scroll-through accepted as-is (docs/adr.md):
@@ -207,6 +213,18 @@ Foundational — items in §2, §3, §4 depend on it.
       toggle) (bonus, if time remains)
 - [ ] [L] Quick capture — global keyboard-first Inbox add
 - [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
+- [ ] [H] [doc] Tag syntax `[H]`/`[L]`/`[bug]`/`[doc]`/etc. collides with
+      markdown's reference-link syntax — linter flags each one as "Cannot
+      resolve link label." Needs a fix.
+- [ ] [H] [doc] Investigate whether YAML or AsciiDoc would serve
+      board.md's tagging system better than Markdown — avoids the `[tag]`
+      / markdown-link-label collision entirely. Research thoroughly: pick
+      whatever keeps the workflow easy and simple, while still working
+      well in git (plain text, diffable, mergeable).
+- [ ] [H] [doc] Backport kind/priority tags onto existing board.md items
+      that predate this convention (2026-07-19) — sweep Requirements/
+      Backlog/pipeline entries and add [bug]/[feature]/[doc]/[chore] +
+      [H]/[M]/[L] where missing.
 
 ## Menu & interaction
 
