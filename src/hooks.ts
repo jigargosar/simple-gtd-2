@@ -1,4 +1,13 @@
-import { type ChangeEvent, type KeyboardEvent, useRef, useState } from 'react'
+import {
+    type ChangeEvent,
+    type KeyboardEvent,
+    type RefObject,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react'
+
+type EditableElement = HTMLInputElement | HTMLTextAreaElement
 
 export function useEditInput({
     initialValue,
@@ -22,13 +31,16 @@ export function useEditInput({
     }
     return {
         value,
-        onChange: (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value),
+        onChange: (e: ChangeEvent<EditableElement>) => setValue(e.target.value),
         onBlur: () => {
             if (!finished.current) save()
             finished.current = false
         },
-        onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => {
+        onKeyDown: (e: KeyboardEvent<EditableElement>) => {
             if (e.key === 'Enter') {
+                // Textarea callers rely on this to stop Enter from inserting a
+                // newline — title editing is single-conceptual-line, matching input.
+                e.preventDefault()
                 finished.current = true
                 save()
             }
@@ -38,4 +50,15 @@ export function useEditInput({
             }
         },
     }
+}
+
+// Grows a textarea to fit its content instead of scrolling internally, so an
+// edit-mode textarea visually matches the wrap-anywhere display span it replaces.
+export function useAutoGrow(ref: RefObject<HTMLTextAreaElement | null>, value: string) {
+    useLayoutEffect(() => {
+        const el = ref.current
+        if (!el) return
+        el.style.height = 'auto'
+        el.style.height = `${el.scrollHeight}px`
+    }, [ref, value])
 }

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { useEditInput } from './hooks'
+import { useAutoGrow, useEditInput } from './hooks'
 import {
     appendSection,
     appendTask,
@@ -487,12 +487,16 @@ function ViewSectionTitleEditor({
     onCancel: () => void
 }) {
     const editProps = useEditInput({ initialValue: title, onSave, onCancel })
+    const ref = useRef<HTMLTextAreaElement>(null)
+    useAutoGrow(ref, editProps.value)
     return (
-        <input
+        <textarea
+            ref={ref}
             autoFocus
+            rows={1}
             {...editProps}
             placeholder="Section name…"
-            className="focus-visible:ring-accent caret-accent min-w-0 flex-1 rounded-md border-none bg-transparent px-2 text-lg font-bold text-stone-800 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="focus-visible:ring-accent caret-accent min-w-0 flex-1 resize-none overflow-hidden rounded-md border-none bg-transparent px-2 text-lg font-bold wrap-anywhere text-stone-800 transition outline-none placeholder:text-stone-500 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
         />
     )
 }
@@ -666,14 +670,18 @@ function ViewTitleEditor({
     onCancel: () => void
 }) {
     const editProps = useEditInput({ initialValue: title, onSave, onCancel })
+    const ref = useRef<HTMLTextAreaElement>(null)
+    useAutoGrow(ref, editProps.value)
     return (
-        <input
+        <textarea
+            ref={ref}
             autoFocus
+            rows={1}
             {...editProps}
             placeholder="Type or Esc to cancel"
             className={clsx(
                 titleBox,
-                'caret-accent focus-visible:ring-accent border-none bg-transparent text-stone-900 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
+                'caret-accent focus-visible:ring-accent resize-none overflow-hidden border-none bg-transparent text-stone-900 transition outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
             )}
         />
     )
@@ -838,6 +846,7 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
                                 key={t.id}
                                 text={t.title}
                                 kind="item"
+                                done={t.done}
                                 onRestore={() => restoreTask(t.id)}
                                 onDelete={() => deleteTask(t.id)}
                             />
@@ -868,11 +877,13 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
 function ViewArchiveRow({
     text,
     kind,
+    done,
     onRestore,
     onDelete,
 }: {
     text: string
     kind: 'item' | 'list'
+    done?: boolean
     onRestore: () => void
     onDelete: () => void
 }) {
@@ -885,9 +896,7 @@ function ViewArchiveRow({
     if (confirming) {
         return (
             <div className={wrap}>
-                {!isList && (
-                    <span className="mr-3 h-4 w-4 shrink-0 rounded-full border-2 border-stone-300" />
-                )}
+                {!isList && <ViewArchiveDoneMark done={done} />}
                 <span
                     className={clsx(
                         'flex-1 text-base text-stone-400 line-through',
@@ -915,13 +924,15 @@ function ViewArchiveRow({
 
     return (
         <div className={wrap}>
-            {!isList && (
-                <span className="mr-3 h-4 w-4 shrink-0 rounded-full border-2 border-stone-400" />
-            )}
+            {!isList && <ViewArchiveDoneMark done={done} />}
             <span
                 className={clsx(
                     'flex-1 text-base',
-                    isList ? 'font-medium text-stone-700' : 'text-stone-900',
+                    isList
+                        ? 'font-medium text-stone-700'
+                        : done
+                          ? 'text-stone-500 line-through'
+                          : 'text-stone-900',
                 )}
             >
                 {text}
@@ -941,6 +952,31 @@ function ViewArchiveRow({
                 <Trash2 className="size-4" />
             </button>
         </div>
+    )
+}
+
+// Archive-row done indicator. Static (not a toggle) — archived items previously
+// showed the same neutral dot regardless of done state, losing that information.
+function ViewArchiveDoneMark({ done }: { done?: boolean }) {
+    return (
+        <span
+            className={clsx(
+                'mr-3 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2',
+                done ? 'border-accent bg-accent' : 'border-stone-400',
+            )}
+        >
+            {done && (
+                <svg width="7" height="5" viewBox="0 0 9 7" fill="none">
+                    <path
+                        d="M1 3.5L3.5 6L8 1"
+                        stroke="white"
+                        strokeWidth="1.75"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    />
+                </svg>
+            )}
+        </span>
     )
 }
 

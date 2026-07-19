@@ -151,17 +151,21 @@ Foundational — items in §2, §3, §4 depend on it.
 - [x] Row/section model finalized — unified icon sizing, spacing, and
       hover/focus treatment across rows and section headers. See
       [reference/2026-07-05-row-section-model.md](reference/2026-07-05-row-section-model.md).
-- [ ] Edit ↔ display parity — display wraps multi-line, editor is single-line
-      `<input>` (`wrap-anywhere` is a no-op on inputs); reconcile (textarea or
-      truncate), never overflow horizontally.
+- [x] Edit ↔ display parity — title editors (task + section) are now an
+      auto-growing `<textarea>` (`useAutoGrow`) instead of a single-line
+      `<input>`, matching the `wrap-anywhere` display span; Enter still saves
+      (newline suppressed), Escape still cancels. 2026-07-19.
 - [~] Checkbox ↔ edit-input spacing — display + editor share `titleBox`; verify
       whether it still reads too narrow
 - [x] Board view: archive-only, no delete button (`Trash2` lives only in the archive) — §1
-- [ ] Done status visible in archive view — §1
+- [x] Done status visible in archive view — archive rows now show a filled/
+      checkmarked dot and struck-through text for done items instead of the
+      same neutral dot for both states. 2026-07-19.
 - [ ] Auto-scroll to a newly-added input (add-section on a long page)
 - [~] Reduce over-dark / over-bold text; font pass (Inter set; tone pass pending)
 - [ ] Tailwind class cleanup
-- [ ] Page-scrollbar shift fix (`scrollbar-gutter`)
+- [x] Page-scrollbar shift fix — already done (`scrollbar-gutter: stable` in
+      index.css); item was stale, found while re-triaging this list. 2026-07-19.
 - [ ] Hover consistency — section header has no hover bg; add-rows use
       `focus-within:bg-stone-100/40` vs task hover `bg-stone-100/60`
 
