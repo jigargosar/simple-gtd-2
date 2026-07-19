@@ -29,32 +29,38 @@
 # In Progress (IP)
 
 - Dialog/menu polish (2026-07-19) — code done, build/lint clean;
-      **manual browser testing still pending**, not yet verified by user:
+      manual browser testing done 2026-07-19, one bug found (see below):
       Archive dialog:
-      - [ ] Tab through: close (X) → items tab → lists tab → each row's
-            restore/delete
-      - [ ] Focus "Archived items" tab — ring is a clean rounded box, no
+      - [~] Tab through: close (X) → items tab → lists tab → each row's
+            restore/delete — DEVIATION: first Tab from dialog-open jumps
+            straight to the "Archived items" tab, skipping the close (X)
+            button; X is reachable but only at the end of the loop (confirmed
+            via the tab-loop check below), not first
+      - [x] Focus "Archived items" tab — ring is a clean rounded box, no
             flat-cut edge on the left
-      - [ ] Focus "Archived lists" tab — same check, no cut edge on the right
-      - [ ] Click "restore" on an archived item — button is blue (not
+      - [x] Focus "Archived lists" tab — same check, no cut edge on the right
+      - [x] Click "restore" on an archived item — button is blue (not
             indigo), item reappears on the board
-      - [ ] Switch between tabs — dialog's outer size stays fixed, no jump
-      - [ ] Click trash icon → confirm state appears — no size jump; Tab to
+      - [x] Switch between tabs — dialog's outer size stays fixed, no jump
+      - [x] Click trash icon → confirm state appears — no size jump; Tab to
             Yes/Cancel, both show a ring
-      - [ ] Click Cancel — row returns to normal
-      - [ ] Empty a tab — "No archived items/lists" text is legible
-      - [ ] Press Esc — dialog closes
-      - [ ] Click the dark backdrop — dialog closes
+      - [x] Click Cancel — row returns to normal
+      - [x] Empty a tab — "No archived items/lists" text is legible
+      - [x] Press Esc — dialog closes
+      - [x] Click the dark backdrop — dialog closes
       - [ ] Mouse-wheel over the page behind the dialog — page doesn't scroll
-      - [ ] Tab past the last control — focus loops back inside the dialog,
-            never escapes to the browser chrome or page behind
+            — BUG: wheel-scrolling over the backdrop scrolls the page behind
+            the dialog; no scroll lock
+      - [x] Tab past the last control — focus loops back inside the dialog
+            (lands back on close X), never escapes to the browser chrome or
+            page behind
       Import dialog (menu → "Import data…"):
-      - [ ] Esc closes it
-      - [ ] Click-outside closes it
-      - [ ] Focus stays trapped inside
-      - [ ] Invalid file → error view — dialog size doesn't jump
-      - [ ] Tab to Cancel/Replace (or OK on error) — rings visible
-      - [ ] Click Replace — data loads, dialog closes
+      - [x] Esc closes it
+      - [x] Click-outside closes it
+      - [x] Focus stays trapped inside
+      - [x] Invalid file → error view — dialog size doesn't jump
+      - [x] Tab to Cancel/Replace (or OK on error) — rings visible
+      - [x] Click Replace — data loads, dialog closes
 - `eslint.config.js` (2026-07-19): added a lenient rule set for
       `docs/spikes/**` so throwaway repro files don't fail the strict
       `react-refresh` component-export rule. Code done, build/lint clean;
@@ -203,7 +209,7 @@ Foundational — items in §2, §3, §4 depend on it.
       scanning which list needs attention requires opening each one.
 - [ ] 3-state filter — Active / Done / All (replaces the binary `showDone`
       toggle) (bonus, if time remains)
-- [ ] Quick capture — global keyboard-first Inbox add
+- [ ] [L] Quick capture — global keyboard-first Inbox add
 - [ ] Task metadata — notes; contexts/tags (@home, @calls) + filtering
 
 ## Menu & interaction
@@ -275,6 +281,15 @@ before being acted on.
 - **Backlog** — not-yet-committed items, grouped by whatever dimension is
   useful; an item fitting more than one group lives in one canonical place,
   linked from the others, never duplicated.
+
+## Priority
+Backlog and Requirements items may carry an optional priority tag `[H]`/
+`[M]`/`[L]` (high/med/low), placed immediately after the status checkbox.
+Used only where sequencing matters; absence of a tag means unranked.
+
+Examples:
+- `- [ ] [H] Fix crash on empty import file`
+- `- [ ] [L] Quick capture — global keyboard-first Inbox add`
 
 ## Checking an item out
 Requirements and Backlog items are authoritative. Picking one up creates a
