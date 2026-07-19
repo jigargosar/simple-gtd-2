@@ -1,6 +1,30 @@
 # Scratch pad
 
-## FLIP reflow bug — fix confirmed, not yet committed (2026-07-12)
+## Intended doc structure (not yet matching reality) — 2026-07-19
+
+Intention: three separate files —
+- adr.md — decisions (already matches)
+- icebox.md — items explicitly excluded from consideration for the
+  current release (v1); frozen, not being planned for now
+- board.md — just the pipeline: To Do / In Progress / Done (leaner than
+  today)
+
+Current reality: board.md combines InBasket, Planning, Ready, In Progress,
+Done, Requirements, and Backlog all in one file — doesn't match the
+intention above. Also, "Backlog" (board.md's current catch-all for
+not-yet-committed ideas) isn't the same concept as icebox — icebox is
+specifically for v1-excluded items, not general someday/maybe ideas. Not
+restructured yet; logged here so the mismatch and the concept difference
+aren't lost.
+
+## FLIP reflow bug — superseded, see commit history (2026-07-12 → 2026-07-19)
+
+Everything below described the hand-rolled `useFlip` hook and its
+scroll-position fix. That hook no longer exists: commit `8422581` fixed it,
+then commit `084de93` (2026-07-19) deleted `useFlip` entirely and replaced it
+with dnd-kit's own `transition: { idle: true }`, per an isolated spike
+proving dnd-kit's reflow handles the same case. Kept below for historical
+context only — don't treat file/line references here as current.
 
 **Problem:** checking off a task / toggling "Show completed" caused sibling
 rows to snap instead of sliding — user reported it as inconsistent,

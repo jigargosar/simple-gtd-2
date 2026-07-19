@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { useEditInput, useScrollLock } from './hooks'
+import { useEditInput } from './hooks'
 import {
     appendSection,
     appendTask,
@@ -321,7 +321,6 @@ function ViewMenu() {
 function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () => void }) {
     const [result, setResult] = useState(state)
     const ref = useRef<HTMLDialogElement>(null)
-    useScrollLock()
     useEffect(() => {
         ref.current?.showModal()
     }, [])
@@ -330,9 +329,7 @@ function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () =
         <dialog
             ref={ref}
             onClose={onClose}
-            onClick={(e) => {
-                if (e.target === e.currentTarget) onClose()
-            }}
+            closedby="any"
             className="backdrop:bg-black/30 m-auto flex h-[70vh] w-[min(480px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white p-0 shadow-2xl"
         >
             <div className="flex items-center border-b border-stone-200 px-5 py-4">
@@ -792,7 +789,6 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
     const tasks = useArchivedTasks()
     const sections = useArchivedSections()
     const ref = useRef<HTMLDialogElement>(null)
-    useScrollLock()
     useEffect(() => {
         ref.current?.showModal()
     }, [])
@@ -801,9 +797,7 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
         <dialog
             ref={ref}
             onClose={onClose}
-            onClick={(e) => {
-                if (e.target === e.currentTarget) onClose()
-            }}
+            closedby="any"
             className="backdrop:bg-black/30 m-auto flex h-[70vh] w-[min(560px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white p-0 shadow-2xl"
         >
             <div className="flex items-center border-b border-stone-200 px-5 py-4">

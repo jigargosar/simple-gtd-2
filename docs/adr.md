@@ -36,3 +36,10 @@ Append-only, dated. One line per event (decision or completion). Newest at botto
     while empty" — not a bug.
   - Consequence: hooks.ts's stale "Won't fix" comment and requirements.md's
     matching "Known issues" line both contradicted this and are removed.
+
+- 2026-07-19 — Decision: remove scroll-locking from dialogs (deleted
+  `useScrollLock`); the page behind can now scroll freely while a dialog
+  is open.
+  - Why: the lock never fully worked (wheel-scroll over the backdrop
+    still leaked through), and fixing it costs more than accepting no
+    lock at all.
