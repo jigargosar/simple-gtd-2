@@ -11,10 +11,6 @@
 
 # Planning (PN)
 
-- [ ] Dialog/menu polish leftovers from the 2026-07-02 visual pass:
-      archive-dialog focus rings, restore-button color (indigo → accent),
-      empty-state contrast, and wiring the unused useScrollLock hook into
-      both dialogs.
 - [ ] V1 UX/UI pass — see §4 below.
 - [ ] Search / filter — one input + `useMatchingTasks(query)` (bonus, if time
       remains). docs/reference/search-notes
@@ -31,7 +27,38 @@
 ---
 
 # In Progress (IP)
-- 
+
+- Dialog/menu polish (2026-07-19) — code done, build/lint clean;
+      **manual browser testing still pending**, not yet verified by user:
+      Archive dialog:
+      - [ ] Tab through: close (X) → items tab → lists tab → each row's
+            restore/delete
+      - [ ] Focus "Archived items" tab — ring is a clean rounded box, no
+            flat-cut edge on the left
+      - [ ] Focus "Archived lists" tab — same check, no cut edge on the right
+      - [ ] Click "restore" on an archived item — button is blue (not
+            indigo), item reappears on the board
+      - [ ] Switch between tabs — dialog's outer size stays fixed, no jump
+      - [ ] Click trash icon → confirm state appears — no size jump; Tab to
+            Yes/Cancel, both show a ring
+      - [ ] Click Cancel — row returns to normal
+      - [ ] Empty a tab — "No archived items/lists" text is legible
+      - [ ] Press Esc — dialog closes
+      - [ ] Click the dark backdrop — dialog closes
+      - [ ] Mouse-wheel over the page behind the dialog — page doesn't scroll
+      - [ ] Tab past the last control — focus loops back inside the dialog,
+            never escapes to the browser chrome or page behind
+      Import dialog (menu → "Import data…"):
+      - [ ] Esc closes it
+      - [ ] Click-outside closes it
+      - [ ] Focus stays trapped inside
+      - [ ] Invalid file → error view — dialog size doesn't jump
+      - [ ] Tab to Cancel/Replace (or OK on error) — rings visible
+      - [ ] Click Replace — data loads, dialog closes
+- `eslint.config.js` (2026-07-19): added a lenient rule set for
+      `docs/spikes/**` so throwaway repro files don't fail the strict
+      `react-refresh` component-export rule. Code done, build/lint clean;
+      holding here per "don't move Done items until v1 ships."
 
 ---
 ---
@@ -239,6 +266,10 @@ before being acted on.
 - **Ready** — scoped, queued, next up.
 - **In Progress** — actively being worked on right now.
 - **Done** — recently finished pipeline entries; not a permanent home.
+- Until the v1 milestone (see Requirements section) is complete, do not move
+  finished pipeline items into Done — leave them in In Progress instead, with
+  a note that the code/build side is finished and what (if anything) is
+  still pending (e.g. manual browser testing). (Added 2026-07-19.)
 - **Requirements** — authoritative record of committed scope and its status
   ([ ]/[~]/[x]).
 - **Backlog** — not-yet-committed items, grouped by whatever dimension is

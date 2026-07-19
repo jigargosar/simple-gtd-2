@@ -17,9 +17,9 @@ import {
     Upload,
     X,
 } from 'lucide-react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
-import { useEditInput } from './hooks'
+import { useEditInput, useScrollLock } from './hooks'
 import {
     appendSection,
     appendTask,
@@ -320,69 +320,74 @@ function ViewMenu() {
 // commit re-validates from `rawString` rather than trusting this preview parse).
 function ViewImportDialog({ state, onClose }: { state: ParsedData; onClose: () => void }) {
     const [result, setResult] = useState(state)
+    const ref = useRef<HTMLDialogElement>(null)
+    useScrollLock()
+    useEffect(() => {
+        ref.current?.showModal()
+    }, [])
 
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+        <dialog
+            ref={ref}
+            onClose={onClose}
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose()
             }}
+            className="backdrop:bg-black/30 m-auto flex h-[70vh] w-[min(480px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white p-0 shadow-2xl"
         >
-            <div className="flex max-h-[80vh] min-h-[30vh] w-[min(480px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
-                <div className="flex items-center border-b border-stone-200 px-5 py-4">
-                    <span className="text-base font-semibold text-stone-900">Import data</span>
-                    <button
-                        onClick={onClose}
-                        aria-label="Close"
-                        className="ml-auto grid h-7 w-7 place-items-center rounded-md text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
-                    >
-                        <X className="size-4" />
-                    </button>
-                </div>
-
-                {result.tag === 'error' ? (
-                    <>
-                        <p className="flex-1 px-5 pt-4 text-sm text-stone-700">{result.message}</p>
-                        <div className="flex justify-end px-5 py-4">
-                            <button
-                                onClick={onClose}
-                                className="focus-visible:ring-accent cursor-pointer rounded-md px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                            >
-                                OK
-                            </button>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <p className="px-5 pt-4 pb-1 text-sm text-stone-700">
-                            Replace all current data with {result.preview.summary.sections} lists,{' '}
-                            {result.preview.summary.tasks} tasks?
-                        </p>
-                        <pre className="mx-5 mt-2 flex-1 overflow-y-auto rounded-lg bg-stone-50 p-3 font-mono text-xs whitespace-pre-wrap wrap-anywhere text-stone-600">
-                            {result.preview.tree}
-                        </pre>
-                        <div className="flex justify-end gap-2 px-5 py-4">
-                            <button
-                                onClick={onClose}
-                                className="focus-visible:ring-accent cursor-pointer rounded-md px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => {
-                                    const error = loadRaw(result.rawString)
-                                    if (error) setResult({ tag: 'error', message: error })
-                                    else onClose()
-                                }}
-                                className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:outline-none"
-                            >
-                                Replace
-                            </button>
-                        </div>
-                    </>
-                )}
+            <div className="flex items-center border-b border-stone-200 px-5 py-4">
+                <span className="text-base font-semibold text-stone-900">Import data</span>
+                <button
+                    onClick={onClose}
+                    aria-label="Close"
+                    className="focus-visible:ring-accent ml-auto grid h-7 w-7 place-items-center rounded-md text-stone-400 transition hover:bg-stone-100 hover:text-stone-700 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                    <X className="size-4" />
+                </button>
             </div>
-        </div>
+
+            {result.tag === 'error' ? (
+                <>
+                    <p className="flex-1 px-5 pt-4 text-sm text-stone-700">{result.message}</p>
+                    <div className="flex justify-end px-5 py-4">
+                        <button
+                            onClick={onClose}
+                            className="focus-visible:ring-accent cursor-pointer rounded-md px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                        >
+                            OK
+                        </button>
+                    </div>
+                </>
+            ) : (
+                <>
+                    <p className="px-5 pt-4 pb-1 text-sm text-stone-700">
+                        Replace all current data with {result.preview.summary.sections} lists,{' '}
+                        {result.preview.summary.tasks} tasks?
+                    </p>
+                    <pre className="mx-5 mt-2 flex-1 overflow-y-auto rounded-lg bg-stone-50 p-3 font-mono text-xs whitespace-pre-wrap wrap-anywhere text-stone-600">
+                        {result.preview.tree}
+                    </pre>
+                    <div className="flex justify-end gap-2 px-5 py-4">
+                        <button
+                            onClick={onClose}
+                            className="focus-visible:ring-accent cursor-pointer rounded-md px-3 py-1.5 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={() => {
+                                const error = loadRaw(result.rawString)
+                                if (error) setResult({ tag: 'error', message: error })
+                                else onClose()
+                            }}
+                            className="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:outline-none"
+                        >
+                            Replace
+                        </button>
+                    </div>
+                </>
+            )}
+        </dialog>
     )
 }
 
@@ -786,76 +791,81 @@ function ViewArchiveDialog({ onClose }: { onClose: () => void }) {
     const [tab, setTab] = useState<'items' | 'lists'>('items')
     const tasks = useArchivedTasks()
     const sections = useArchivedSections()
+    const ref = useRef<HTMLDialogElement>(null)
+    useScrollLock()
+    useEffect(() => {
+        ref.current?.showModal()
+    }, [])
 
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+        <dialog
+            ref={ref}
+            onClose={onClose}
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose()
             }}
+            className="backdrop:bg-black/30 m-auto flex h-[70vh] w-[min(560px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white p-0 shadow-2xl"
         >
-            <div className="flex max-h-[80vh] min-h-[30vh] w-[min(560px,92vw)] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-2xl">
-                <div className="flex items-center border-b border-stone-200 px-5 py-4">
-                    <span className="text-base font-semibold text-stone-900">Archive</span>
+            <div className="flex items-center border-b border-stone-200 px-5 py-4">
+                <span className="text-base font-semibold text-stone-900">Archive</span>
+                <button
+                    onClick={onClose}
+                    aria-label="Close"
+                    className="focus-visible:ring-accent ml-auto grid h-7 w-7 place-items-center rounded-md text-stone-400 transition hover:bg-stone-100 hover:text-stone-700 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                    <X className="size-4" />
+                </button>
+            </div>
+
+            {/* compact left-aligned segmented tabs */}
+            <div className="mx-5 mt-4 mb-1 inline-flex self-start overflow-hidden rounded-lg border border-stone-200">
+                {(['items', 'lists'] as const).map((t, i) => (
                     <button
-                        onClick={onClose}
-                        aria-label="Close"
-                        className="ml-auto grid h-7 w-7 place-items-center rounded-md text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
+                        key={t}
+                        onClick={() => setTab(t)}
+                        className={clsx(
+                            'focus-visible:ring-accent px-4 py-1.5 text-xs transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:outline-none',
+                            i === 0 ? 'rounded-l-lg' : 'rounded-r-lg border-l border-stone-200',
+                            tab === t
+                                ? 'bg-stone-100 text-stone-900'
+                                : 'text-stone-500 hover:text-stone-700',
+                        )}
                     >
-                        <X className="size-4" />
+                        {t === 'items' ? 'Archived items' : 'Archived lists'}
                     </button>
-                </div>
+                ))}
+            </div>
 
-                {/* compact left-aligned segmented tabs */}
-                <div className="mx-5 mt-4 mb-1 inline-flex self-start overflow-hidden rounded-lg border border-stone-200">
-                    {(['items', 'lists'] as const).map((t, i) => (
-                        <button
-                            key={t}
-                            onClick={() => setTab(t)}
-                            className={clsx(
-                                'px-4 py-1.5 text-xs transition',
-                                i > 0 && 'border-l border-stone-200',
-                                tab === t
-                                    ? 'bg-stone-100 text-stone-900'
-                                    : 'text-stone-500 hover:text-stone-700',
-                            )}
-                        >
-                            {t === 'items' ? 'Archived items' : 'Archived lists'}
-                        </button>
-                    ))}
-                </div>
-
-                <div className="overflow-y-auto px-5 pt-2 pb-5">
-                    {tab === 'items' ? (
-                        tasks.length ? (
-                            tasks.map((t) => (
-                                <ViewArchiveRow
-                                    key={t.id}
-                                    text={t.title}
-                                    kind="item"
-                                    onRestore={() => restoreTask(t.id)}
-                                    onDelete={() => deleteTask(t.id)}
-                                />
-                            ))
-                        ) : (
-                            <p className="py-4 text-sm text-stone-400 italic">No archived items.</p>
-                        )
-                    ) : sections.length ? (
-                        sections.map((s) => (
+            <div className="overflow-y-auto px-5 pt-2 pb-5">
+                {tab === 'items' ? (
+                    tasks.length ? (
+                        tasks.map((t) => (
                             <ViewArchiveRow
-                                key={s.id}
-                                text={s.title}
-                                kind="list"
-                                onRestore={() => restoreSection(s.id)}
-                                onDelete={() => deleteSection(s.id)}
+                                key={t.id}
+                                text={t.title}
+                                kind="item"
+                                onRestore={() => restoreTask(t.id)}
+                                onDelete={() => deleteTask(t.id)}
                             />
                         ))
                     ) : (
-                        <p className="py-4 text-sm text-stone-400 italic">No archived lists.</p>
-                    )}
-                </div>
+                        <p className="py-4 text-sm text-stone-500 italic">No archived items.</p>
+                    )
+                ) : sections.length ? (
+                    sections.map((s) => (
+                        <ViewArchiveRow
+                            key={s.id}
+                            text={s.title}
+                            kind="list"
+                            onRestore={() => restoreSection(s.id)}
+                            onDelete={() => deleteSection(s.id)}
+                        />
+                    ))
+                ) : (
+                    <p className="py-4 text-sm text-stone-500 italic">No archived lists.</p>
+                )}
             </div>
-        </div>
+        </dialog>
     )
 }
 
@@ -895,13 +905,13 @@ function ViewArchiveRow({
                 <span className="text-sm text-stone-500">Delete permanently?</span>
                 <button
                     onClick={onDelete}
-                    className="ml-3 cursor-pointer rounded-md px-2 py-1 text-sm font-medium text-red-700 hover:bg-red-50"
+                    className="ml-3 cursor-pointer rounded-md px-2 py-1 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                     Yes
                 </button>
                 <button
                     onClick={() => setConfirming(false)}
-                    className="ml-1 cursor-pointer rounded-md px-2 py-1 text-sm text-stone-500 hover:bg-stone-100"
+                    className="focus-visible:ring-accent ml-1 cursor-pointer rounded-md px-2 py-1 text-sm text-stone-500 transition hover:bg-stone-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
                     Cancel
                 </button>
@@ -924,7 +934,7 @@ function ViewArchiveRow({
             </span>
             <button
                 onClick={onRestore}
-                className="ml-2 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-sm text-indigo-600 transition hover:bg-indigo-50"
+                className="focus-visible:ring-accent text-accent ml-2 inline-flex cursor-pointer items-center gap-1 rounded-md px-2 py-1 text-sm transition hover:bg-accent/10 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
                 <ArchiveRestore className="size-3.5" />
                 restore
@@ -932,7 +942,7 @@ function ViewArchiveRow({
             <button
                 onClick={() => setConfirming(true)}
                 aria-label="Delete permanently"
-                className="ml-1 shrink-0 cursor-pointer rounded-md p-1.5 text-red-700 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-red-50 focus-visible:opacity-100"
+                className="ml-1 shrink-0 cursor-pointer rounded-md p-1.5 text-red-700 opacity-0 transition group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-red-50 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 focus-visible:outline-none"
             >
                 <Trash2 className="size-4" />
             </button>

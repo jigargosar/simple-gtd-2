@@ -25,6 +25,13 @@ Stable rules already live in CLAUDE.md Conventions; this file is for the rest.
 - See CLAUDE.md Convention 6 — focus-visible ring pattern.
 - Icon-button rings sit flush on the hit-area edge (no `ring-offset`), so the
   ring never implies a bigger clickable area than what's actually there.
+- Focus rings must never be clipped. A focusable element inside an
+  `overflow-hidden` ancestor (e.g. a rounded segmented-tab group) will have
+  its ring cut off unless handled: give the first/last item corner rounding
+  that matches the ancestor's radius, use `ring-inset` instead of an offset
+  ring, or don't clip that ancestor at all. Found on the archive dialog's
+  tab bar (2026-07-19) — the un-rounded end buttons' square-corner ring was
+  sliced by the container's `rounded-lg overflow-hidden`.
 
 ## Outline
 

@@ -9,12 +9,20 @@ export default defineConfig([
   globalIgnores(['dist', '.remember']),
   {
     files: ['**/*.{ts,tsx}'],
+    ignores: ['docs/spikes/**'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite,
     ],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+  {
+    files: ['docs/spikes/**/*.{ts,tsx}'],
+    extends: [js.configs.recommended, tseslint.configs.recommended, reactHooks.configs.flat.recommended],
     languageOptions: {
       globals: globals.browser,
     },
